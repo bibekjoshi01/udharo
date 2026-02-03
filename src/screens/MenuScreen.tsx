@@ -12,7 +12,6 @@ import { AppPressable } from '../components/AppPressable';
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Menu'>;
 
 const appConfig = require('../../app.json');
-const appVersion = appConfig?.expo?.version ?? '1.0.0';
 const packageName = appConfig?.expo?.android?.package ?? 'com.udharo.app';
 const playStoreUrl = `https://play.google.com/store/apps/details?id=${packageName}`;
 const shareUrl = playStoreUrl;
@@ -63,11 +62,6 @@ export function MenuScreen() {
       onPress: () => navigation.navigate('LockSettings'),
     },
     {
-      label: STRINGS.privacyPolicy,
-      icon: 'shield-checkmark-outline',
-      onPress: () => navigation.navigate('PrivacyPolicy'),
-    },
-    {
       label: STRINGS.termsOfUse,
       icon: 'document-text-outline',
       onPress: () => navigation.navigate('Terms'),
@@ -107,26 +101,7 @@ export function MenuScreen() {
     <View style={styles.container}>
       <ScreenHeader title={STRINGS.menuTitle} onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.infoCard}>
-          <View style={styles.infoHeader}>
-            <View style={styles.logo}>
-              <Ionicons name="book-outline" size={20} color={COLORS.primary} />
-            </View>
-            <View style={styles.infoText}>
-              <Text style={styles.appName}>{STRINGS.appName}</Text>
-              <Text style={styles.tagline}>{STRINGS.tagline}</Text>
-            </View>
-          </View>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>{STRINGS.appVersion}</Text>
-            <Text style={styles.infoValue}>{appVersion}</Text>
-          </View>
-        </View>
-
-        <Text style={styles.sectionTitle}>{STRINGS.appInfo}</Text>
         <View style={styles.menuCard}>{mainItems.map(renderItem)}</View>
-
-        <Text style={styles.sectionTitle}>{STRINGS.support}</Text>
         <View style={styles.menuCard}>{supportItems.map(renderItem)}</View>
       </ScrollView>
     </View>
@@ -161,21 +136,6 @@ const styles = StyleSheet.create({
   infoText: { flex: 1 },
   appName: { fontSize: FONTS.body, fontWeight: '700', color: COLORS.text },
   tagline: { fontSize: FONTS.small, color: COLORS.textSecondary, marginTop: 2 },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: SPACING.sm,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-  },
-  infoLabel: { fontSize: FONTS.small, color: COLORS.textSecondary },
-  infoValue: { fontSize: FONTS.small, color: COLORS.text, fontWeight: '600' },
-  sectionTitle: {
-    fontSize: FONTS.caption,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.sm,
-    marginLeft: SPACING.xs,
-  },
   menuCard: {
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,

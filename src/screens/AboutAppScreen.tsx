@@ -9,6 +9,9 @@ import type { RootStackParamList } from '../navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AboutApp'>;
 
+const appConfig = require('../../app.json');
+const appVersion = appConfig?.expo?.version ?? '1.0.0';
+
 export function AboutAppScreen() {
   const navigation = useNavigation<Nav>();
 
@@ -17,12 +20,20 @@ export function AboutAppScreen() {
       <ScreenHeader title={STRINGS.aboutApp} onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
+          <Text style={styles.title}>{STRINGS.appName}</Text>
+          <Text style={styles.tagline}>{STRINGS.tagline}</Text>
           <Text style={styles.body}>{STRINGS.aboutBody}</Text>
-          <Text style={styles.developer}>Developer: Bibek Joshi</Text>
+          <Text style={styles.note}>{STRINGS.aboutNote}</Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>
+              {STRINGS.appVersion}: {appVersion}
+            </Text>
+            <Text style={styles.developer}>Developer: Bibek Joshi</Text>
+          </View>
         </View>
       </ScrollView>
     </View>
-  );
+  ); 
 }
 
 const styles = StyleSheet.create({
@@ -35,10 +46,27 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     padding: SPACING.md,
   },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: 2,
+  },
+  tagline: {
+    fontSize: FONTS.body,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.sm,
+  },
   body: {
     fontSize: FONTS.body,
     color: COLORS.text,
     lineHeight: 22,
+  },
+  note: {
+    marginTop: SPACING.sm,
+    fontSize: FONTS.small,
+    color: COLORS.textSecondary,
+    lineHeight: 20,
   },
   developer: {
     marginTop: SPACING.md,
@@ -46,4 +74,14 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     fontWeight: '600',
   },
+  infoRow: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    paddingTop: SPACING.sm,
+    borderTopWidth: 1,
+    marginTop: SPACING.sm,
+    borderTopColor: COLORS.border,
+  },
+  infoLabel: { fontSize: FONTS.small, color: COLORS.textSecondary },
+  infoValue: { fontSize: FONTS.small, color: COLORS.text, fontWeight: '600' },
 });

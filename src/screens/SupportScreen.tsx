@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Linking, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -31,6 +31,10 @@ export function SupportScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
           <Text style={styles.body}>{STRINGS.supportBody}</Text>
+          <View style={styles.infoBlock}>
+            <Text style={styles.infoLabel}>Developer</Text>
+            <Text style={styles.infoValue}>Bibek Joshi</Text>
+          </View>
           <View style={styles.emailRow}>
             <Text style={styles.emailLabel}>Email</Text>
             <Text style={styles.emailValue}>{STRINGS.supportEmail}</Text>
@@ -38,6 +42,20 @@ export function SupportScreen() {
           <AppPressable style={styles.button} onPress={openEmail}>
             <Text style={styles.buttonText}>Email पठाउनुहोस्</Text>
           </AppPressable>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.donateTitle}>सहयोग गर्न चाहनुहुन्छ?</Text>
+          <Text style={styles.donateBody}>
+            तपाईंको सानो सहयोगले यो एप अझ राम्रो बनाउन ऊर्जा दिन्छ। QR स्क्यान गरेर
+            दान गर्न सक्नुहुन्छ।
+          </Text>
+          <Image
+            source={require('../../assets/donate-qr.png')}
+            style={styles.qr}
+            resizeMode="contain"
+          />
+          <Text style={styles.donateNote}>Thank you for your support.</Text>
         </View>
       </ScrollView>
     </View>
@@ -53,11 +71,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     padding: SPACING.md,
+    marginTop: SPACING.md,
   },
   body: {
     fontSize: FONTS.body,
     color: COLORS.text,
     lineHeight: 22,
+  },
+  infoBlock: {
+    marginTop: SPACING.md,
+  },
+  infoLabel: {
+    fontSize: FONTS.small,
+    color: COLORS.textSecondary,
+    marginBottom: 2,
+  },
+  infoValue: {
+    fontSize: FONTS.body,
+    color: COLORS.text,
+    fontWeight: '600',
   },
   emailRow: {
     marginTop: SPACING.md,
@@ -87,5 +119,31 @@ const styles = StyleSheet.create({
     fontSize: FONTS.body,
     fontWeight: '700',
     color: COLORS.white,
+  },
+  donateTitle: {
+    fontSize: FONTS.body,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: SPACING.xs,
+  },
+  donateBody: {
+    fontSize: FONTS.body,
+    color: COLORS.textSecondary,
+    lineHeight: 22,
+  },
+  qr: {
+    marginTop: SPACING.md,
+    width: '100%',
+    height: 220,
+    backgroundColor: '#F8FAFC',
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  donateNote: {
+    marginTop: SPACING.sm,
+    textAlign: 'center',
+    color: COLORS.textSecondary,
+    fontSize: FONTS.small,
   },
 });

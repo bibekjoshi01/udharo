@@ -17,7 +17,8 @@ export function TermsScreen() {
       <ScreenHeader title={STRINGS.termsOfUse} onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
-          <Text style={styles.body}>{STRINGS.termsBody}</Text>
+          <Text style={styles.body}>• {STRINGS.termsBody}</Text>
+          <Text style={[styles.body, { marginTop: 20 }]}>• {STRINGS.privacyBody}</Text>
         </View>
       </ScrollView>
     </View>
