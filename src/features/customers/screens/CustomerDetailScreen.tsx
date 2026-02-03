@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import { ScreenHeader } from '../components';
 import { deleteCustomer } from '../../../db/database';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
+import { ConfirmDialog } from '../../../components/ConfirmDialog';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'CustomerDetail'>;
 
@@ -26,6 +27,7 @@ export function CustomerDetailScreen() {
   const customerId = (route.params as { customerId: number }).customerId;
   const { customer, balance, totalCredits, totalPayments, loading, refresh, error } =
     useCustomer(customerId);
+  const [showDelete, setShowDelete] = React.useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -69,19 +71,7 @@ export function CustomerDetailScreen() {
             </AppPressable>
             <AppPressable
               style={[styles.iconBtn, styles.iconBtnSpacing]}
-              onPress={() => {
-                Alert.alert(STRINGS.deleteCustomer, STRINGS.confirmDeleteCustomer, [
-                  { text: STRINGS.cancel, style: 'cancel' },
-                  {
-                    text: STRINGS.delete,
-                    style: 'destructive',
-                    onPress: async () => {
-                      await deleteCustomer(customerId);
-                      navigation.goBack();
-                    },
-                  },
-                ]);
-              }}
+              onPress={() => setShowDelete(true)}
             >
               <Ionicons name="trash-outline" size={ICON_SIZE} color={COLORS.debt} />
             </AppPressable>
@@ -128,6 +118,20 @@ export function CustomerDetailScreen() {
           </View>
         </View>
       </ScrollView>
+      <ConfirmDialog
+        visible={showDelete}
+        title={STRINGS.deleteCustomer}
+        message={STRINGS.confirmDeleteCustomer}
+        confirmLabel={STRINGS.delete}
+        cancelLabel={STRINGS.cancel}
+        destructive
+        onCancel={() => setShowDelete(false)}
+        onConfirm={async () => {
+          setShowDelete(false);
+          await deleteCustomer(customerId);
+          navigation.goBack();
+        }}
+      />
     </View>
   );
 }
@@ -173,7 +177,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   balanceLabel: {
-    fontSize: FONTS.body,
+    fontSize: 18,
     color: COLORS.textSecondary,
     marginBottom: SPACING.xs,
   },
@@ -201,13 +205,13 @@ const styles = StyleSheet.create({
     paddingRight: SPACING.sm,
   },
   summaryLabel: {
-    fontSize: FONTS.small,
+    fontSize: FONTS.body,
     color: COLORS.textSecondary,
     marginBottom: 2,
     fontWeight: '700',
   },
   summaryValue: {
-    fontSize: FONTS.body,
+    fontSize: 18,
     color: COLORS.text,
     fontWeight: '700',
   },
@@ -220,12 +224,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   infoLabel: {
-    fontSize: FONTS.small,
+    fontSize: 15,
     color: COLORS.textSecondary,
     marginBottom: 2,
   },
   infoValue: {
-    fontSize: FONTS.body,
+    fontSize: 18,
     color: COLORS.text,
   },
 });

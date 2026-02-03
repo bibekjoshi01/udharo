@@ -6,7 +6,6 @@ import {
   Platform,
   ScrollView,
   Text,
-  Alert,
 } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -20,6 +19,7 @@ import { deleteCredit, deletePayment, updateCredit, updatePayment } from '../../
 import { useTransaction } from '../hooks';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
+import { ConfirmDialog } from '../../../components/ConfirmDialog';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'EditTransaction'>;
 type Route = RouteProp<RootStackParamList, 'EditTransaction'>;
@@ -34,6 +34,7 @@ export function EditTransactionScreen() {
   const [amountStr, setAmountStr] = useState('');
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
     if (transaction) {
@@ -69,21 +70,7 @@ export function EditTransactionScreen() {
 
   const onDelete = () => {
     if (!transaction) return;
-    Alert.alert(STRINGS.deleteTransaction, STRINGS.confirmDeleteTransaction, [
-      { text: STRINGS.cancel, style: 'cancel' },
-      {
-        text: STRINGS.delete,
-        style: 'destructive',
-        onPress: async () => {
-          if (currentMode === 'udharo') {
-            await deleteCredit(transaction.id);
-          } else {
-            await deletePayment(transaction.id);
-          }
-          navigation.goBack();
-        },
-      },
-    ]);
+    setShowDelete(true);
   };
 
   if (loading || !transaction) {
@@ -135,6 +122,25 @@ export function EditTransactionScreen() {
           allowModeToggle={false}
         />
       </ScrollView>
+      <ConfirmDialog
+        visible={showDelete}
+        title={STRINGS.deleteTransaction}
+        message={STRINGS.confirmDeleteTransaction}
+        confirmLabel={STRINGS.delete}
+        cancelLabel={STRINGS.cancel}
+        destructive
+        onCancel={() => setShowDelete(false)}
+        onConfirm={async () => {
+          if (!transaction) return;
+          setShowDelete(false);
+          if (currentMode === 'udharo') {
+            await deleteCredit(transaction.id);
+          } else {
+            await deletePayment(transaction.id);
+          }
+          navigation.goBack();
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }

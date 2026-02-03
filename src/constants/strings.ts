@@ -37,6 +37,7 @@ export const STRINGS = {
   addCreditTitle: 'उधारो थप्नुहोस्',
   paymentTitle: 'भुक्तानी',
   amountPlaceholder: 'रकम लेख्नुहोस्',
+  notePlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
   appNlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
   save: 'सेभ गर्नुहोस्',
   creditAdded: 'उधारो सेभ भयो',
