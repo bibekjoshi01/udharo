@@ -108,6 +108,13 @@ export const STRINGS = {
   unlockApp: 'एप अनलक गर्नुहोस्',
   useBiometric: 'बायोमेट्रिक प्रयोग गर्नुहोस्',
 
+  // Audit logs
+  auditLogsTitle: 'परिवर्तन लग',
+  auditLogsEmpty: 'अहिलेसम्म परिवर्तन लग छैन।',
+  oldAmount: 'पहिलेको रकम',
+  newAmount: 'नयाँ रकम',
+  loading: 'लोड हुँदैछ...',
+
   // Common
   back: 'पछि',
   cancel: 'रद्द गर्नुहोस्',

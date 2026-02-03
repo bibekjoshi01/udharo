@@ -16,4 +16,5 @@ export type RootStackParamList = {
   Terms: undefined;
   Support: undefined;
   LockSettings: undefined;
+  TransactionAuditLogs: { mode: 'udharo' | 'payment'; transactionId: number };
 };

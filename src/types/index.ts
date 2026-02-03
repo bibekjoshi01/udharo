@@ -9,21 +9,6 @@ export interface Customer {
   created_at: string;
 }
 
-export interface Transaction {
-  id: number;
-  customer_id: number;
-  amount: number;
-  type: TransactionType;
-  note?: string;
-  date: string;
-  created_at: string;
-}
-
-export interface TransactionWithCustomer extends Transaction {
-  customer_name: string;
-  customer_mobile?: string;
-}
-
 export interface CustomerCredit {
   id: number;
   customer_id: number;
@@ -40,6 +25,24 @@ export interface CustomerPayment {
   note?: string;
   date: string;
   created_at: string;
+}
+
+export interface CreditLog {
+  id: number;
+  credit_id: number;
+  customer_id: number;
+  old_amount: number | null;
+  new_amount: number | null;
+  changed_at: string;
+}
+
+export interface PaymentLog {
+  id: number;
+  payment_id: number;
+  customer_id: number;
+  old_amount: number | null;
+  new_amount: number | null;
+  changed_at: string;
 }
 
 export interface CustomerCreditWithCustomer extends CustomerCredit {

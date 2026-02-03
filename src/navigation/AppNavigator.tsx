@@ -21,6 +21,7 @@ import { AboutAppScreen } from '../screens/AboutAppScreen';
 import { TermsScreen } from '../screens/TermsScreen';
 import { SupportScreen } from '../screens/SupportScreen';
 import { LockSettingsScreen } from '../screens/LockSettingsScreen';
+import { TransactionAuditLogsScreen } from '../features/transactions/screens/TransactionAuditLogsScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -57,6 +58,10 @@ export function AppNavigator() {
         <Stack.Screen name="Terms" component={TermsScreen} />
         <Stack.Screen name="Support" component={SupportScreen} />
         <Stack.Screen name="LockSettings" component={LockSettingsScreen} />
+        <Stack.Screen
+          name="TransactionAuditLogs"
+          component={TransactionAuditLogsScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

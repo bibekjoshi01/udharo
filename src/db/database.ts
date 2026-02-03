@@ -1,15 +1,19 @@
 import * as SQLite from 'expo-sqlite';
 import {
   CREATE_CUSTOMERS_TABLE,
-  CREATE_TRANSACTIONS_TABLE,
-  CREATE_INDEX_CUSTOMER_ID,
-  CREATE_INDEX_TRANSACTION_DATE,
   CREATE_CREDITS_TABLE,
   CREATE_PAYMENTS_TABLE,
   CREATE_INDEX_CREDITS_CUSTOMER_ID,
   CREATE_INDEX_PAYMENTS_CUSTOMER_ID,
   CREATE_INDEX_CREDITS_DATE,
   CREATE_INDEX_PAYMENTS_DATE,
+  CREATE_SCHEMA_MIGRATIONS_TABLE,
+  CREATE_CREDITS_LOGS_TABLE,
+  CREATE_PAYMENTS_LOGS_TABLE,
+  CREATE_INDEX_CREDIT_LOGS,
+  CREATE_INDEX_PAYMENT_LOGS,
+  CREATE_TRIGGER_CREDIT_AMOUNT_LOG,
+  CREATE_TRIGGER_PAYMENT_AMOUNT_LOG,
 } from './schema';
 import type {
   Customer,
@@ -21,11 +25,19 @@ import type {
 } from '../types';
 
 let db: SQLite.SQLiteDatabase | null = null;
+const DB_VERSION = 2;
+
+async function recordMigration(database: SQLite.SQLiteDatabase, version: number) {
+  await database.execAsync(CREATE_SCHEMA_MIGRATIONS_TABLE);
+  await database.runAsync(
+    'INSERT OR IGNORE INTO schema_migrations (version, applied_at) VALUES (?, datetime(\'now\'))',
+    version,
+  );
+}
 
 async function ensureSchema(database: SQLite.SQLiteDatabase) {
   // Tables (create if missing)
   await database.execAsync(CREATE_CUSTOMERS_TABLE);
-  await database.execAsync(CREATE_TRANSACTIONS_TABLE);
   await database.execAsync(CREATE_CREDITS_TABLE);
   await database.execAsync(CREATE_PAYMENTS_TABLE);
 
@@ -45,28 +57,6 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
       "UPDATE customers SET created_at = COALESCE(created_at, datetime('now'))",
     );
   }
-
-  const txCols = await database.getAllAsync<{ name: string }>('PRAGMA table_info(transactions)');
-  const txColSet = new Set((txCols as { name: string }[]).map((c) => c.name));
-  if (!txColSet.has('note'))
-    await database.runAsync('ALTER TABLE transactions ADD COLUMN note TEXT');
-  if (!txColSet.has('date')) {
-    await database.runAsync('ALTER TABLE transactions ADD COLUMN date TEXT');
-    await database.runAsync("UPDATE transactions SET date = COALESCE(date, date('now'))");
-  }
-  if (!txColSet.has('created_at')) {
-    await database.runAsync('ALTER TABLE transactions ADD COLUMN created_at TEXT');
-    await database.runAsync(
-      "UPDATE transactions SET created_at = COALESCE(created_at, datetime('now'))",
-    );
-  }
-  // If date exists but has NULLs, normalize.
-  await database.runAsync(
-    "UPDATE transactions SET date = COALESCE(date, substr(created_at, 1, 10), date('now'))",
-  );
-  await database.runAsync(
-    "UPDATE transactions SET created_at = COALESCE(created_at, datetime('now'))",
-  );
 
   const creditsCols = await database.getAllAsync<{ name: string }>(
     'PRAGMA table_info(customer_credits)',
@@ -115,36 +105,10 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   );
 
   // Indexes last: older DBs might not have the indexed columns until we migrate above.
-  await database.execAsync(CREATE_INDEX_CUSTOMER_ID);
-  await database.execAsync(CREATE_INDEX_TRANSACTION_DATE);
   await database.execAsync(CREATE_INDEX_CREDITS_CUSTOMER_ID);
   await database.execAsync(CREATE_INDEX_PAYMENTS_CUSTOMER_ID);
   await database.execAsync(CREATE_INDEX_CREDITS_DATE);
   await database.execAsync(CREATE_INDEX_PAYMENTS_DATE);
-
-  // Migrate legacy transactions into new tables if needed
-  const legacyCountRow = await database.getFirstAsync<{ cnt: number }>(
-    'SELECT COUNT(*) as cnt FROM transactions',
-  );
-  const legacyCount = Number((legacyCountRow as any)?.cnt ?? 0);
-  const creditsCountRow = await database.getFirstAsync<{ cnt: number }>(
-    'SELECT COUNT(*) as cnt FROM customer_credits',
-  );
-  const paymentsCountRow = await database.getFirstAsync<{ cnt: number }>(
-    'SELECT COUNT(*) as cnt FROM customer_payments',
-  );
-  const creditsCount = Number((creditsCountRow as any)?.cnt ?? 0);
-  const paymentsCount = Number((paymentsCountRow as any)?.cnt ?? 0);
-  if (legacyCount > 0 && creditsCount === 0 && paymentsCount === 0) {
-    await database.runAsync(
-      `INSERT INTO customer_credits (customer_id, amount, note, date, created_at)
-       SELECT customer_id, amount, note, date, created_at FROM transactions WHERE type = 'udharo'`,
-    );
-    await database.runAsync(
-      `INSERT INTO customer_payments (customer_id, amount, note, date, created_at)
-       SELECT customer_id, amount, note, date, created_at FROM transactions WHERE type = 'payment'`,
-    );
-  }
 
   // Seed minimal demo data for first run (dev-friendly). Won't run once users have real data.
   const row = await database.getFirstAsync<{ cnt: number }>(
@@ -185,12 +149,72 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   }
 }
 
+async function migrateDatabase(database: SQLite.SQLiteDatabase) {
+  await database.execAsync(CREATE_SCHEMA_MIGRATIONS_TABLE);
+  const row = await database.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  let version = Number((row as any)?.user_version ?? 0);
+
+  if (version < 1) {
+    await ensureSchema(database);
+    await database.execAsync('PRAGMA user_version = 1');
+    await recordMigration(database, 1);
+    version = 1;
+  } else {
+    await ensureSchema(database);
+  }
+
+  if (version < 2) {
+    await database.execAsync('PRAGMA user_version = 2');
+    await recordMigration(database, 2);
+    version = 2;
+  }
+
+  // If a legacy transactions table exists, migrate once into new tables.
+  const legacyTable = await database.getFirstAsync<{ name: string }>(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name='transactions'",
+  );
+  if (legacyTable?.name) {
+    const creditsCountRow = await database.getFirstAsync<{ cnt: number }>(
+      'SELECT COUNT(*) as cnt FROM customer_credits',
+    );
+    const paymentsCountRow = await database.getFirstAsync<{ cnt: number }>(
+      'SELECT COUNT(*) as cnt FROM customer_payments',
+    );
+    const creditsCount = Number((creditsCountRow as any)?.cnt ?? 0);
+    const paymentsCount = Number((paymentsCountRow as any)?.cnt ?? 0);
+    if (creditsCount === 0 && paymentsCount === 0) {
+      await database.runAsync(
+        `INSERT INTO customer_credits (customer_id, amount, note, date, created_at)
+         SELECT customer_id, amount, note, date, created_at
+         FROM transactions WHERE type = 'udharo'`,
+      );
+      await database.runAsync(
+        `INSERT INTO customer_payments (customer_id, amount, note, date, created_at)
+         SELECT customer_id, amount, note, date, created_at
+         FROM transactions WHERE type = 'payment'`,
+      );
+    }
+  }
+
+  // Always ensure log tables/triggers exist (idempotent).
+  await database.execAsync(CREATE_CREDITS_LOGS_TABLE);
+  await database.execAsync(CREATE_PAYMENTS_LOGS_TABLE);
+  await database.execAsync(CREATE_INDEX_CREDIT_LOGS);
+  await database.execAsync(CREATE_INDEX_PAYMENT_LOGS);
+  await database.execAsync(CREATE_TRIGGER_CREDIT_AMOUNT_LOG);
+  await database.execAsync(CREATE_TRIGGER_PAYMENT_AMOUNT_LOG);
+
+  if (version !== DB_VERSION) {
+    await database.execAsync(`PRAGMA user_version = ${DB_VERSION}`);
+  }
+}
+
 export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (!db) {
     db = await SQLite.openDatabaseAsync('udharo.db');
   }
-  // Always ensure schema in case the app is hot-reloaded with a newer schema.
-  await ensureSchema(db);
+  await db.execAsync('PRAGMA foreign_keys = ON');
+  await migrateDatabase(db);
   return db;
 }
 
@@ -562,6 +586,44 @@ export async function deletePayment(id: number): Promise<void> {
   await database.runAsync('DELETE FROM customer_payments WHERE id = ?', id);
 }
 
+export async function getCreditLogs(creditId: number) {
+  const database = db ?? (await initDatabase());
+  const rows = await database.getAllAsync<{
+    id: number;
+    credit_id: number;
+    customer_id: number;
+    old_amount: number | null;
+    new_amount: number | null;
+    changed_at: string;
+  }>(
+    `SELECT id, credit_id, customer_id, old_amount, new_amount, changed_at
+     FROM customer_credit_logs
+     WHERE credit_id = ?
+     ORDER BY changed_at DESC`,
+    [creditId],
+  );
+  return rows ?? [];
+}
+
+export async function getPaymentLogs(paymentId: number) {
+  const database = db ?? (await initDatabase());
+  const rows = await database.getAllAsync<{
+    id: number;
+    payment_id: number;
+    customer_id: number;
+    old_amount: number | null;
+    new_amount: number | null;
+    changed_at: string;
+  }>(
+    `SELECT id, payment_id, customer_id, old_amount, new_amount, changed_at
+     FROM customer_payment_logs
+     WHERE payment_id = ?
+     ORDER BY changed_at DESC`,
+    [paymentId],
+  );
+  return rows ?? [];
+}
+
 // --- Reports (date range) ---
 export async function getReportTotals(
   startDate: string,
@@ -592,12 +654,9 @@ export async function getReportTotals(
 export async function getTotalReceivables(): Promise<number> {
   const database = db ?? (await initDatabase());
   const row = await database.getFirstAsync<{ total: number }>(
-    `SELECT COALESCE(SUM(bal), 0) as total FROM (
-      SELECT
-        COALESCE((SELECT SUM(amount) FROM customer_credits WHERE customer_id = c.id), 0) -
-        COALESCE((SELECT SUM(amount) FROM customer_payments WHERE customer_id = c.id), 0) as bal
-      FROM customers c
-    ) WHERE bal > 0`,
+    `SELECT
+       COALESCE((SELECT SUM(amount) FROM customer_credits), 0) -
+       COALESCE((SELECT SUM(amount) FROM customer_payments), 0) as total`,
   );
-  return row?.total ?? 0;
+  return Number(row?.total ?? 0);
 }

@@ -74,12 +74,25 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
           ) : null}
           <Text style={styles.rowDate}>{formatNepaliDate(item.date)}</Text>
         </View>
-        <Text
-          style={[styles.rowAmount, type === 'udharo' ? styles.amountCredit : styles.amountPayment]}
-        >
-          {STRINGS.currencyPrefix}
-          {formatAmount(item.amount)}
-        </Text>
+        <View style={styles.rowRight}>
+          <Text
+            style={[
+              styles.rowAmount,
+              type === 'udharo' ? styles.amountCredit : styles.amountPayment,
+            ]}
+          >
+            {STRINGS.currencyPrefix}
+            {formatAmount(item.amount)}
+          </Text>
+          <AppPressable
+            style={styles.logBtn}
+            onPress={() =>
+              navigation.navigate('TransactionAuditLogs', { mode: type, transactionId: item.id })
+            }
+          >
+            <Ionicons name="time-outline" size={18} color={COLORS.textSecondary} />
+          </AppPressable>
+        </View>
       </AppPressable>
     );
   };
@@ -200,12 +213,21 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   rowLeft: { flex: 1 },
-  rowTitle: { fontSize: FONTS.body, fontWeight: '600', color: COLORS.text },
-  rowNote: { fontSize: FONTS.caption, color: COLORS.textSecondary, marginTop: 2 },
-  rowDate: { fontSize: FONTS.small, color: COLORS.textSecondary, marginTop: 2 },
+  rowRight: {
+    alignItems: 'flex-end',
+  },
+  rowTitle: { fontSize: 18, fontWeight: '700', color: COLORS.text },
+  rowNote: { fontSize: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
+  rowDate: { fontSize: 15, color: COLORS.textSecondary, marginTop: 4 },
   rowAmount: { fontSize: FONTS.amount, fontWeight: '700' },
   amountCredit: { color: COLORS.debt },
   amountPayment: { color: COLORS.paid },
+  logBtn: {
+    marginTop: 6,
+    padding: 6,
+    borderRadius: 12,
+    backgroundColor: '#F1F5F9',
+  },
   empty: {
     flex: 1,
     justifyContent: 'center',
