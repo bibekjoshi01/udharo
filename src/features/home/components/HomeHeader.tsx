@@ -3,15 +3,18 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, MIN_TOUCH } from '../../../constants/theme';
 import { AppPressable } from '../../../components/AppPressable';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ICON_SIZE = 24;
 
 export interface HomeHeaderProps {
-  paddingTop: number;
   onMenuPress?: () => void;
 }
 
-export function HomeHeader({ paddingTop, onMenuPress }: HomeHeaderProps) {
+export function HomeHeader({ onMenuPress }: HomeHeaderProps) {
+  const insets = useSafeAreaInsets();
+  const paddingTop = insets.top + SPACING.sm;
+
   return (
     <View style={[styles.header, { paddingTop }]}>
       <View style={styles.headerLeft}>

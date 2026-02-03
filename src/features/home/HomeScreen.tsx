@@ -6,7 +6,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, SPACING } from '../../constants/theme';
 import { getTotalReceivables } from '../../db/database';
 import type { RootStackParamList } from '../../navigation/types';
-import { HomeHeader, SummaryCard, ActionGrid, HomeFooter } from './components';
+import { HomeHeader, SummaryCard, ActionGrid } from './components';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -43,12 +43,9 @@ export function HomeScreen() {
     setRefreshing(false);
   }, [loadTotal]);
 
-  const headerPaddingTop = Math.max(insets.top, SPACING.md);
-  const footerPaddingBottom = Math.max(insets.bottom, SPACING.md);
-
   return (
     <View style={styles.container}>
-      <HomeHeader paddingTop={headerPaddingTop} onMenuPress={() => navigation.navigate('Menu')} />
+      <HomeHeader onMenuPress={() => navigation.navigate('Menu')} />
 
       <ScrollView
         style={styles.scroll}
@@ -63,18 +60,6 @@ export function HomeScreen() {
           onReports={() => navigation.navigate('CreditReports')}
         />
       </ScrollView>
-
-      <HomeFooter
-        paddingBottom={footerPaddingBottom}
-        onCustomers={() => navigation.navigate('CustomerList')}
-        onAddCredit={() =>
-          navigation.navigate('AddTransaction', {
-            mode: 'udharo',
-            lockMode: true,
-          })
-        }
-        onBhuktani={() => navigation.navigate('PaymentList')}
-      />
     </View>
   );
 }

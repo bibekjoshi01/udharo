@@ -47,7 +47,6 @@ export function CustomerListScreen() {
   );
 
   const screenTitle = `${STRINGS.customerListTitle} (${totalCount})`;
-
   return (
     <View style={styles.container}>
       <ScreenHeader title={screenTitle} onBack={() => navigation.goBack()} />

@@ -23,7 +23,7 @@ export function ScreenHeader({
   showBackIcon = true,
 }: ScreenHeaderProps) {
   const insets = useSafeAreaInsets();
-  const paddingTop = Math.max(insets.top, SPACING.md);
+  const paddingTop = insets.top + SPACING.xs;
 
   return (
     <View style={[styles.header, { paddingTop }]}>
