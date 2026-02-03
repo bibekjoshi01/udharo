@@ -12,6 +12,7 @@ import { CUSTOMER_STRINGS } from '../constants';
 import { formatNepaliDateTime } from '../../../utils/date';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'CustomerList'>;
 
@@ -20,8 +21,9 @@ const ICON_SIZE = 24;
 export function CustomerListScreen() {
   const navigation = useNavigation<Nav>();
   const [search, setSearch] = React.useState('');
+  const debouncedSearch = useDebouncedValue(search, 300);
   const { customers, totalCount, loading, refreshing, loadingMore, refresh, loadMore, error } =
-    useCustomers({ query: search, pageSize: 100 });
+    useCustomers({ query: debouncedSearch, pageSize: 100 });
 
   const emptyComponent = useMemo(
     () => (

@@ -89,6 +89,22 @@ export const STRINGS = {
     'उधारो एप प्रयोग गर्नुहोस्: सजिलो उधारो खाता, ग्राहक व्यवस्थापन र रिपोर्ट। डाउनलोड: ',
   comingSoon: 'चाँडै उपलब्ध हुनेछ',
 
+  // App lock
+  appLockTitle: 'एप लक',
+  enableAppLock: 'एप लक सक्षम गर्नुहोस्',
+  setPin: 'नयाँ PIN',
+  confirmPin: 'PIN पुष्टि',
+  biometricUnlock: 'बायोमेट्रिक अनलक',
+  pinRequired: 'कृपया कम्तिमा ४ अङ्कको PIN लेख्नुहोस्।',
+  pinMismatch: 'PIN मिलेन। कृपया पुनः प्रयास गर्नुहोस्।',
+  lockEnabled: 'एप लक सक्षम भयो',
+  lockDisabled: 'एप लक बन्द भयो',
+  lockDisableConfirm: 'एप लक बन्द गर्न चाहनुहुन्छ?',
+  disable: 'बन्द गर्नुहोस्',
+  enterPin: 'PIN हाल्नुहोस्',
+  unlockApp: 'एप अनलक गर्नुहोस्',
+  useBiometric: 'बायोमेट्रिक प्रयोग गर्नुहोस्',
+
   // Common
   back: 'पछि',
   cancel: 'रद्द गर्नुहोस्',

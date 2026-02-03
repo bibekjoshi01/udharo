@@ -21,6 +21,7 @@ import { AboutAppScreen } from '../screens/AboutAppScreen';
 import { PrivacyPolicyScreen } from '../screens/PrivacyPolicyScreen';
 import { TermsScreen } from '../screens/TermsScreen';
 import { SupportScreen } from '../screens/SupportScreen';
+import { LockSettingsScreen } from '../screens/LockSettingsScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -57,6 +58,7 @@ export function AppNavigator() {
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />
         <Stack.Screen name="Support" component={SupportScreen} />
+        <Stack.Screen name="LockSettings" component={LockSettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

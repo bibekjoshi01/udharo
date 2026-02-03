@@ -58,6 +58,11 @@ export function MenuScreen() {
       onPress: () => navigation.navigate('AboutApp'),
     },
     {
+      label: STRINGS.appLockTitle,
+      icon: 'lock-closed-outline',
+      onPress: () => navigation.navigate('LockSettings'),
+    },
+    {
       label: STRINGS.privacyPolicy,
       icon: 'shield-checkmark-outline',
       onPress: () => navigation.navigate('PrivacyPolicy'),

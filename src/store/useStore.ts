@@ -6,11 +6,17 @@ const PREFS_KEY = '@udharo_prefs';
 export interface AppPrefs {
   language?: string;
   sortOrder?: 'recent' | 'balance';
+  lockEnabled?: boolean;
+  pin?: string;
+  biometricEnabled?: boolean;
 }
 
 interface AppState {
   isDbReady: boolean;
   setDbReady: (v: boolean) => void;
+  isUnlocked: boolean;
+  setUnlocked: (v: boolean) => void;
+  prefsHydrated: boolean;
   selectedCustomerId: number | null;
   setSelectedCustomerId: (id: number | null) => void;
   prefs: AppPrefs;
@@ -21,6 +27,9 @@ interface AppState {
 export const useStore = create<AppState>((set, get) => ({
   isDbReady: false,
   setDbReady: (v) => set({ isDbReady: v }),
+  isUnlocked: true,
+  setUnlocked: (v) => set({ isUnlocked: v }),
+  prefsHydrated: false,
   selectedCustomerId: null,
   setSelectedCustomerId: (id) => set({ selectedCustomerId: id }),
   prefs: {},
@@ -30,12 +39,19 @@ export const useStore = create<AppState>((set, get) => ({
     AsyncStorage.setItem(PREFS_KEY, JSON.stringify(next));
   },
   hydratePrefs: async () => {
+    if (get().prefsHydrated) return;
     try {
       const raw = await AsyncStorage.getItem(PREFS_KEY);
       if (raw) {
         const prefs = JSON.parse(raw) as AppPrefs;
-        set({ prefs });
+        set({
+          prefs,
+          prefsHydrated: true,
+          isUnlocked: prefs.lockEnabled ? false : get().isUnlocked,
+        });
+        return;
       }
+      set({ prefsHydrated: true });
     } catch {
       // ignore
     }

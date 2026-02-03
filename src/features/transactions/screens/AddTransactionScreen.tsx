@@ -21,6 +21,7 @@ import { TransactionForm } from '../components';
 import { useCustomers } from '../../customers/hooks';
 import { AppPressable } from '../../../components/AppPressable';
 import { showToast } from '../../../utils/toast';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AddTransaction'>;
 type Route = RouteProp<RootStackParamList, 'AddTransaction'>;
@@ -38,7 +39,8 @@ export function AddTransactionScreen() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState('');
 
-  const { customers } = useCustomers({ query: search, pageSize: 200 });
+  const debouncedSearch = useDebouncedValue(search, 300);
+  const { customers } = useCustomers({ query: debouncedSearch, pageSize: 200 });
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId) ?? null;
 
   const amount = parseFloat(amountStr.replace(/[^0-9.]/g, '')) || 0;
@@ -154,7 +156,19 @@ export function AddTransactionScreen() {
                 </AppPressable>
               ))}
               {customers.length === 0 ? (
-                <Text style={styles.emptyText}>{STRINGS.emptyCustomers}</Text>
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyText}>{STRINGS.emptyCustomers}</Text>
+                  <AppPressable
+                    style={styles.emptyButton}
+                    onPress={() => {
+                      setPickerOpen(false);
+                      navigation.navigate('AddCustomer');
+                    }}
+                  >
+                    <Ionicons name="add-circle-outline" size={20} color={COLORS.primary} />
+                    <Text style={styles.emptyButtonText}> {STRINGS.addCustomer}</Text>
+                  </AppPressable>
+                </View>
               ) : null}
             </ScrollView>
           </View>
@@ -251,5 +265,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: COLORS.textSecondary,
     paddingVertical: SPACING.md,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+  },
+  emptyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.xs,
+  },
+  emptyButtonText: {
+    fontSize: FONTS.body,
+    color: COLORS.primary,
+    fontWeight: '600',
   },
 });

@@ -16,6 +16,7 @@ import type {
 } from '../../../types';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -32,8 +33,9 @@ export interface TransactionListScreenProps {
 export function TransactionListScreen({ type, title }: TransactionListScreenProps) {
   const navigation = useNavigation<Nav>();
   const [search, setSearch] = React.useState('');
+  const debouncedSearch = useDebouncedValue(search, 300);
   const { transactions, totalCount, loading, refreshing, loadingMore, refresh, loadMore, error } =
-    useTransactions(type, { query: search, pageSize: 100 });
+    useTransactions(type, { query: debouncedSearch, pageSize: 100 });
 
   const emptyComponent = (
     <View style={styles.empty}>

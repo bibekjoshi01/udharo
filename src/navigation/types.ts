@@ -15,4 +15,5 @@ export type RootStackParamList = {
   PrivacyPolicy: undefined;
   Terms: undefined;
   Support: undefined;
+  LockSettings: undefined;
 };

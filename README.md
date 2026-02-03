@@ -38,3 +38,13 @@ Data is stored only on device (offline-first). No backend in v1.
 npm run lint
 npm run format```
 ````
+
+
+### Building APK
+
+```bash
+npx eas-cli login
+npx eas-cli build -p android --profile preview
+npx eas-cli build -p android --local
+npx eas-cli build -p android --profile production
+```
