@@ -8,6 +8,8 @@ import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/t
 import { STRINGS } from '../constants/strings';
 import type { RootStackParamList } from '../navigation/types';
 import { AppPressable } from '../components/AppPressable';
+import { exportDatabaseToSql, importDatabaseFromSql } from '../db/backup';
+import { showToast } from '../utils/toast';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Menu'>;
 
@@ -66,11 +68,6 @@ export function MenuScreen() {
       icon: 'document-text-outline',
       onPress: () => navigation.navigate('Terms'),
     },
-    {
-      label: STRINGS.dataBackup,
-      icon: 'cloud-upload-outline',
-      onPress: handleComingSoon,
-    },
   ];
 
   const supportItems: MenuItem[] = [
@@ -101,6 +98,60 @@ export function MenuScreen() {
     <View style={styles.container}>
       <ScreenHeader title={STRINGS.menuTitle} onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.backupCard}>
+          <Text style={styles.backupTitle}>{STRINGS.dataBackup}</Text>
+          <View style={styles.backupRow}>
+            <AppPressable
+              style={styles.backupBtn}
+              onPress={() => {
+                Alert.alert(STRINGS.dataBackup, 'डाटा एक्सपोर्ट गर्न चाहनुहुन्छ?', [
+                  { text: STRINGS.cancel, style: 'cancel' },
+                  {
+                    text: 'Export',
+                    onPress: async () => {
+                      try {
+                        await exportDatabaseToSql();
+                        showToast('ब्याकअप तयार भयो');
+                      } catch (e: any) {
+                        Alert.alert('ब्याकअप असफल', String(e?.message ?? e));
+                      }
+                    },
+                  },
+                ]);
+              }}
+            >
+              <Text style={styles.backupBtnText}>Export</Text>
+            </AppPressable>
+            <AppPressable
+              style={[styles.backupBtn, styles.backupBtnSecondary]}
+              onPress={() => {
+                Alert.alert(
+                  STRINGS.dataBackup,
+                  'इम्पोर्ट गर्दा पुरानो डाटा मेटिन्छ। पहिले ब्याकअप लिनुहोस्। जारी राख्नुहुन्छ?',
+                  [
+                    { text: STRINGS.cancel, style: 'cancel' },
+                    {
+                      text: 'Import',
+                      style: 'destructive',
+                      onPress: async () => {
+                        try {
+                          const ok = await importDatabaseFromSql();
+                          if (ok) showToast('डाटा इम्पोर्ट भयो');
+                        } catch (e: any) {
+                          Alert.alert('इम्पोर्ट असफल', String(e?.message ?? e));
+                        }
+                      },
+                    },
+                  ],
+                );
+              }}
+            >
+              <Text style={[styles.backupBtnText, styles.backupBtnTextSecondary]}>
+                Import
+              </Text>
+            </AppPressable>
+          </View>
+        </View>
         <View style={styles.menuCard}>{mainItems.map(renderItem)}</View>
         <View style={styles.menuCard}>{supportItems.map(renderItem)}</View>
       </ScrollView>
@@ -111,6 +162,45 @@ export function MenuScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   scrollContent: { padding: SPACING.md, paddingBottom: SPACING.xl },
+  backupCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: SPACING.md,
+    marginBottom: SPACING.lg,
+  },
+  backupTitle: {
+    fontSize: FONTS.body,
+    fontWeight: '700',
+    color: COLORS.text,
+    marginBottom: SPACING.sm,
+  },
+  backupRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+  },
+  backupBtn: {
+    flex: 1,
+    minHeight: MIN_TOUCH,
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backupBtnSecondary: {
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  backupBtnText: {
+    fontSize: FONTS.body,
+    fontWeight: '700',
+    color: COLORS.white,
+  },
+  backupBtnTextSecondary: {
+    color: COLORS.text,
+  },
   infoCard: {
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,
