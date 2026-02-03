@@ -16,6 +16,11 @@ import {
   PaymentListScreen,
 } from "../features/transactions";
 import { CreditReportsScreen } from "../features/reports/CreditReportsScreen";
+import { MenuScreen } from "../screens/MenuScreen";
+import { AboutAppScreen } from "../screens/AboutAppScreen";
+import { PrivacyPolicyScreen } from "../screens/PrivacyPolicyScreen";
+import { TermsScreen } from "../screens/TermsScreen";
+import { SupportScreen } from "../screens/SupportScreen";
 import type { RootStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -50,6 +55,11 @@ export function AppNavigator() {
         <Stack.Screen name="AddCustomer" component={AddCustomerScreen} />
         <Stack.Screen name="EditCustomer" component={EditCustomerScreen} />
         <Stack.Screen name="CreditReports" component={CreditReportsScreen} />
+        <Stack.Screen name="Menu" component={MenuScreen} />
+        <Stack.Screen name="AboutApp" component={AboutAppScreen} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+        <Stack.Screen name="Terms" component={TermsScreen} />
+        <Stack.Screen name="Support" component={SupportScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

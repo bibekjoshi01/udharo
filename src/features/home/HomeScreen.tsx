@@ -48,7 +48,10 @@ export function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <HomeHeader paddingTop={headerPaddingTop} onMenuPress={() => {}} />
+      <HomeHeader
+        paddingTop={headerPaddingTop}
+        onMenuPress={() => navigation.navigate("Menu")}
+      />
 
       <ScrollView
         style={styles.scroll}
