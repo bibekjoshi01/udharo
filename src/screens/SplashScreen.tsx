@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS, FONTS, SPACING } from "../constants/theme";
-import { STRINGS } from "../constants/strings";
-import { initDatabase } from "../db/database";
-import { useStore } from "../store/useStore";
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS, FONTS, SPACING } from '../constants/theme';
+import { STRINGS } from '../constants/strings';
+import { initDatabase } from '../db/database';
+import { useStore } from '../store/useStore';
 
 export function SplashScreen({ onReady }: { onReady: () => void }) {
   const insets = useSafeAreaInsets();
@@ -43,6 +44,9 @@ export function SplashScreen({ onReady }: { onReady: () => void }) {
         },
       ]}
     >
+      <View style={styles.logoWrap}>
+        <Ionicons name="book-outline" size={32} color={COLORS.primary} />
+      </View>
       <Text style={styles.appName}>{STRINGS.appName}</Text>
       <Text style={styles.tagline}>{STRINGS.tagline}</Text>
     </View>
@@ -53,12 +57,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.surface,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#E2F3F1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SPACING.md,
   },
   appName: {
     fontSize: 36,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.primary,
     marginBottom: SPACING.sm,
   },

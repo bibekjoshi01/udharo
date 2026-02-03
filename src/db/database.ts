@@ -33,56 +33,86 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   // If any SELECT later references missing columns, hooks can get stuck "loading".
   const customerCols = await database.getAllAsync<{ name: string }>('PRAGMA table_info(customers)');
   const customerColSet = new Set((customerCols as { name: string }[]).map((c) => c.name));
-  if (!customerColSet.has('mobile')) await database.runAsync('ALTER TABLE customers ADD COLUMN mobile TEXT');
-  if (!customerColSet.has('address')) await database.runAsync('ALTER TABLE customers ADD COLUMN address TEXT');
-  if (!customerColSet.has('note')) await database.runAsync('ALTER TABLE customers ADD COLUMN note TEXT');
+  if (!customerColSet.has('mobile'))
+    await database.runAsync('ALTER TABLE customers ADD COLUMN mobile TEXT');
+  if (!customerColSet.has('address'))
+    await database.runAsync('ALTER TABLE customers ADD COLUMN address TEXT');
+  if (!customerColSet.has('note'))
+    await database.runAsync('ALTER TABLE customers ADD COLUMN note TEXT');
   if (!customerColSet.has('created_at')) {
     await database.runAsync('ALTER TABLE customers ADD COLUMN created_at TEXT');
-    await database.runAsync("UPDATE customers SET created_at = COALESCE(created_at, datetime('now'))");
+    await database.runAsync(
+      "UPDATE customers SET created_at = COALESCE(created_at, datetime('now'))",
+    );
   }
 
   const txCols = await database.getAllAsync<{ name: string }>('PRAGMA table_info(transactions)');
   const txColSet = new Set((txCols as { name: string }[]).map((c) => c.name));
-  if (!txColSet.has('note')) await database.runAsync('ALTER TABLE transactions ADD COLUMN note TEXT');
+  if (!txColSet.has('note'))
+    await database.runAsync('ALTER TABLE transactions ADD COLUMN note TEXT');
   if (!txColSet.has('date')) {
     await database.runAsync('ALTER TABLE transactions ADD COLUMN date TEXT');
     await database.runAsync("UPDATE transactions SET date = COALESCE(date, date('now'))");
   }
   if (!txColSet.has('created_at')) {
     await database.runAsync('ALTER TABLE transactions ADD COLUMN created_at TEXT');
-    await database.runAsync("UPDATE transactions SET created_at = COALESCE(created_at, datetime('now'))");
+    await database.runAsync(
+      "UPDATE transactions SET created_at = COALESCE(created_at, datetime('now'))",
+    );
   }
   // If date exists but has NULLs, normalize.
-  await database.runAsync("UPDATE transactions SET date = COALESCE(date, substr(created_at, 1, 10), date('now'))");
-  await database.runAsync("UPDATE transactions SET created_at = COALESCE(created_at, datetime('now'))");
+  await database.runAsync(
+    "UPDATE transactions SET date = COALESCE(date, substr(created_at, 1, 10), date('now'))",
+  );
+  await database.runAsync(
+    "UPDATE transactions SET created_at = COALESCE(created_at, datetime('now'))",
+  );
 
-  const creditsCols = await database.getAllAsync<{ name: string }>('PRAGMA table_info(customer_credits)');
+  const creditsCols = await database.getAllAsync<{ name: string }>(
+    'PRAGMA table_info(customer_credits)',
+  );
   const creditsColSet = new Set((creditsCols as { name: string }[]).map((c) => c.name));
-  if (!creditsColSet.has('note')) await database.runAsync('ALTER TABLE customer_credits ADD COLUMN note TEXT');
+  if (!creditsColSet.has('note'))
+    await database.runAsync('ALTER TABLE customer_credits ADD COLUMN note TEXT');
   if (!creditsColSet.has('date')) {
     await database.runAsync('ALTER TABLE customer_credits ADD COLUMN date TEXT');
     await database.runAsync("UPDATE customer_credits SET date = COALESCE(date, date('now'))");
   }
   if (!creditsColSet.has('created_at')) {
     await database.runAsync('ALTER TABLE customer_credits ADD COLUMN created_at TEXT');
-    await database.runAsync("UPDATE customer_credits SET created_at = COALESCE(created_at, datetime('now'))");
+    await database.runAsync(
+      "UPDATE customer_credits SET created_at = COALESCE(created_at, datetime('now'))",
+    );
   }
-  await database.runAsync("UPDATE customer_credits SET date = COALESCE(date, substr(created_at, 1, 10), date('now'))");
-  await database.runAsync("UPDATE customer_credits SET created_at = COALESCE(created_at, datetime('now'))");
+  await database.runAsync(
+    "UPDATE customer_credits SET date = COALESCE(date, substr(created_at, 1, 10), date('now'))",
+  );
+  await database.runAsync(
+    "UPDATE customer_credits SET created_at = COALESCE(created_at, datetime('now'))",
+  );
 
-  const paymentsCols = await database.getAllAsync<{ name: string }>('PRAGMA table_info(customer_payments)');
+  const paymentsCols = await database.getAllAsync<{ name: string }>(
+    'PRAGMA table_info(customer_payments)',
+  );
   const paymentsColSet = new Set((paymentsCols as { name: string }[]).map((c) => c.name));
-  if (!paymentsColSet.has('note')) await database.runAsync('ALTER TABLE customer_payments ADD COLUMN note TEXT');
+  if (!paymentsColSet.has('note'))
+    await database.runAsync('ALTER TABLE customer_payments ADD COLUMN note TEXT');
   if (!paymentsColSet.has('date')) {
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN date TEXT');
     await database.runAsync("UPDATE customer_payments SET date = COALESCE(date, date('now'))");
   }
   if (!paymentsColSet.has('created_at')) {
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN created_at TEXT');
-    await database.runAsync("UPDATE customer_payments SET created_at = COALESCE(created_at, datetime('now'))");
+    await database.runAsync(
+      "UPDATE customer_payments SET created_at = COALESCE(created_at, datetime('now'))",
+    );
   }
-  await database.runAsync("UPDATE customer_payments SET date = COALESCE(date, substr(created_at, 1, 10), date('now'))");
-  await database.runAsync("UPDATE customer_payments SET created_at = COALESCE(created_at, datetime('now'))");
+  await database.runAsync(
+    "UPDATE customer_payments SET date = COALESCE(date, substr(created_at, 1, 10), date('now'))",
+  );
+  await database.runAsync(
+    "UPDATE customer_payments SET created_at = COALESCE(created_at, datetime('now'))",
+  );
 
   // Indexes last: older DBs might not have the indexed columns until we migrate above.
   await database.execAsync(CREATE_INDEX_CUSTOMER_ID);
@@ -94,30 +124,32 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
 
   // Migrate legacy transactions into new tables if needed
   const legacyCountRow = await database.getFirstAsync<{ cnt: number }>(
-    'SELECT COUNT(*) as cnt FROM transactions'
+    'SELECT COUNT(*) as cnt FROM transactions',
   );
   const legacyCount = Number((legacyCountRow as any)?.cnt ?? 0);
   const creditsCountRow = await database.getFirstAsync<{ cnt: number }>(
-    'SELECT COUNT(*) as cnt FROM customer_credits'
+    'SELECT COUNT(*) as cnt FROM customer_credits',
   );
   const paymentsCountRow = await database.getFirstAsync<{ cnt: number }>(
-    'SELECT COUNT(*) as cnt FROM customer_payments'
+    'SELECT COUNT(*) as cnt FROM customer_payments',
   );
   const creditsCount = Number((creditsCountRow as any)?.cnt ?? 0);
   const paymentsCount = Number((paymentsCountRow as any)?.cnt ?? 0);
   if (legacyCount > 0 && creditsCount === 0 && paymentsCount === 0) {
     await database.runAsync(
       `INSERT INTO customer_credits (customer_id, amount, note, date, created_at)
-       SELECT customer_id, amount, note, date, created_at FROM transactions WHERE type = 'udharo'`
+       SELECT customer_id, amount, note, date, created_at FROM transactions WHERE type = 'udharo'`,
     );
     await database.runAsync(
       `INSERT INTO customer_payments (customer_id, amount, note, date, created_at)
-       SELECT customer_id, amount, note, date, created_at FROM transactions WHERE type = 'payment'`
+       SELECT customer_id, amount, note, date, created_at FROM transactions WHERE type = 'payment'`,
     );
   }
 
   // Seed minimal demo data for first run (dev-friendly). Won't run once users have real data.
-  const row = await database.getFirstAsync<{ cnt: number }>('SELECT COUNT(*) as cnt FROM customers');
+  const row = await database.getFirstAsync<{ cnt: number }>(
+    'SELECT COUNT(*) as cnt FROM customers',
+  );
   const count = Number((row as any)?.cnt ?? 0);
   if (count === 0 && typeof __DEV__ !== 'undefined' && __DEV__) {
     const c1 = await database.runAsync(
@@ -125,14 +157,14 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
       'राम प्रसाद',
       '9812345678',
       'काठमाडौं',
-      'Demo'
+      'Demo',
     );
     const c2 = await database.runAsync(
       'INSERT INTO customers (name, mobile, address, note) VALUES (?, ?, ?, ?)',
       'सीता देवी',
       '9800000000',
       'ललितपुर',
-      'Demo'
+      'Demo',
     );
 
     const today = new Date().toISOString().slice(0, 10);
@@ -141,14 +173,14 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
       Number(c1.lastInsertRowId),
       500,
       'चामल',
-      today
+      today,
     );
     await database.runAsync(
       'INSERT INTO customer_payments (customer_id, amount, note, date) VALUES (?, ?, ?, ?)',
       Number(c2.lastInsertRowId),
       200,
       'आंशिक भुक्तानी',
-      today
+      today,
     );
   }
 }
@@ -170,7 +202,7 @@ export function getDb(): SQLite.SQLiteDatabase | null {
 export async function getAllCustomers(): Promise<Customer[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<Customer>(
-    'SELECT id, name, mobile, address, note, created_at FROM customers ORDER BY name COLLATE NOCASE'
+    'SELECT id, name, mobile, address, note, created_at FROM customers ORDER BY name COLLATE NOCASE',
   );
   return rows as Customer[];
 }
@@ -194,7 +226,7 @@ export async function getCustomersWithBalance(): Promise<CustomerWithBalance[]> 
       COALESCE((SELECT COUNT(*) FROM customer_credits WHERE customer_id = c.id), 0) +
       COALESCE((SELECT COUNT(*) FROM customer_payments WHERE customer_id = c.id), 0) as transaction_count
      FROM customers c
-     ORDER BY COALESCE(last_transaction_date, c.created_at) DESC, balance DESC`
+     ORDER BY COALESCE(last_transaction_date, c.created_at) DESC, balance DESC`,
   );
   return (rows as CustomerWithBalance[]) ?? [];
 }
@@ -205,7 +237,7 @@ export async function getCustomersWithBalancePage(params: {
   query?: string;
 }): Promise<CustomerWithBalance[]> {
   const database = db ?? (await initDatabase());
-  const q = (params.query ?? "").trim().toLowerCase();
+  const q = (params.query ?? '').trim().toLowerCase();
   const hasQuery = q.length > 0;
   const like = `%${q}%`;
   const rows = await database.getAllAsync<CustomerWithBalance>(
@@ -223,25 +255,25 @@ export async function getCustomersWithBalancePage(params: {
       COALESCE((SELECT COUNT(*) FROM customer_credits WHERE customer_id = c.id), 0) +
       COALESCE((SELECT COUNT(*) FROM customer_payments WHERE customer_id = c.id), 0) as transaction_count
      FROM customers c
-     ${hasQuery ? "WHERE lower(c.name) LIKE ? OR lower(c.mobile) LIKE ?" : ""}
+     ${hasQuery ? 'WHERE lower(c.name) LIKE ? OR lower(c.mobile) LIKE ?' : ''}
      ORDER BY COALESCE(last_transaction_date, c.created_at) DESC, balance DESC
      LIMIT ? OFFSET ?`,
     ...(hasQuery ? [like, like] : []),
     params.limit,
-    params.offset
+    params.offset,
   );
   return (rows as CustomerWithBalance[]) ?? [];
 }
 
 export async function getCustomersCount(query?: string): Promise<number> {
   const database = db ?? (await initDatabase());
-  const q = (query ?? "").trim().toLowerCase();
+  const q = (query ?? '').trim().toLowerCase();
   const hasQuery = q.length > 0;
   const like = `%${q}%`;
   const row = await database.getFirstAsync<{ total: number }>(
     `SELECT COUNT(*) as total FROM customers
-     ${hasQuery ? "WHERE lower(name) LIKE ? OR lower(mobile) LIKE ?" : ""}`,
-    ...(hasQuery ? [like, like] : [])
+     ${hasQuery ? 'WHERE lower(name) LIKE ? OR lower(mobile) LIKE ?' : ''}`,
+    ...(hasQuery ? [like, like] : []),
   );
   return Number(row?.total ?? 0);
 }
@@ -250,7 +282,7 @@ export async function getCustomerById(id: number): Promise<Customer | null> {
   const database = db ?? (await initDatabase());
   const row = await database.getFirstAsync<Customer>(
     'SELECT id, name, mobile, address, note, created_at FROM customers WHERE id = ?',
-    [id]
+    [id],
   );
   return (row as Customer) ?? null;
 }
@@ -269,14 +301,14 @@ export async function insertCustomer(data: {
     data.mobile ?? null,
     data.address ?? null,
     data.note ?? null,
-    createdAt
+    createdAt,
   );
   return Number(result.lastInsertRowId);
 }
 
 export async function updateCustomer(
   id: number,
-  data: { name?: string; mobile?: string; address?: string; note?: string }
+  data: { name?: string; mobile?: string; address?: string; note?: string },
 ): Promise<void> {
   const database = db ?? (await initDatabase());
   await database.runAsync(
@@ -285,7 +317,7 @@ export async function updateCustomer(
     data.mobile ?? null,
     data.address ?? null,
     data.note ?? null,
-    id
+    id,
   );
 }
 
@@ -303,7 +335,7 @@ export async function getBalanceForCustomer(customerId: number): Promise<number>
     `SELECT
        COALESCE((SELECT SUM(amount) FROM customer_credits WHERE customer_id = ?), 0) -
        COALESCE((SELECT SUM(amount) FROM customer_payments WHERE customer_id = ?), 0) as balance`,
-    [customerId]
+    [customerId],
   );
   return row?.balance ?? 0;
 }
@@ -312,7 +344,7 @@ export async function getTotalCreditsForCustomer(customerId: number): Promise<nu
   const database = db ?? (await initDatabase());
   const row = await database.getFirstAsync<{ total: number }>(
     'SELECT COALESCE(SUM(amount), 0) as total FROM customer_credits WHERE customer_id = ?',
-    [customerId]
+    [customerId],
   );
   return row?.total ?? 0;
 }
@@ -321,7 +353,7 @@ export async function getTotalPaymentsForCustomer(customerId: number): Promise<n
   const database = db ?? (await initDatabase());
   const row = await database.getFirstAsync<{ total: number }>(
     'SELECT COALESCE(SUM(amount), 0) as total FROM customer_payments WHERE customer_id = ?',
-    [customerId]
+    [customerId],
   );
   return row?.total ?? 0;
 }
@@ -333,7 +365,7 @@ export async function getCreditsForCustomer(customerId: number): Promise<Custome
     `SELECT id, customer_id, amount, note, date, created_at
      FROM customer_credits WHERE customer_id = ?
      ORDER BY date DESC, created_at DESC`,
-    [customerId]
+    [customerId],
   );
   return (rows as CustomerCredit[]) ?? [];
 }
@@ -344,7 +376,7 @@ export async function getCreditsWithCustomerPage(params: {
   query?: string;
 }): Promise<CustomerCreditWithCustomer[]> {
   const database = db ?? (await initDatabase());
-  const q = (params.query ?? "").trim().toLowerCase();
+  const q = (params.query ?? '').trim().toLowerCase();
   const hasQuery = q.length > 0;
   const like = `%${q}%`;
   const rows = await database.getAllAsync<CustomerCreditWithCustomer>(
@@ -353,26 +385,26 @@ export async function getCreditsWithCustomerPage(params: {
       cu.name as customer_name, cu.mobile as customer_mobile
      FROM customer_credits c
      JOIN customers cu ON cu.id = c.customer_id
-     ${hasQuery ? "WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?" : ""}
+     ${hasQuery ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?' : ''}
      ORDER BY c.date DESC, c.created_at DESC
      LIMIT ? OFFSET ?`,
     ...(hasQuery ? [like, like] : []),
     params.limit,
-    params.offset
+    params.offset,
   );
   return (rows as CustomerCreditWithCustomer[]) ?? [];
 }
 
 export async function getCreditsCount(query?: string): Promise<number> {
   const database = db ?? (await initDatabase());
-  const q = (query ?? "").trim().toLowerCase();
+  const q = (query ?? '').trim().toLowerCase();
   const hasQuery = q.length > 0;
   const like = `%${q}%`;
   const row = await database.getFirstAsync<{ total: number }>(
     `SELECT COUNT(*) as total FROM customer_credits c
      JOIN customers cu ON cu.id = c.customer_id
-     ${hasQuery ? "WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?" : ""}`,
-    ...(hasQuery ? [like, like] : [])
+     ${hasQuery ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?' : ''}`,
+    ...(hasQuery ? [like, like] : []),
   );
   return Number(row?.total ?? 0);
 }
@@ -382,7 +414,7 @@ export async function getCreditById(id: number): Promise<CustomerCredit | null> 
   const row = await database.getFirstAsync<CustomerCredit>(
     `SELECT id, customer_id, amount, note, date, created_at
      FROM customer_credits WHERE id = ?`,
-    [id]
+    [id],
   );
   return (row as CustomerCredit) ?? null;
 }
@@ -400,14 +432,14 @@ export async function insertCredit(data: {
     data.customer_id,
     data.amount,
     data.note ?? null,
-    date
+    date,
   );
   return Number(result.lastInsertRowId);
 }
 
 export async function updateCredit(
   id: number,
-  data: { amount?: number; note?: string; date?: string }
+  data: { amount?: number; note?: string; date?: string },
 ): Promise<void> {
   const database = db ?? (await initDatabase());
   await database.runAsync(
@@ -419,7 +451,7 @@ export async function updateCredit(
     data.amount ?? null,
     data.note ?? null,
     data.date ?? null,
-    id
+    id,
   );
 }
 
@@ -435,7 +467,7 @@ export async function getPaymentsForCustomer(customerId: number): Promise<Custom
     `SELECT id, customer_id, amount, note, date, created_at
      FROM customer_payments WHERE customer_id = ?
      ORDER BY date DESC, created_at DESC`,
-    [customerId]
+    [customerId],
   );
   return (rows as CustomerPayment[]) ?? [];
 }
@@ -446,7 +478,7 @@ export async function getPaymentsWithCustomerPage(params: {
   query?: string;
 }): Promise<CustomerPaymentWithCustomer[]> {
   const database = db ?? (await initDatabase());
-  const q = (params.query ?? "").trim().toLowerCase();
+  const q = (params.query ?? '').trim().toLowerCase();
   const hasQuery = q.length > 0;
   const like = `%${q}%`;
   const rows = await database.getAllAsync<CustomerPaymentWithCustomer>(
@@ -455,26 +487,26 @@ export async function getPaymentsWithCustomerPage(params: {
       cu.name as customer_name, cu.mobile as customer_mobile
      FROM customer_payments p
      JOIN customers cu ON cu.id = p.customer_id
-     ${hasQuery ? "WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?" : ""}
+     ${hasQuery ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?' : ''}
      ORDER BY p.date DESC, p.created_at DESC
      LIMIT ? OFFSET ?`,
     ...(hasQuery ? [like, like] : []),
     params.limit,
-    params.offset
+    params.offset,
   );
   return (rows as CustomerPaymentWithCustomer[]) ?? [];
 }
 
 export async function getPaymentsCount(query?: string): Promise<number> {
   const database = db ?? (await initDatabase());
-  const q = (query ?? "").trim().toLowerCase();
+  const q = (query ?? '').trim().toLowerCase();
   const hasQuery = q.length > 0;
   const like = `%${q}%`;
   const row = await database.getFirstAsync<{ total: number }>(
     `SELECT COUNT(*) as total FROM customer_payments p
      JOIN customers cu ON cu.id = p.customer_id
-     ${hasQuery ? "WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?" : ""}`,
-    ...(hasQuery ? [like, like] : [])
+     ${hasQuery ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?' : ''}`,
+    ...(hasQuery ? [like, like] : []),
   );
   return Number(row?.total ?? 0);
 }
@@ -484,7 +516,7 @@ export async function getPaymentById(id: number): Promise<CustomerPayment | null
   const row = await database.getFirstAsync<CustomerPayment>(
     `SELECT id, customer_id, amount, note, date, created_at
      FROM customer_payments WHERE id = ?`,
-    [id]
+    [id],
   );
   return (row as CustomerPayment) ?? null;
 }
@@ -502,14 +534,14 @@ export async function insertPayment(data: {
     data.customer_id,
     data.amount,
     data.note ?? null,
-    date
+    date,
   );
   return Number(result.lastInsertRowId);
 }
 
 export async function updatePayment(
   id: number,
-  data: { amount?: number; note?: string; date?: string }
+  data: { amount?: number; note?: string; date?: string },
 ): Promise<void> {
   const database = db ?? (await initDatabase());
   await database.runAsync(
@@ -521,7 +553,7 @@ export async function updatePayment(
     data.amount ?? null,
     data.note ?? null,
     data.date ?? null,
-    id
+    id,
   );
 }
 
@@ -531,19 +563,22 @@ export async function deletePayment(id: number): Promise<void> {
 }
 
 // --- Reports (date range) ---
-export async function getReportTotals(startDate: string, endDate: string): Promise<{
+export async function getReportTotals(
+  startDate: string,
+  endDate: string,
+): Promise<{
   totalCredits: number;
   totalPayments: number;
   netBalance: number;
 }> {
   const database = db ?? (await initDatabase());
   const credits = await database.getFirstAsync<{ total: number }>(
-    "SELECT COALESCE(SUM(amount), 0) as total FROM customer_credits WHERE date >= ? AND date <= ?",
-    [startDate, endDate]
+    'SELECT COALESCE(SUM(amount), 0) as total FROM customer_credits WHERE date >= ? AND date <= ?',
+    [startDate, endDate],
   );
   const payments = await database.getFirstAsync<{ total: number }>(
-    "SELECT COALESCE(SUM(amount), 0) as total FROM customer_payments WHERE date >= ? AND date <= ?",
-    [startDate, endDate]
+    'SELECT COALESCE(SUM(amount), 0) as total FROM customer_payments WHERE date >= ? AND date <= ?',
+    [startDate, endDate],
   );
   const totalCredits = credits?.total ?? 0;
   const totalPayments = payments?.total ?? 0;
@@ -562,7 +597,7 @@ export async function getTotalReceivables(): Promise<number> {
         COALESCE((SELECT SUM(amount) FROM customer_credits WHERE customer_id = c.id), 0) -
         COALESCE((SELECT SUM(amount) FROM customer_payments WHERE customer_id = c.id), 0) as bal
       FROM customers c
-    ) WHERE bal > 0`
+    ) WHERE bal > 0`,
   );
   return row?.total ?? 0;
 }

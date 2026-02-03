@@ -26,22 +26,25 @@ export function CreditReportsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const load = useCallback(async (showLoading = true) => {
-    if (showLoading) {
-      setLoading(true);
-    }
-    try {
-      const { startAD, endAD } = getNepaliRange(range);
-      const t = await getReportTotals(startAD, endAD);
-      setTotals(t);
-    } catch {
-      setTotals({ totalCredits: 0, totalPayments: 0, netBalance: 0 });
-    } finally {
+  const load = useCallback(
+    async (showLoading = true) => {
       if (showLoading) {
-        setLoading(false);
+        setLoading(true);
       }
-    }
-  }, [range]);
+      try {
+        const { startAD, endAD } = getNepaliRange(range);
+        const t = await getReportTotals(startAD, endAD);
+        setTotals(t);
+      } catch {
+        setTotals({ totalCredits: 0, totalPayments: 0, netBalance: 0 });
+      } finally {
+        if (showLoading) {
+          setLoading(false);
+        }
+      }
+    },
+    [range],
+  );
 
   React.useEffect(() => {
     load(true);
@@ -58,10 +61,7 @@ export function CreditReportsScreen() {
 
   return (
     <View style={styles.container}>
-      <ScreenHeader
-        title={STRINGS.creditReportTitle}
-        onBack={() => navigation.goBack()}
-      />
+      <ScreenHeader title={STRINGS.creditReportTitle} onBack={() => navigation.goBack()} />
 
       <View style={styles.rangeToggle}>
         <AppPressable
@@ -101,9 +101,7 @@ export function CreditReportsScreen() {
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {loading ? (
           <View style={styles.skeletonStack}>
@@ -116,14 +114,16 @@ export function CreditReportsScreen() {
             <View style={styles.card}>
               <Text style={styles.cardLabel}>{STRINGS.totalCredits}</Text>
               <Text style={styles.cardAmount}>
-                {STRINGS.currencyPrefix}{formatAmount(totals.totalCredits)}
+                {STRINGS.currencyPrefix}
+                {formatAmount(totals.totalCredits)}
               </Text>
             </View>
 
             <View style={styles.card}>
               <Text style={styles.cardLabel}>{STRINGS.totalPayments}</Text>
               <Text style={[styles.cardAmount, styles.cardAmountGreen]}>
-                {STRINGS.currencyPrefix}{formatAmount(totals.totalPayments)}
+                {STRINGS.currencyPrefix}
+                {formatAmount(totals.totalPayments)}
               </Text>
             </View>
 
@@ -135,7 +135,8 @@ export function CreditReportsScreen() {
                   totals.netBalance >= 0 ? styles.cardAmountDebt : styles.cardAmountGreen,
                 ]}
               >
-                {STRINGS.currencyPrefix}{formatAmount(totals.netBalance)}
+                {STRINGS.currencyPrefix}
+                {formatAmount(totals.netBalance)}
               </Text>
             </View>
           </>

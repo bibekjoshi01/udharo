@@ -27,36 +27,28 @@ export function CustomerListScreen() {
     () => (
       <View style={styles.empty}>
         <Text style={styles.emptyText}>{STRINGS.emptyCustomers}</Text>
-        <AppPressable
-          style={styles.emptyButton}
-          onPress={() => navigation.navigate('AddCustomer')}
-        >
+        <AppPressable style={styles.emptyButton} onPress={() => navigation.navigate('AddCustomer')}>
           <Ionicons name="add-circle-outline" size={ICON_SIZE} color={COLORS.primary} />
           <Text style={styles.emptyButtonText}> {STRINGS.addCustomer}</Text>
         </AppPressable>
       </View>
     ),
-    [navigation]
+    [navigation],
   );
 
-  const refreshControl = (
-    <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-  );
+  const refreshControl = <RefreshControl refreshing={refreshing} onRefresh={refresh} />;
 
   useFocusEffect(
     React.useCallback(() => {
       refresh();
-    }, [refresh])
+    }, [refresh]),
   );
 
   const screenTitle = `${STRINGS.customerListTitle} (${totalCount})`;
 
   return (
     <View style={styles.container}>
-      <ScreenHeader
-        title={screenTitle}
-        onBack={() => navigation.goBack()}
-      />
+      <ScreenHeader title={screenTitle} onBack={() => navigation.goBack()} />
       <View style={styles.searchWrap}>
         <Ionicons name="search" size={20} color={COLORS.textSecondary} style={styles.searchIcon} />
         <TextInput
@@ -103,17 +95,32 @@ export function CustomerListScreen() {
               onPress={() => navigation.navigate('CustomerDetail', { customerId: item.id })}
             >
               <View style={styles.cardHeader}>
-                <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
-                <Text style={[styles.cardBalance, isDebt ? styles.balanceDebt : styles.balancePaid]}>
-                  {STRINGS.currencyPrefix}{balanceText}
+                <Text style={styles.cardName} numberOfLines={1}>
+                  {item.name}
+                </Text>
+                <Text
+                  style={[styles.cardBalance, isDebt ? styles.balanceDebt : styles.balancePaid]}
+                >
+                  {STRINGS.currencyPrefix}
+                  {balanceText}
                 </Text>
               </View>
               <View style={styles.cardMetaRow}>
-                <Ionicons name="call-outline" size={14} color={COLORS.textSecondary} style={styles.metaIcon} />
+                <Ionicons
+                  name="call-outline"
+                  size={14}
+                  color={COLORS.textSecondary}
+                  style={styles.metaIcon}
+                />
                 <Text style={styles.cardMetaText}>{item.mobile ?? '—'}</Text>
               </View>
               <View style={styles.cardMetaRow}>
-                <Ionicons name="location-outline" size={14} color={COLORS.textSecondary} style={styles.metaIcon} />
+                <Ionicons
+                  name="location-outline"
+                  size={14}
+                  color={COLORS.textSecondary}
+                  style={styles.metaIcon}
+                />
                 <Text style={styles.cardMetaText} numberOfLines={1}>
                   {item.address ?? '—'}
                 </Text>
@@ -122,9 +129,7 @@ export function CustomerListScreen() {
                 <Text style={styles.cardFooterText}>
                   {CUSTOMER_STRINGS.transactionsTitle}: {txCount}
                 </Text>
-                <Text style={styles.cardFooterText}>
-                  {formatNepaliDateTime(lastActivity)}
-                </Text>
+                <Text style={styles.cardFooterText}>{formatNepaliDateTime(lastActivity)}</Text>
               </View>
             </AppPressable>
           );
@@ -133,10 +138,7 @@ export function CustomerListScreen() {
           loadingMore ? <Text style={styles.loadingMore}>लोड हुँदैछ...</Text> : null
         }
       />
-      <AppPressable
-        style={styles.fab}
-        onPress={() => navigation.navigate('AddCustomer')}
-      >
+      <AppPressable style={styles.fab} onPress={() => navigation.navigate('AddCustomer')}>
         <Ionicons name="add" size={28} color={COLORS.white} />
       </AppPressable>
     </View>
@@ -156,7 +158,7 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   skeletonList: {
-    width: "100%",
+    width: '100%',
   },
   skeletonItem: {
     marginBottom: SPACING.md,

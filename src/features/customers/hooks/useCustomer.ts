@@ -1,5 +1,9 @@
 import { useCallback, useState, useEffect } from 'react';
-import { getCustomerById, getTotalCreditsForCustomer, getTotalPaymentsForCustomer } from '../../../db/database';
+import {
+  getCustomerById,
+  getTotalCreditsForCustomer,
+  getTotalPaymentsForCustomer,
+} from '../../../db/database';
 import type { Customer } from '../../../types';
 
 export function useCustomer(customerId: number | null) {
@@ -71,5 +75,15 @@ export function useCustomer(customerId: number | null) {
     }
   }, [load]);
 
-  return { customer, balance, totalCredits, totalPayments, loading, refreshing, refresh, reload: load, error };
+  return {
+    customer,
+    balance,
+    totalCredits,
+    totalPayments,
+    loading,
+    refreshing,
+    refresh,
+    reload: load,
+    error,
+  };
 }

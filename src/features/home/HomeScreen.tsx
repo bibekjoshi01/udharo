@@ -1,14 +1,14 @@
-import React, { useCallback, useState } from "react";
-import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { COLORS, SPACING } from "../../constants/theme";
-import { getTotalReceivables } from "../../db/database";
-import type { RootStackParamList } from "../../navigation/types";
-import { HomeHeader, SummaryCard, ActionGrid, HomeFooter } from "./components";
+import React, { useCallback, useState } from 'react';
+import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { COLORS, SPACING } from '../../constants/theme';
+import { getTotalReceivables } from '../../db/database';
+import type { RootStackParamList } from '../../navigation/types';
+import { HomeHeader, SummaryCard, ActionGrid, HomeFooter } from './components';
 
-type Nav = NativeStackNavigationProp<RootStackParamList, "Home">;
+type Nav = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export function HomeScreen() {
   const navigation = useNavigation<Nav>();
@@ -48,37 +48,32 @@ export function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <HomeHeader
-        paddingTop={headerPaddingTop}
-        onMenuPress={() => navigation.navigate("Menu")}
-      />
+      <HomeHeader paddingTop={headerPaddingTop} onMenuPress={() => navigation.navigate('Menu')} />
 
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <SummaryCard total={totalReceivables} loading={loadingTotal} />
         <ActionGrid
-          onCustomers={() => navigation.navigate("CustomerList")}
-          onUdharo={() => navigation.navigate("CreditList")}
-          onBhuktani={() => navigation.navigate("PaymentList")}
-          onReports={() => navigation.navigate("CreditReports")}
+          onCustomers={() => navigation.navigate('CustomerList')}
+          onUdharo={() => navigation.navigate('CreditList')}
+          onBhuktani={() => navigation.navigate('PaymentList')}
+          onReports={() => navigation.navigate('CreditReports')}
         />
       </ScrollView>
 
       <HomeFooter
         paddingBottom={footerPaddingBottom}
-        onCustomers={() => navigation.navigate("CustomerList")}
+        onCustomers={() => navigation.navigate('CustomerList')}
         onAddCredit={() =>
-          navigation.navigate("AddTransaction", {
-            mode: "udharo",
+          navigation.navigate('AddTransaction', {
+            mode: 'udharo',
             lockMode: true,
           })
         }
-        onBhuktani={() => navigation.navigate("PaymentList")}
+        onBhuktani={() => navigation.navigate('PaymentList')}
       />
     </View>
   );

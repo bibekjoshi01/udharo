@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,12 +24,13 @@ export function CustomerDetailScreen() {
   const navigation = useNavigation<Nav>();
   const route = useRoute();
   const customerId = (route.params as { customerId: number }).customerId;
-  const { customer, balance, totalCredits, totalPayments, loading, refresh, error } = useCustomer(customerId);
+  const { customer, balance, totalCredits, totalPayments, loading, refresh, error } =
+    useCustomer(customerId);
 
   useFocusEffect(
     React.useCallback(() => {
       refresh();
-    }, [refresh])
+    }, [refresh]),
   );
 
   if (loading || !customer) {
@@ -75,21 +70,17 @@ export function CustomerDetailScreen() {
             <AppPressable
               style={[styles.iconBtn, styles.iconBtnSpacing]}
               onPress={() => {
-                Alert.alert(
-                  STRINGS.deleteCustomer,
-                  STRINGS.confirmDeleteCustomer,
-                  [
-                    { text: STRINGS.cancel, style: 'cancel' },
-                    {
-                      text: STRINGS.delete,
-                      style: 'destructive',
-                      onPress: async () => {
-                        await deleteCustomer(customerId);
-                        navigation.goBack();
-                      },
+                Alert.alert(STRINGS.deleteCustomer, STRINGS.confirmDeleteCustomer, [
+                  { text: STRINGS.cancel, style: 'cancel' },
+                  {
+                    text: STRINGS.delete,
+                    style: 'destructive',
+                    onPress: async () => {
+                      await deleteCustomer(customerId);
+                      navigation.goBack();
                     },
-                  ]
-                );
+                  },
+                ]);
               }}
             >
               <Ionicons name="trash-outline" size={ICON_SIZE} color={COLORS.debt} />
@@ -100,35 +91,33 @@ export function CustomerDetailScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.balanceSection}>
           <Text style={styles.balanceLabel}>{STRINGS.outstandingBalance}</Text>
-        <Text
-          style={[
-            styles.balanceValue,
-            isDebt ? styles.balanceDebt : styles.balancePaid,
-          ]}
-        >
-          {STRINGS.currencyPrefix}{formatAmount(balance)}
-        </Text>
-      </View>
+          <Text style={[styles.balanceValue, isDebt ? styles.balanceDebt : styles.balancePaid]}>
+            {STRINGS.currencyPrefix}
+            {formatAmount(balance)}
+          </Text>
+        </View>
 
-      <View style={styles.infoCard}>
-        <View style={styles.summaryRow}>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>{STRINGS.totalCredits}</Text>
-            <Text style={styles.summaryValue}>
-              {STRINGS.currencyPrefix}{formatAmount(totalCredits)}
-            </Text>
+        <View style={styles.infoCard}>
+          <View style={styles.summaryRow}>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryLabel}>{STRINGS.totalCredits}</Text>
+              <Text style={styles.summaryValue}>
+                {STRINGS.currencyPrefix}
+                {formatAmount(totalCredits)}
+              </Text>
+            </View>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryLabel}>{STRINGS.totalPayments}</Text>
+              <Text style={styles.summaryValue}>
+                {STRINGS.currencyPrefix}
+                {formatAmount(totalPayments)}
+              </Text>
+            </View>
           </View>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>{STRINGS.totalPayments}</Text>
-            <Text style={styles.summaryValue}>
-              {STRINGS.currencyPrefix}{formatAmount(totalPayments)}
-            </Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>{STRINGS.mobileNumber}</Text>
+            <Text style={styles.infoValue}>{customer.mobile ?? '–'}</Text>
           </View>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>{STRINGS.mobileNumber}</Text>
-          <Text style={styles.infoValue}>{customer.mobile ?? '–'}</Text>
-        </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>{STRINGS.address}</Text>
             <Text style={styles.infoValue}>{customer.address ?? '–'}</Text>

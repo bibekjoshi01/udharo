@@ -1,22 +1,22 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView, Alert, Linking } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ScreenHeader } from "../components/ScreenHeader";
-import { AppPressable } from "../components/AppPressable";
-import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from "../constants/theme";
-import { STRINGS } from "../constants/strings";
-import type { RootStackParamList } from "../navigation/types";
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { AppPressable } from '../components/AppPressable';
+import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
+import { STRINGS } from '../constants/strings';
+import type { RootStackParamList } from '../navigation/types';
 
-type Nav = NativeStackNavigationProp<RootStackParamList, "Support">;
+type Nav = NativeStackNavigationProp<RootStackParamList, 'Support'>;
 
 export function SupportScreen() {
   const navigation = useNavigation<Nav>();
 
   const openEmail = async () => {
     const mailUrl = `mailto:${STRINGS.supportEmail}?subject=${encodeURIComponent(
-      STRINGS.appName
-    )}&body=${encodeURIComponent("नमस्ते,")}`;
+      STRINGS.appName,
+    )}&body=${encodeURIComponent('नमस्ते,')}`;
     const canOpen = await Linking.canOpenURL(mailUrl);
     if (!canOpen) {
       Alert.alert(STRINGS.support, STRINGS.supportEmail);
@@ -73,19 +73,19 @@ const styles = StyleSheet.create({
   emailValue: {
     fontSize: FONTS.body,
     color: COLORS.text,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   button: {
     marginTop: SPACING.md,
     backgroundColor: COLORS.primary,
     borderRadius: BORDER_RADIUS.sm,
     minHeight: MIN_TOUCH,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     fontSize: FONTS.body,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.white,
   },
 });

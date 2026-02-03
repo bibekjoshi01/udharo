@@ -1,8 +1,8 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS, SPACING, MIN_TOUCH } from "../../../constants/theme";
-import { AppPressable } from "../../../components/AppPressable";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS, SPACING, MIN_TOUCH } from '../../../constants/theme';
+import { AppPressable } from '../../../components/AppPressable';
 
 const ICON_SIZE = 24;
 
@@ -36,9 +36,9 @@ export function HomeFooter({
 
 const styles = StyleSheet.create({
   footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
     backgroundColor: COLORS.surface,
@@ -48,18 +48,18 @@ const styles = StyleSheet.create({
   footerBtn: {
     width: MIN_TOUCH,
     height: MIN_TOUCH,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: MIN_TOUCH / 2,
-    backgroundColor: "#F1F5F9",
+    backgroundColor: '#F1F5F9',
   },
   fab: {
     width: 56,
     height: 56,
     borderRadius: 28,
     backgroundColor: COLORS.primary,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 3,
     borderColor: COLORS.surface,
   },

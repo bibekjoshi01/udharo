@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS, FONTS, SPACING, MIN_TOUCH } from "../constants/theme";
-import { AppPressable } from "./AppPressable";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS, FONTS, SPACING, MIN_TOUCH } from '../constants/theme';
+import { AppPressable } from './AppPressable';
 
 const ICON_SIZE = 24;
 
@@ -35,11 +35,7 @@ export function ScreenHeader({
               onPress={onBack}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Ionicons
-                name="arrow-back"
-                size={ICON_SIZE}
-                color={COLORS.primary}
-              />
+              <Ionicons name="arrow-back" size={ICON_SIZE} color={COLORS.primary} />
             </AppPressable>
           ) : null)}
       </View>
@@ -55,8 +51,8 @@ export function ScreenHeader({
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: SPACING.sm,
     paddingBottom: SPACING.xs,
     backgroundColor: COLORS.surface,
@@ -66,23 +62,23 @@ const styles = StyleSheet.create({
   side: {
     minWidth: MIN_TOUCH,
     height: MIN_TOUCH,
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   sideRight: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
   },
   iconBtn: {
     width: MIN_TOUCH,
     height: MIN_TOUCH,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     flex: 1,
     fontSize: FONTS.title,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.text,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });

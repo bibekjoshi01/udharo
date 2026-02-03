@@ -84,15 +84,9 @@ export function AddTransactionScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.label}>{STRINGS.customerName} *</Text>
-        <AppPressable
-          style={styles.selectField}
-          onPress={() => setPickerOpen(true)}
-        >
+        <AppPressable style={styles.selectField} onPress={() => setPickerOpen(true)}>
           <Text
-            style={[
-              styles.selectText,
-              !selectedCustomer && styles.selectPlaceholder,
-            ]}
+            style={[styles.selectText, !selectedCustomer && styles.selectPlaceholder]}
             numberOfLines={1}
           >
             {selectedCustomer
@@ -131,7 +125,12 @@ export function AddTransactionScreen() {
           <View style={styles.modalSheet}>
             <Text style={styles.modalTitle}>{STRINGS.selectCustomerTitle}</Text>
             <View style={styles.searchWrap}>
-              <Ionicons name="search" size={18} color={COLORS.textSecondary} style={styles.searchIcon} />
+              <Ionicons
+                name="search"
+                size={18}
+                color={COLORS.textSecondary}
+                style={styles.searchIcon}
+              />
               <TextInput
                 style={styles.searchInput}
                 placeholder={STRINGS.searchPlaceholder}

@@ -41,7 +41,7 @@ export function EditCustomerScreen() {
         setSaving(false);
       }
     },
-    [customerId, navigation]
+    [customerId, navigation],
   );
 
   if (loading || !customer) {
@@ -64,10 +64,7 @@ export function EditCustomerScreen() {
 
   return (
     <View style={styles.wrapper}>
-      <ScreenHeader
-        title={STRINGS.editCustomer}
-        onBack={() => navigation.goBack()}
-      />
+      <ScreenHeader title={STRINGS.editCustomer} onBack={() => navigation.goBack()} />
       <CustomerForm
         initialValues={{
           name: customer.name,

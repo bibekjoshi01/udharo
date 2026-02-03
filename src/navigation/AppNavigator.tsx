@@ -1,27 +1,27 @@
-import React, { useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { SplashScreen } from "../screens/SplashScreen";
-import { HomeScreen } from "../features/home/HomeScreen";
+import React, { useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SplashScreen } from '../screens/SplashScreen';
+import { HomeScreen } from '../features/home/HomeScreen';
 import {
   CustomerListScreen,
   CustomerDetailScreen,
   AddCustomerScreen,
   EditCustomerScreen,
-} from "../features/customers";
+} from '../features/customers';
 import {
   AddTransactionScreen,
   EditTransactionScreen,
   CreditListScreen,
   PaymentListScreen,
-} from "../features/transactions";
-import { CreditReportsScreen } from "../features/reports/CreditReportsScreen";
-import { MenuScreen } from "../screens/MenuScreen";
-import { AboutAppScreen } from "../screens/AboutAppScreen";
-import { PrivacyPolicyScreen } from "../screens/PrivacyPolicyScreen";
-import { TermsScreen } from "../screens/TermsScreen";
-import { SupportScreen } from "../screens/SupportScreen";
-import type { RootStackParamList } from "./types";
+} from '../features/transactions';
+import { CreditReportsScreen } from '../features/reports/CreditReportsScreen';
+import { MenuScreen } from '../screens/MenuScreen';
+import { AboutAppScreen } from '../screens/AboutAppScreen';
+import { PrivacyPolicyScreen } from '../screens/PrivacyPolicyScreen';
+import { TermsScreen } from '../screens/TermsScreen';
+import { SupportScreen } from '../screens/SupportScreen';
+import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -38,8 +38,8 @@ export function AppNavigator() {
         initialRouteName="Home"
         screenOptions={{
           headerShown: false,
-          animation: "slide_from_right",
-          contentStyle: { backgroundColor: "#F8FAFC" },
+          animation: 'slide_from_right',
+          contentStyle: { backgroundColor: '#F8FAFC' },
         }}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
@@ -48,10 +48,7 @@ export function AppNavigator() {
         <Stack.Screen name="PaymentList" component={PaymentListScreen} />
         <Stack.Screen name="CustomerDetail" component={CustomerDetailScreen} />
         <Stack.Screen name="AddTransaction" component={AddTransactionScreen} />
-        <Stack.Screen
-          name="EditTransaction"
-          component={EditTransactionScreen}
-        />
+        <Stack.Screen name="EditTransaction" component={EditTransactionScreen} />
         <Stack.Screen name="AddCustomer" component={AddCustomerScreen} />
         <Stack.Screen name="EditCustomer" component={EditCustomerScreen} />
         <Stack.Screen name="CreditReports" component={CreditReportsScreen} />

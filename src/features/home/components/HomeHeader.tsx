@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { COLORS, SPACING, MIN_TOUCH } from "../../../constants/theme";
-import { AppPressable } from "../../../components/AppPressable";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS, SPACING, MIN_TOUCH } from '../../../constants/theme';
+import { AppPressable } from '../../../components/AppPressable';
 
 const ICON_SIZE = 24;
 
@@ -35,9 +35,9 @@ export function HomeHeader({ paddingTop, onMenuPress }: HomeHeaderProps) {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
     backgroundColor: COLORS.surface,
@@ -47,32 +47,32 @@ const styles = StyleSheet.create({
   headerLeft: {
     width: MIN_TOUCH,
     height: MIN_TOUCH,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   logoWrap: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#E2F3F1",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#E2F3F1',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerCenter: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.text,
   },
   menuButton: {
     width: MIN_TOUCH,
     height: MIN_TOUCH,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: MIN_TOUCH / 2,
-    backgroundColor: "#F1F5F9",
+    backgroundColor: '#F1F5F9',
   },
 });

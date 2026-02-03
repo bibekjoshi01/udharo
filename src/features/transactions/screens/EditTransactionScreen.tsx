@@ -69,25 +69,21 @@ export function EditTransactionScreen() {
 
   const onDelete = () => {
     if (!transaction) return;
-    Alert.alert(
-      STRINGS.deleteTransaction,
-      STRINGS.confirmDeleteTransaction,
-      [
-        { text: STRINGS.cancel, style: 'cancel' },
-        {
-          text: STRINGS.delete,
-          style: 'destructive',
-          onPress: async () => {
-            if (currentMode === 'udharo') {
-              await deleteCredit(transaction.id);
-            } else {
-              await deletePayment(transaction.id);
-            }
-            navigation.goBack();
-          },
+    Alert.alert(STRINGS.deleteTransaction, STRINGS.confirmDeleteTransaction, [
+      { text: STRINGS.cancel, style: 'cancel' },
+      {
+        text: STRINGS.delete,
+        style: 'destructive',
+        onPress: async () => {
+          if (currentMode === 'udharo') {
+            await deleteCredit(transaction.id);
+          } else {
+            await deletePayment(transaction.id);
+          }
+          navigation.goBack();
         },
-      ]
-    );
+      },
+    ]);
   };
 
   if (loading || !transaction) {
@@ -125,9 +121,7 @@ export function EditTransactionScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        {customer ? (
-          <Text style={styles.customerName}>{customer.name}</Text>
-        ) : null}
+        {customer ? <Text style={styles.customerName}>{customer.name}</Text> : null}
         <TransactionForm
           mode={currentMode}
           onModeChange={undefined}

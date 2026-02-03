@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
 import { STRINGS } from '../../../constants/strings';
 import { AppPressable } from '../../../components/AppPressable';
@@ -48,12 +43,7 @@ export function TransactionForm({
             ]}
             onPress={() => onModeChange?.('udharo')}
           >
-            <Text
-              style={[
-                styles.modeBtnText,
-                mode === 'udharo' && styles.modeBtnTextActive,
-              ]}
-            >
+            <Text style={[styles.modeBtnText, mode === 'udharo' && styles.modeBtnTextActive]}>
               {STRINGS.addCreditTitle}
             </Text>
           </AppPressable>
@@ -65,12 +55,7 @@ export function TransactionForm({
             ]}
             onPress={() => onModeChange?.('payment')}
           >
-            <Text
-              style={[
-                styles.modeBtnText,
-                mode === 'payment' && styles.modeBtnTextActive,
-              ]}
-            >
+            <Text style={[styles.modeBtnText, mode === 'payment' && styles.modeBtnTextActive]}>
               {STRINGS.paymentTitle}
             </Text>
           </AppPressable>
@@ -97,16 +82,11 @@ export function TransactionForm({
       />
 
       <AppPressable
-        style={[
-          styles.saveBtn,
-          (disabled || saving) && styles.saveBtnDisabled,
-        ]}
+        style={[styles.saveBtn, (disabled || saving) && styles.saveBtnDisabled]}
         onPress={onSubmit}
         disabled={disabled || saving}
       >
-        <Text style={styles.saveBtnText}>
-          {saving ? 'सेभ हुँदैछ...' : submitLabel}
-        </Text>
+        <Text style={styles.saveBtnText}>{saving ? 'सेभ हुँदैछ...' : submitLabel}</Text>
       </AppPressable>
     </View>
   );

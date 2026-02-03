@@ -1,13 +1,13 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ScreenHeader } from "../components/ScreenHeader";
-import { COLORS, FONTS, SPACING, BORDER_RADIUS } from "../constants/theme";
-import { STRINGS } from "../constants/strings";
-import type { RootStackParamList } from "../navigation/types";
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../constants/theme';
+import { STRINGS } from '../constants/strings';
+import type { RootStackParamList } from '../navigation/types';
 
-type Nav = NativeStackNavigationProp<RootStackParamList, "PrivacyPolicy">;
+type Nav = NativeStackNavigationProp<RootStackParamList, 'PrivacyPolicy'>;
 
 export function PrivacyPolicyScreen() {
   const navigation = useNavigation<Nav>();

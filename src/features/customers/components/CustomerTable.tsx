@@ -27,12 +27,11 @@ export function CustomerTable({
   const renderRow = ({ item }: { item: CustomerWithBalance }) => {
     const isDebt = item.balance > 0;
     return (
-      <AppPressable
-        style={styles.row}
-        onPress={() => onRowPress(item)}
-      >
+      <AppPressable style={styles.row} onPress={() => onRowPress(item)}>
         <View style={styles.cellName}>
-          <Text style={styles.cellText} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.cellText} numberOfLines={1}>
+            {item.name}
+          </Text>
         </View>
         <View style={styles.cellMobile}>
           <Text style={styles.cellTextSecondary} numberOfLines={1}>
@@ -41,13 +40,11 @@ export function CustomerTable({
         </View>
         <View style={styles.cellBalance}>
           <Text
-            style={[
-              styles.cellBalanceText,
-              isDebt ? styles.balanceDebt : styles.balancePaid,
-            ]}
+            style={[styles.cellBalanceText, isDebt ? styles.balanceDebt : styles.balancePaid]}
             numberOfLines={1}
           >
-            {STRINGS.currencyPrefix}{formatAmount(item.balance)}
+            {STRINGS.currencyPrefix}
+            {formatAmount(item.balance)}
           </Text>
         </View>
         <View style={styles.cellAddress}>
@@ -61,13 +58,25 @@ export function CustomerTable({
 
   return (
     <View style={styles.tableOuter}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.hScrollContent}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.hScrollContent}
+      >
         <View style={styles.tableInner}>
           <View style={styles.headerRow}>
-            <Text style={[styles.headerCell, styles.cellName]}>{CUSTOMER_STRINGS.tableHeaderName}</Text>
-            <Text style={[styles.headerCell, styles.cellMobile]}>{CUSTOMER_STRINGS.tableHeaderMobile}</Text>
-            <Text style={[styles.headerCell, styles.cellBalance]}>{CUSTOMER_STRINGS.tableHeaderBalance}</Text>
-            <Text style={[styles.headerCell, styles.cellAddress]}>{CUSTOMER_STRINGS.tableHeaderAddress}</Text>
+            <Text style={[styles.headerCell, styles.cellName]}>
+              {CUSTOMER_STRINGS.tableHeaderName}
+            </Text>
+            <Text style={[styles.headerCell, styles.cellMobile]}>
+              {CUSTOMER_STRINGS.tableHeaderMobile}
+            </Text>
+            <Text style={[styles.headerCell, styles.cellBalance]}>
+              {CUSTOMER_STRINGS.tableHeaderBalance}
+            </Text>
+            <Text style={[styles.headerCell, styles.cellAddress]}>
+              {CUSTOMER_STRINGS.tableHeaderAddress}
+            </Text>
           </View>
           <FlatList
             data={data}

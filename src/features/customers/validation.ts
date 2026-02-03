@@ -25,12 +25,10 @@ export const CUSTOMER_VALIDATION = {
   mobileLength: MOBILE_LENGTH,
 } as const;
 
-export function validateCustomerInput(
-  input: CustomerFormInput,
-): ValidationResult {
-  const errors: ValidationResult["errors"] = {};
-  const name = input.name?.trim() ?? "";
-  const mobile = input.mobile?.trim() ?? "";
+export function validateCustomerInput(input: CustomerFormInput): ValidationResult {
+  const errors: ValidationResult['errors'] = {};
+  const name = input.name?.trim() ?? '';
+  const mobile = input.mobile?.trim() ?? '';
 
   if (name.length < MIN_NAME_LENGTH) {
     errors.name = `नाम कम्तीमा ${MIN_NAME_LENGTH} अक्षर हुनुपर्छ।`;
@@ -38,7 +36,7 @@ export function validateCustomerInput(
 
   if (mobile.length > 0) {
     if (!MOBILE_DIGITS_ONLY.test(mobile)) {
-      errors.mobile = "मोबाइल नम्बर सङ्ख्या मात्र हुनुपर्छ।";
+      errors.mobile = 'मोबाइल नम्बर सङ्ख्या मात्र हुनुपर्छ।';
     } else if (mobile.length !== MOBILE_LENGTH) {
       errors.mobile = `मोबाइल नम्बर ${MOBILE_LENGTH} अङ्कको हुनुपर्छ।`;
     }

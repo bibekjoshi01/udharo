@@ -13,7 +13,10 @@ import {
 
 type TxRow = CustomerCreditWithCustomer | CustomerPaymentWithCustomer;
 
-export function useTransactions(type: TransactionType, options?: { query?: string; pageSize?: number }) {
+export function useTransactions(
+  type: TransactionType,
+  options?: { query?: string; pageSize?: number },
+) {
   const [transactions, setTransactions] = useState<TxRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

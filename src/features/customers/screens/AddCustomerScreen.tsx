@@ -33,15 +33,12 @@ export function AddCustomerScreen() {
         setSaving(false);
       }
     },
-    [navigation]
+    [navigation],
   );
 
   return (
     <View style={{ flex: 1 }}>
-      <ScreenHeader
-        title={STRINGS.addCustomer}
-        onBack={() => navigation.goBack()}
-      />
+      <ScreenHeader title={STRINGS.addCustomer} onBack={() => navigation.goBack()} />
       <CustomerForm
         onSubmit={handleSubmit}
         submitLabel={STRINGS.saveCustomer}

@@ -47,13 +47,10 @@ export function CustomerForm({
 
   const validationResult = validateCustomerInput(values);
 
-  const validateAndSet = useCallback(
-    (next: CustomerFormInput) => {
-      const result = validateCustomerInput(next);
-      setErrors(result.errors);
-    },
-    []
-  );
+  const validateAndSet = useCallback((next: CustomerFormInput) => {
+    const result = validateCustomerInput(next);
+    setErrors(result.errors);
+  }, []);
 
   const handleSubmit = useCallback(async () => {
     setErrors(validationResult.errors);
@@ -61,7 +58,15 @@ export function CustomerForm({
     if (!validationResult.valid) return;
     if (isSubmitting) return;
     await onSubmit(values);
-  }, [validationResult.valid, validationResult.errors, isSubmitting, values.name, values.mobile, values.address, values.note]);
+  }, [
+    validationResult.valid,
+    validationResult.errors,
+    isSubmitting,
+    values.name,
+    values.mobile,
+    values.address,
+    values.note,
+  ]);
 
   const valid = validationResult.valid;
   const showNameError = touched.name && errors.name;
@@ -97,9 +102,7 @@ export function CustomerForm({
             onBlur={() => setTouched((t) => ({ ...t, name: true }))}
             autoFocus
           />
-          {showNameError ? (
-            <Text style={styles.errorText}>{errors.name}</Text>
-          ) : null}
+          {showNameError ? <Text style={styles.errorText}>{errors.name}</Text> : null}
         </View>
 
         <View style={styles.field}>
@@ -122,9 +125,7 @@ export function CustomerForm({
             keyboardType="phone-pad"
             maxLength={10}
           />
-          {showMobileError ? (
-            <Text style={styles.errorText}>{errors.mobile}</Text>
-          ) : null}
+          {showMobileError ? <Text style={styles.errorText}>{errors.mobile}</Text> : null}
         </View>
 
         <View style={styles.field}>

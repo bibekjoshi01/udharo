@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, RefreshControl } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,7 +9,11 @@ import { formatNepaliDate } from '../../../utils/date';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import { useTransactions } from '../hooks';
 import type { RootStackParamList } from '../../../navigation/types';
-import type { TransactionType, CustomerCreditWithCustomer, CustomerPaymentWithCustomer } from '../../../types';
+import type {
+  TransactionType,
+  CustomerCreditWithCustomer,
+  CustomerPaymentWithCustomer,
+} from '../../../types';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 
@@ -35,16 +32,8 @@ export interface TransactionListScreenProps {
 export function TransactionListScreen({ type, title }: TransactionListScreenProps) {
   const navigation = useNavigation<Nav>();
   const [search, setSearch] = React.useState('');
-  const {
-    transactions,
-    totalCount,
-    loading,
-    refreshing,
-    loadingMore,
-    refresh,
-    loadMore,
-    error,
-  } = useTransactions(type, { query: search, pageSize: 100 });
+  const { transactions, totalCount, loading, refreshing, loadingMore, refresh, loadMore, error } =
+    useTransactions(type, { query: search, pageSize: 100 });
 
   const emptyComponent = (
     <View style={styles.empty}>
@@ -62,39 +51,43 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
     </View>
   );
 
-  const renderItem = ({ item }: { item: CustomerCreditWithCustomer | CustomerPaymentWithCustomer }) => {
+  const renderItem = ({
+    item,
+  }: {
+    item: CustomerCreditWithCustomer | CustomerPaymentWithCustomer;
+  }) => {
     return (
       <AppPressable
         style={styles.row}
-        onPress={() => navigation.navigate('EditTransaction', { transactionId: item.id, mode: type })}
+        onPress={() =>
+          navigation.navigate('EditTransaction', { transactionId: item.id, mode: type })
+        }
       >
         <View style={styles.rowLeft}>
           <Text style={styles.rowTitle}>{item.customer_name}</Text>
           {item.note ? (
-            <Text style={styles.rowNote} numberOfLines={1}>{item.note}</Text>
+            <Text style={styles.rowNote} numberOfLines={1}>
+              {item.note}
+            </Text>
           ) : null}
           <Text style={styles.rowDate}>{formatNepaliDate(item.date)}</Text>
         </View>
         <Text
-          style={[
-            styles.rowAmount,
-            type === 'udharo' ? styles.amountCredit : styles.amountPayment,
-          ]}
+          style={[styles.rowAmount, type === 'udharo' ? styles.amountCredit : styles.amountPayment]}
         >
-          {STRINGS.currencyPrefix}{formatAmount(item.amount)}
+          {STRINGS.currencyPrefix}
+          {formatAmount(item.amount)}
         </Text>
       </AppPressable>
     );
   };
 
-  const refreshControl = (
-    <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-  );
+  const refreshControl = <RefreshControl refreshing={refreshing} onRefresh={refresh} />;
 
   useFocusEffect(
     React.useCallback(() => {
       refresh();
-    }, [refresh])
+    }, [refresh]),
   );
 
   return (

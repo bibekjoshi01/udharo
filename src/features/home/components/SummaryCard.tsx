@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { COLORS, FONTS, SPACING, BORDER_RADIUS } from "../../../constants/theme";
-import { STRINGS } from "../../../constants/strings";
-import { Skeleton } from "../../../components/Skeleton";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../../constants/theme';
+import { STRINGS } from '../../../constants/strings';
+import { Skeleton } from '../../../components/Skeleton';
 
 export interface SummaryCardProps {
   total: number;
@@ -10,7 +10,7 @@ export interface SummaryCardProps {
 }
 
 const formatAmount = (n: number) =>
-  n.toLocaleString("en-US", {
+  n.toLocaleString('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
@@ -41,15 +41,15 @@ const styles = StyleSheet.create({
     fontSize: FONTS.body,
     color: COLORS.white,
     opacity: 0.9,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: SPACING.xs,
   },
   summaryAmount: {
     fontSize: 32,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.white,
   },
   skeletonAmount: {
-    backgroundColor: "rgba(255,255,255,0.4)",
+    backgroundColor: 'rgba(255,255,255,0.4)',
   },
 });
