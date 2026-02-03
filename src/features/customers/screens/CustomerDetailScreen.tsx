@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,10 +9,11 @@ import { CUSTOMER_STRINGS } from '../constants';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useCustomer } from '../hooks';
 import { ScreenHeader } from '../components';
-import { deleteCustomer } from '../../../db/database';
+import { deleteCustomer, getCreditsForCustomer, getPaymentsForCustomer } from '../../../db/database';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
+import { exportCustomerPdf } from '../../../utils/pdf';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'CustomerDetail'>;
 
@@ -68,6 +69,35 @@ export function CustomerDetailScreen() {
               onPress={() => navigation.navigate('EditCustomer', { customerId })}
             >
               <Ionicons name="pencil" size={ICON_SIZE} color={COLORS.primary} />
+            </AppPressable>
+            <AppPressable
+              style={[styles.iconBtn, styles.iconBtnSpacing]}
+              onPress={() => {
+                Alert.alert('PDF डाउनलोड', 'PDF डाउनलोड गर्न चाहनुहुन्छ?', [
+                  { text: STRINGS.cancel, style: 'cancel' },
+                  {
+                    text: 'डाउनलोड',
+                    onPress: async () => {
+                      try {
+                        const credits = await getCreditsForCustomer(customerId);
+                        const payments = await getPaymentsForCustomer(customerId);
+                        await exportCustomerPdf({
+                          customer,
+                          totalCredits,
+                          totalPayments,
+                          balance,
+                          credits,
+                          payments,
+                        });
+                      } catch (e: any) {
+                        Alert.alert('PDF असफल', String(e?.message ?? e));
+                      }
+                    },
+                  },
+                ]);
+              }}
+            >
+              <Ionicons name="download-outline" size={ICON_SIZE} color={COLORS.primary} />
             </AppPressable>
             <AppPressable
               style={[styles.iconBtn, styles.iconBtnSpacing]}

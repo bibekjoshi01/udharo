@@ -110,43 +110,6 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   await database.execAsync(CREATE_INDEX_CREDITS_DATE);
   await database.execAsync(CREATE_INDEX_PAYMENTS_DATE);
 
-  // Seed minimal demo data for first run (dev-friendly). Won't run once users have real data.
-  const row = await database.getFirstAsync<{ cnt: number }>(
-    'SELECT COUNT(*) as cnt FROM customers',
-  );
-  const count = Number((row as any)?.cnt ?? 0);
-  if (count === 0 && typeof __DEV__ !== 'undefined' && __DEV__) {
-    const c1 = await database.runAsync(
-      'INSERT INTO customers (name, mobile, address, note) VALUES (?, ?, ?, ?)',
-      'राम प्रसाद',
-      '9812345678',
-      'काठमाडौं',
-      'Demo',
-    );
-    const c2 = await database.runAsync(
-      'INSERT INTO customers (name, mobile, address, note) VALUES (?, ?, ?, ?)',
-      'सीता देवी',
-      '9800000000',
-      'ललितपुर',
-      'Demo',
-    );
-
-    const today = new Date().toISOString().slice(0, 10);
-    await database.runAsync(
-      'INSERT INTO customer_credits (customer_id, amount, note, date) VALUES (?, ?, ?, ?)',
-      Number(c1.lastInsertRowId),
-      500,
-      'चामल',
-      today,
-    );
-    await database.runAsync(
-      'INSERT INTO customer_payments (customer_id, amount, note, date) VALUES (?, ?, ?, ?)',
-      Number(c2.lastInsertRowId),
-      200,
-      'आंशिक भुक्तानी',
-      today,
-    );
-  }
 }
 
 async function migrateDatabase(database: SQLite.SQLiteDatabase) {
@@ -492,6 +455,30 @@ export async function getPaymentsForCustomer(customerId: number): Promise<Custom
      FROM customer_payments WHERE customer_id = ?
      ORDER BY date DESC, created_at DESC`,
     [customerId],
+  );
+  return (rows as CustomerPayment[]) ?? [];
+}
+
+export async function getCreditsByDateRange(startDate: string, endDate: string): Promise<CustomerCredit[]> {
+  const database = db ?? (await initDatabase());
+  const rows = await database.getAllAsync<CustomerCredit>(
+    `SELECT id, customer_id, amount, note, date, created_at
+     FROM customer_credits
+     WHERE date >= ? AND date <= ?
+     ORDER BY date DESC, created_at DESC`,
+    [startDate, endDate],
+  );
+  return (rows as CustomerCredit[]) ?? [];
+}
+
+export async function getPaymentsByDateRange(startDate: string, endDate: string): Promise<CustomerPayment[]> {
+  const database = db ?? (await initDatabase());
+  const rows = await database.getAllAsync<CustomerPayment>(
+    `SELECT id, customer_id, amount, note, date, created_at
+     FROM customer_payments
+     WHERE date >= ? AND date <= ?
+     ORDER BY date DESC, created_at DESC`,
+    [startDate, endDate],
   );
   return (rows as CustomerPayment[]) ?? [];
 }

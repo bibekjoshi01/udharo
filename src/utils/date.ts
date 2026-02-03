@@ -40,6 +40,10 @@ const NEPALI_DIGITS: Record<string, string> = {
 function toDate(value?: string | Date): Date | null {
   if (!value) return null;
   if (value instanceof Date) return value;
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)) {
+    // SQLite datetime('now') -> UTC without timezone
+    return new Date(`${value.replace(' ', 'T')}Z`);
+  }
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return new Date(`${value}T00:00:00+05:45`);
   }
@@ -64,6 +68,21 @@ function getNepalTimeString(adDate: Date): string {
     hour12: false,
   });
   return formatter.format(adDate);
+}
+
+function getNepalTimeString12(adDate: Date): string {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: NEPAL_TZ,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+  const parts = formatter.formatToParts(adDate);
+  const hour = parts.find((p) => p.type === 'hour')?.value ?? '';
+  const minute = parts.find((p) => p.type === 'minute')?.value ?? '';
+  const dayPeriod = parts.find((p) => p.type === 'dayPeriod')?.value ?? '';
+  const nepPeriod = dayPeriod === 'AM' ? 'पूर्वाह्न' : dayPeriod === 'PM' ? 'अपराह्न' : dayPeriod;
+  return `${hour}:${minute} ${nepPeriod}`.trim();
 }
 
 export function getNepaliGreeting(date: Date = new Date()): string {
@@ -115,7 +134,7 @@ export function formatNepaliDateTime(value?: string | Date): string {
   const d = toDate(value);
   if (!d || Number.isNaN(d.getTime())) return value ? String(value) : '—';
   const nepDate = formatNepaliDate(d);
-  const time = getNepalTimeString(d);
+  const time = getNepalTimeString12(d);
   return `${nepDate} ${time}`;
 }
 

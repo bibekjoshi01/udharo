@@ -1,14 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
-import { getReportTotals } from '../../db/database';
+import { getReportTotals, getCreditsByDateRange, getPaymentsByDateRange } from '../../db/database';
 import type { RootStackParamList } from '../../navigation/types';
 import { AppPressable } from '../../components/AppPressable';
+import { Ionicons } from '@expo/vector-icons';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { getNepaliRange } from '../../utils/date';
+import { exportReportPdf } from '../../utils/pdf';
 import { Skeleton } from '../../components/Skeleton';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'CreditReports'>;
@@ -61,7 +63,42 @@ export function CreditReportsScreen() {
 
   return (
     <View style={styles.container}>
-      <ScreenHeader title={STRINGS.creditReportTitle} onBack={() => navigation.goBack()} />
+      <ScreenHeader
+        title={STRINGS.creditReportTitle}
+        onBack={() => navigation.goBack()}
+        rightElement={
+          <AppPressable
+            style={styles.downloadBtn}
+            onPress={() => {
+              Alert.alert('PDF डाउनलोड', 'PDF डाउनलोड गर्न चाहनुहुन्छ?', [
+                { text: STRINGS.cancel, style: 'cancel' },
+                {
+                  text: 'डाउनलोड',
+                  onPress: async () => {
+                    try {
+                      const { startAD, endAD } = getNepaliRange(range);
+                      const credits = await getCreditsByDateRange(startAD, endAD);
+                      const payments = await getPaymentsByDateRange(startAD, endAD);
+                      await exportReportPdf({
+                        title: STRINGS.creditReportTitle,
+                        totalCredits: totals.totalCredits,
+                        totalPayments: totals.totalPayments,
+                        netBalance: totals.netBalance,
+                        credits,
+                        payments,
+                      });
+                    } catch (e: any) {
+                      Alert.alert('PDF असफल', String(e?.message ?? e));
+                    }
+                  },
+                },
+              ]);
+            }}
+          >
+            <Ionicons name="download-outline" size={20} color={COLORS.text} />
+          </AppPressable>
+        }
+      />
 
       <View style={styles.rangeToggle}>
         <AppPressable
@@ -219,4 +256,14 @@ const styles = StyleSheet.create({
   },
   cardAmountGreen: { color: COLORS.paid },
   cardAmountDebt: { color: COLORS.debt },
+  downloadBtn: {
+    minHeight: 36,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: BORDER_RADIUS.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  downloadText: { fontSize: FONTS.body, fontWeight: '700', color: COLORS.text },
 });
