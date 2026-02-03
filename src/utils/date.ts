@@ -1,6 +1,41 @@
 import NepaliDate from 'nepali-date-converter';
 
 const NEPAL_TZ = 'Asia/Kathmandu';
+const NEPALI_MONTHS = [
+  'बैशाख',
+  'जेठ',
+  'असार',
+  'साउन',
+  'भदौ',
+  'असोज',
+  'कात्तिक',
+  'मंसिर',
+  'पुस',
+  'माघ',
+  'फागुन',
+  'चैत',
+];
+const NEPALI_WEEKDAYS: Record<string, string> = {
+  Sunday: 'आइतबार',
+  Monday: 'सोमबार',
+  Tuesday: 'मंगलबार',
+  Wednesday: 'बुधबार',
+  Thursday: 'बिहीबार',
+  Friday: 'शुक्रबार',
+  Saturday: 'शनिबार',
+};
+const NEPALI_DIGITS: Record<string, string> = {
+  '0': '०',
+  '1': '१',
+  '2': '२',
+  '3': '३',
+  '4': '४',
+  '5': '५',
+  '6': '६',
+  '7': '७',
+  '8': '८',
+  '9': '९',
+};
 
 function toDate(value?: string | Date): Date | null {
   if (!value) return null;
@@ -29,6 +64,42 @@ function getNepalTimeString(adDate: Date): string {
     hour12: false,
   });
   return formatter.format(adDate);
+}
+
+export function getNepaliGreeting(date: Date = new Date()): string {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: NEPAL_TZ,
+    hour: '2-digit',
+    hour12: false,
+  });
+  const hourStr = formatter.format(date);
+  const hour = Number(hourStr);
+  if (hour >= 5 && hour < 12) return 'शुभ बिहान';
+  if (hour >= 12 && hour < 17) return 'शुभ दिउँसो';
+  if (hour >= 17 && hour < 21) return 'शुभ साँझ';
+  return 'शुभ रात्री';
+}
+
+function toNepaliDigits(value: string): string {
+  return value.replace(/[0-9]/g, (d) => NEPALI_DIGITS[d] ?? d);
+}
+
+export function formatNepaliDateLong(date: Date = new Date()): string {
+  const d = toDate(date) ?? new Date();
+  const nepalDateStr = getNepalDateString(d);
+  const nepalMidnight = new Date(`${nepalDateStr}T00:00:00+05:45`);
+  const nep = new NepaliDate(nepalMidnight);
+  const bsStr = nep.format('YYYY-MM-DD');
+  const bs = parseBsDate(bsStr);
+  const monthName = bs ? NEPALI_MONTHS[bs.month - 1] ?? '' : '';
+  const dayStr = bs ? toNepaliDigits(String(bs.day)) : '';
+  const weekdayEng = new Intl.DateTimeFormat('en-US', {
+    timeZone: NEPAL_TZ,
+    weekday: 'long',
+  }).format(d);
+  const weekdayNep = NEPALI_WEEKDAYS[weekdayEng] ?? '';
+  if (!weekdayNep || !monthName || !dayStr) return bsStr;
+  return `${weekdayNep}, ${monthName} ${dayStr}`;
 }
 
 export function formatNepaliDate(value?: string | Date): string {

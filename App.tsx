@@ -5,9 +5,15 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import React from 'react';
-import { AppState } from 'react-native';
+import { AppState, Text, TextInput } from 'react-native';
 import { useStore } from './src/store/useStore';
 import { LockScreen } from './src/screens/LockScreen';
+import { useFonts } from 'expo-font';
+import {
+  NotoSansDevanagari_400Regular,
+  NotoSansDevanagari_600SemiBold,
+  NotoSansDevanagari_700Bold,
+} from '@expo-google-fonts/noto-sans-devanagari';
 
 export default function App() {
   const isDbReady = useStore((s) => s.isDbReady);
@@ -15,6 +21,26 @@ export default function App() {
   const isUnlocked = useStore((s) => s.isUnlocked);
   const setUnlocked = useStore((s) => s.setUnlocked);
   const [boundaryKey, setBoundaryKey] = React.useState(0);
+  const [fontsLoaded] = useFonts({
+    NotoSansDevanagari_400Regular,
+    NotoSansDevanagari_600SemiBold,
+    NotoSansDevanagari_700Bold,
+  });
+
+  React.useEffect(() => {
+    const TextAny = Text as unknown as { defaultProps?: { style?: any } };
+    const TextInputAny = TextInput as unknown as { defaultProps?: { style?: any } };
+    TextAny.defaultProps = TextAny.defaultProps || {};
+    TextAny.defaultProps.style = [
+      { fontFamily: 'NotoSansDevanagari_400Regular' },
+      TextAny.defaultProps.style,
+    ];
+    TextInputAny.defaultProps = TextInputAny.defaultProps || {};
+    TextInputAny.defaultProps.style = [
+      { fontFamily: 'NotoSansDevanagari_400Regular' },
+      TextInputAny.defaultProps.style,
+    ];
+  }, []);
 
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
@@ -32,6 +58,10 @@ export default function App() {
   }, [prefs.lockEnabled, setUnlocked]);
 
   const showLock = isDbReady && prefs.lockEnabled && !isUnlocked;
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

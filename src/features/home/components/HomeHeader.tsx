@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, MIN_TOUCH } from '../../../constants/theme';
 import { AppPressable } from '../../../components/AppPressable';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { formatNepaliDateLong } from '../../../utils/date';
 
 const ICON_SIZE = 24;
 
@@ -14,6 +15,7 @@ export interface HomeHeaderProps {
 export function HomeHeader({ onMenuPress }: HomeHeaderProps) {
   const insets = useSafeAreaInsets();
   const paddingTop = insets.top + SPACING.sm;
+  const todayLabel = React.useMemo(() => formatNepaliDateLong(), []);
 
   return (
     <View style={[styles.header, { paddingTop }]}>
@@ -23,7 +25,7 @@ export function HomeHeader({ onMenuPress }: HomeHeaderProps) {
         </View>
       </View>
       <View style={styles.headerCenter}>
-        <Text style={styles.headerTitle}>नमस्ते</Text>
+        <Text style={styles.headerTitle}>{todayLabel}</Text>
       </View>
       <AppPressable
         style={styles.menuButton}
@@ -69,6 +71,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: COLORS.text,
+  },
+  headerSubtitle: {
+    marginTop: 2,
+    fontSize: 12,
+    color: COLORS.textSecondary,
   },
   menuButton: {
     width: MIN_TOUCH,
