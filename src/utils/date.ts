@@ -55,13 +55,34 @@ function parseBsDate(bs: string): { year: number; month: number; day: number } |
 }
 
 function bsToAdDate(bsYear: number, bsMonth: number, bsDay: number): Date | null {
-  const nep = new (NepaliDate as any)(bsYear, bsMonth, bsDay);
-  return (
-    (nep as any).getADDate?.() ||
-    (nep as any).getAD?.() ||
-    (nep as any).toJsDate?.() ||
-    null
-  );
+  const resolveDate = (nep: any): Date | null => {
+    return (
+      nep?.getADDate?.() ||
+      nep?.getAD?.() ||
+      nep?.toJsDate?.() ||
+      null
+    );
+  };
+  const isValid = (d: Date | null) => !!d && !Number.isNaN(d.getTime());
+
+  try {
+    const nep = new (NepaliDate as any)(bsYear, bsMonth, bsDay);
+    const ad = resolveDate(nep);
+    if (isValid(ad)) return ad as Date;
+  } catch {
+    // ignore and try fallback
+  }
+
+  // Some libraries expect zero-based month; retry with month-1.
+  try {
+    const nep = new (NepaliDate as any)(bsYear, Math.max(bsMonth - 1, 0), bsDay);
+    const ad = resolveDate(nep);
+    if (isValid(ad)) return ad as Date;
+  } catch {
+    // ignore
+  }
+
+  return null;
 }
 
 function toAdDateString(date: Date): string {
@@ -101,12 +122,16 @@ export function getNepaliRange(range: "today" | "week" | "month" | "year"): {
     const nextMonth = bs.month === 12 ? { y: bs.year + 1, m: 1 } : { y: bs.year, m: bs.month + 1 };
     const nextStartAd = bsToAdDate(nextMonth.y, nextMonth.m, 1) ?? now;
     const endAd = new Date(nextStartAd.getTime() - 86400000);
-    return { startAD: toAdDateString(startAd), endAD: toAdDateString(endAd) };
+    const startIso = toAdDateString(startAd);
+    const endIso = toAdDateString(endAd);
+    return startIso <= endIso ? { startAD: startIso, endAD: endIso } : { startAD: endIso, endAD: startIso };
   }
 
   // year
   const startAd = bsToAdDate(bs.year, 1, 1) ?? now;
   const nextYearStartAd = bsToAdDate(bs.year + 1, 1, 1) ?? now;
   const endAd = new Date(nextYearStartAd.getTime() - 86400000);
-  return { startAD: toAdDateString(startAd), endAD: toAdDateString(endAd) };
+  const startIso = toAdDateString(startAd);
+  const endIso = toAdDateString(endAd);
+  return startIso <= endIso ? { startAD: startIso, endAD: endIso } : { startAD: endIso, endAD: startIso };
 }

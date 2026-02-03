@@ -30,10 +30,12 @@ export function CreditReportsScreen() {
     if (showLoading) {
       setLoading(true);
     }
-    const { startAD, endAD } = getNepaliRange(range);
     try {
+      const { startAD, endAD } = getNepaliRange(range);
       const t = await getReportTotals(startAD, endAD);
       setTotals(t);
+    } catch {
+      setTotals({ totalCredits: 0, totalPayments: 0, netBalance: 0 });
     } finally {
       if (showLoading) {
         setLoading(false);
