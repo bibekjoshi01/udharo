@@ -150,7 +150,7 @@ export function CustomerForm({
             value={note}
             onChangeText={setNote}
             multiline
-            numberOfLines={2}
+            numberOfLines={4}
           />
         </View>
 
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.debt,
   },
   inputMultiline: {
-    minHeight: 80,
+    minHeight: 120,
     textAlignVertical: 'top',
   },
   errorText: {

@@ -78,7 +78,7 @@ export function TransactionForm({
         value={note}
         onChangeText={onNoteChange}
         multiline
-        numberOfLines={2}
+        numberOfLines={4}
       />
 
       <AppPressable
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   noteInput: {
-    minHeight: 56,
+    minHeight: 120,
     borderRadius: BORDER_RADIUS.md,
     borderWidth: 1,
     borderColor: COLORS.border,

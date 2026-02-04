@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   customerName: {
-    fontSize: FONTS.body,
+    fontSize: FONTS.title,
     fontWeight: '600',
     color: COLORS.text,
     marginBottom: SPACING.md,
