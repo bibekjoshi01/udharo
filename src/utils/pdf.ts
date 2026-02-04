@@ -24,6 +24,23 @@ function tableRows(items: { date: string; amount: number; note?: string }[]) {
     .join('');
 }
 
+function creditRows(items: { date: string; amount: number; note?: string; expected_payment_date?: string }[]) {
+  if (items.length === 0) {
+    return `<tr><td colspan="4" class="empty">कुनै लेनदेन छैन</td></tr>`;
+  }
+  return items
+    .map(
+      (i) => `
+    <tr>
+      <td>${formatNepaliDate(i.date)}</td>
+      <td>${formatNepaliDate(i.expected_payment_date || '')}</td>
+      <td>${currency(i.amount)}</td>
+      <td>${i.note ?? ''}</td>
+    </tr>`,
+    )
+    .join('');
+}
+
 function baseHtml(title: string, body: string) {
   return `
   <html>
@@ -42,9 +59,10 @@ function baseHtml(title: string, body: string) {
         th, td { border: 1px solid #e2e8f0; padding: 6px; font-size: 12px; text-align: left; vertical-align: top; word-break: break-word; }
         th { background: #f8fafc; }
         .empty { text-align: center; color: #64748b; }
-        .col-date { width: 22%; }
+        .col-date { width: 20%; }
+        .col-due { width: 22%; }
         .col-amount { width: 18%; }
-        .col-note { width: 60%; }
+        .col-note { width: 40%; }
       </style>
     </head>
     <body>
@@ -99,8 +117,8 @@ export async function exportCustomerPdf(params: {
     </div>
     <h2>उधारो विवरण</h2>
     <table>
-      <thead><tr><th class="col-date">मिति</th><th class="col-amount">रकम</th><th class="col-note">टिप्पणी</th></tr></thead>
-      <tbody>${tableRows(credits)}</tbody>
+      <thead><tr><th class="col-date">मिति</th><th class="col-due">भुक्तानी गर्ने मिति</th><th class="col-amount">रकम</th><th class="col-note">टिप्पणी</th></tr></thead>
+      <tbody>${creditRows(credits)}</tbody>
     </table>
     <h2>भुक्तानी विवरण</h2>
     <table>
@@ -131,8 +149,8 @@ export async function exportReportPdf(params: {
     </div>
     <h2>उधारो तालिका</h2>
     <table>
-      <thead><tr><th class="col-date">मिति</th><th class="col-amount">रकम</th><th class="col-note">टिप्पणी</th></tr></thead>
-      <tbody>${tableRows(credits)}</tbody>
+      <thead><tr><th class="col-date">मिति</th><th class="col-due">भुक्तानी गर्ने मिति</th><th class="col-amount">रकम</th><th class="col-note">टिप्पणी</th></tr></thead>
+      <tbody>${creditRows(credits)}</tbody>
     </table>
     <h2>भुक्तानी तालिका</h2>
     <table>

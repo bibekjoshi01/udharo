@@ -10,6 +10,7 @@ import { useStore } from './src/store/useStore';
 import { LockScreen } from './src/screens/LockScreen';
 import { COLORS } from './src/constants/theme';
 import { useFonts } from 'expo-font';
+import { scheduleDailyReminderAtNine } from './src/utils/notifications';
 import {
   NotoSansDevanagari_400Regular,
   NotoSansDevanagari_600SemiBold,
@@ -69,6 +70,10 @@ export default function App() {
       setUnlocked(false);
     }
   }, [prefs.lockEnabled, setUnlocked]);
+
+  React.useEffect(() => {
+    scheduleDailyReminderAtNine();
+  }, []);
 
   const showLock = isDbReady && prefs.lockEnabled && !isUnlocked;
 

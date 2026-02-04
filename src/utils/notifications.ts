@@ -1,0 +1,51 @@
+import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
+
+const CHANNEL_ID = 'daily-reminder';
+
+export async function ensureNotificationPermission(): Promise<boolean> {
+  const settings = await Notifications.getPermissionsAsync();
+  if (
+    settings.granted ||
+    settings.ios?.status === Notifications.IosAuthorizationStatus.AUTHORIZED
+  ) {
+    return true;
+  }
+  const req = await Notifications.requestPermissionsAsync();
+  return !!req.granted;
+}
+
+async function ensureChannel() {
+  if (Platform.OS !== 'android') return;
+  await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+    name: 'Daily Reminder',
+    importance: Notifications.AndroidImportance.DEFAULT,
+  });
+}
+
+export async function scheduleDailyReminderAtNine() {
+  await ensureChannel();
+  const allowed = await ensureNotificationPermission();
+  if (!allowed) return;
+
+  const existing = await Notifications.getAllScheduledNotificationsAsync();
+  const alreadyScheduled = existing.some(
+    (n) => n.content?.data?.type === 'daily-reminder' || n.content?.title === 'लेनदेन याद दिलाउने',
+  );
+  if (alreadyScheduled) return;
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'हेर्नु भयो?',
+      body: 'आजको उधारो–भुक्तानी लेख्न बाँकी छ है',
+      data: { type: 'daily-reminder' },
+      sound: true,
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+      hour: 9,
+      minute: 0,
+      repeats: true,
+    },
+  });
+}

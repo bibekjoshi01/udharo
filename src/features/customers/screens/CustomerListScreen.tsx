@@ -212,7 +212,9 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   searchIcon: {
-    marginLeft: 6,
+    position: 'absolute',
+    left: SPACING.md + 12,
+    zIndex: 1,
   },
   searchInput: {
     flex: 1,
@@ -220,7 +222,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
-    paddingHorizontal: SPACING.md,
+    paddingLeft: SPACING.lg + 16,
+    paddingRight: SPACING.md,
     fontSize: FONTS.body,
     color: COLORS.text,
   },

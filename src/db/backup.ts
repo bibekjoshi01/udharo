@@ -91,6 +91,14 @@ export async function importDatabaseFromSql(): Promise<boolean> {
     });
 
   const db = await initDatabase();
+  // Ensure new columns exist before import (backups may include them).
+  const creditsCols = await db.getAllAsync<{ name: string }>(
+    'PRAGMA table_info(customer_credits)',
+  );
+  const creditsColSet = new Set((creditsCols as { name: string }[]).map((c) => c.name));
+  if (!creditsColSet.has('expected_payment_date')) {
+    await db.execAsync('ALTER TABLE customer_credits ADD COLUMN expected_payment_date TEXT');
+  }
   await db.execAsync('PRAGMA foreign_keys=OFF;');
   await db.execAsync('BEGIN;');
   try {
