@@ -272,12 +272,12 @@ const styles = StyleSheet.create({
   rowRight: {
     alignItems: 'flex-end',
   },
-  rowTitle: { fontSize: 18, fontWeight: '700', color: COLORS.text },
+  rowTitle: { fontSize: FONTS.title, fontWeight: '700', color: COLORS.text },
   rowNote: { fontSize: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
-  rowDate: { fontSize: 15, color: COLORS.textSecondary, marginTop: 4 },
+  rowDate: { fontSize: FONTS.body, color: COLORS.textSecondary, marginTop: 4 },
   rowExpected: { fontSize: FONTS.small, color: COLORS.textSecondary, marginTop: 2 },
   rowExpectedOverdue: { color: COLORS.debt, fontWeight: '700' },
-  rowAmount: { fontSize: FONTS.amount, fontWeight: '700' },
+  rowAmount: { fontSize: FONTS.title, fontWeight: '700' },
   amountCredit: { color: COLORS.debt },
   amountPayment: { color: COLORS.paid },
   logBtn: {

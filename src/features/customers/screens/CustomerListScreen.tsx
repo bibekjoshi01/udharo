@@ -9,7 +9,6 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useCustomers } from '../hooks';
 import { ScreenHeader } from '../components';
 import { CUSTOMER_STRINGS } from '../constants';
-import { formatNepaliDateTime } from '../../../utils/date';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
@@ -123,7 +122,6 @@ export function CustomerListScreen() {
           const isDebt = item.balance > 0;
           const balanceText = item.balance.toLocaleString('en-US', { maximumFractionDigits: 0 });
           const txCount = item.transaction_count ?? 0;
-          const lastActivity = item.last_transaction_date ?? item.created_at;
           return (
             <AppPressable
               style={styles.card}
@@ -141,13 +139,18 @@ export function CustomerListScreen() {
                 </Text>
               </View>
               <View style={styles.cardMetaRow}>
-                <Ionicons
-                  name="call-outline"
-                  size={14}
-                  color={COLORS.textSecondary}
-                  style={styles.metaIcon}
-                />
-                <Text style={styles.cardMetaText}>{item.mobile ?? '—'}</Text>
+                <View style={styles.metaLeft}>
+                  <Ionicons
+                    name="call-outline"
+                    size={14}
+                    color={COLORS.textSecondary}
+                    style={styles.metaIcon}
+                  />
+                  <Text style={styles.cardMetaText}>{item.mobile ?? '—'}</Text>
+                </View>
+                <Text style={styles.cardMetaCount}>
+                  {CUSTOMER_STRINGS.transactionsTitle}: {txCount}
+                </Text>
               </View>
               <View style={styles.cardMetaRow}>
                 <Ionicons
@@ -160,12 +163,7 @@ export function CustomerListScreen() {
                   {item.address ?? '—'}
                 </Text>
               </View>
-              <View style={styles.cardFooter}>
-                <Text style={styles.cardFooterText}>
-                  {CUSTOMER_STRINGS.transactionsTitle}: {txCount}
-                </Text>
-                <Text style={styles.cardFooterText}>{formatNepaliDateTime(lastActivity)}</Text>
-              </View>
+              <View style={styles.cardFooter} />
             </AppPressable>
           );
         }}
@@ -286,6 +284,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
     padding: SPACING.md,
+    paddingBottom: SPACING.sm,
     marginBottom: SPACING.md,
   },
   cardHeader: {
@@ -296,36 +295,41 @@ const styles = StyleSheet.create({
   },
   cardName: {
     flex: 1,
-    fontSize: FONTS.body,
+    fontSize: FONTS.title,
     fontWeight: '700',
     color: COLORS.text,
     marginRight: SPACING.sm,
   },
   cardBalance: {
-    fontSize: FONTS.body,
+    fontSize: FONTS.title,
     fontWeight: '700',
   },
   cardMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: SPACING.xs,
+    justifyContent: 'space-between',
+  },
+  metaLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: SPACING.sm,
   },
   metaIcon: {
     marginRight: SPACING.xs,
   },
   cardMetaText: {
-    fontSize: FONTS.small,
+    fontSize: FONTS.body,
     color: COLORS.textSecondary,
     flex: 1,
   },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: SPACING.sm,
-  },
-  cardFooterText: {
-    fontSize: FONTS.small,
+  cardMetaCount: {
+    fontSize: FONTS.body,
     color: COLORS.textSecondary,
+  },
+  cardFooter: {
+    marginTop: SPACING.sm,
   },
   balanceDebt: { color: COLORS.debt },
   balancePaid: { color: COLORS.paid },

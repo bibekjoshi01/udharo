@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Linking, Image } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -25,6 +26,11 @@ export function SupportScreen() {
     await Linking.openURL(mailUrl);
   };
 
+  const copyText = async (label: string, value: string) => {
+    await Clipboard.setStringAsync(value);
+    Alert.alert('कपी भयो', `${label}: ${value}`);
+  };
+
   return (
     <View style={styles.container}>
       <ScreenHeader title={STRINGS.support} onBack={() => navigation.goBack()} />
@@ -47,16 +53,20 @@ export function SupportScreen() {
         <View style={styles.card}>
           <Text style={styles.donateTitle}>सहयोग गर्न चाहनुहुन्छ?</Text>
           <Text style={styles.donateBody}>
-            तपाईंको सानो सहयोगले यो एप अझ राम्रो बनाउन ऊर्जा दिन्छ। QR स्क्यान गरेर
-            दान गर्न सक्नुहुन्छ।
+            तपाईंको रु १० को सहयोगले पनि यो एप अझ राम्रो बनाउन ऊर्जा दिन्छ। QR स्क्यान गरेर दान गर्न
+            सक्नुहुन्छ।
           </Text>
-          <Text style={styles.donateMin}>न्यूनतम: रु १०</Text>
-          <Text style={styles.donateNumber}>Esewa/Khalti Number: 9841817489</Text>
           <Image
             source={require('../../assets/donate-qr.png')}
             style={styles.qr}
             resizeMode="contain"
           />
+          <AppPressable
+            style={styles.copyButton}
+            onPress={() => copyText('Esewa/Khalti', '9841817489')}
+          >
+            <Text style={styles.donateNumber}>Esewa/Khalti Number: 9841817489</Text>
+          </AppPressable>
           <Text style={styles.donateNote}>तपाईंको सहयोगका लागि धन्यवाद।</Text>
         </View>
       </ScrollView>
@@ -121,6 +131,21 @@ const styles = StyleSheet.create({
     fontSize: FONTS.body,
     fontWeight: '700',
     color: COLORS.white,
+  },
+  copyButton: {
+    marginTop: SPACING.sm,
+    borderRadius: BORDER_RADIUS.sm,
+    padding: SPACING.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.surface,
+  },
+  copyText: {
+    fontSize: FONTS.body,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
   },
   donateTitle: {
     fontSize: FONTS.body,

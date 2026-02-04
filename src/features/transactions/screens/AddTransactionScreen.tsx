@@ -86,7 +86,7 @@ export function AddTransactionScreen() {
     }
   };
 
-  const title = mode === 'credit' ? STRINGS.addCreditTitle : STRINGS.paymentTitle;
+  const title = mode === 'credit' ? STRINGS.addCreditTitle : STRINGS.addPaymentTitle;
 
   return (
     <KeyboardAvoidingView

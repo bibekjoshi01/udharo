@@ -14,6 +14,7 @@ import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { exportCustomerPdf } from '../../../utils/pdf';
+import { formatNepaliDate } from '../../../utils/date';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'CustomerDetail'>;
 
@@ -137,6 +138,10 @@ export function CustomerDetailScreen() {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>{STRINGS.mobileNumber}</Text>
             <Text style={styles.infoValue}>{customer.mobile ?? '–'}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>{STRINGS.registeredDate}</Text>
+            <Text style={styles.infoValue}>{formatNepaliDate(customer.created_at)}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>{STRINGS.address}</Text>

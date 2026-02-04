@@ -38,6 +38,7 @@ export const STRINGS = {
   // Add transaction
   addCreditTitle: 'उधारो थप्नुहोस्',
   paymentTitle: 'भुक्तानी',
+  addPaymentTitle: 'भुक्तानी थप्नुहोस्',
   amountPlaceholder: 'रकम लेख्नुहोस्',
   notePlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
   appNlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
@@ -55,6 +56,7 @@ export const STRINGS = {
   mobileNumber: 'मोबाइल नम्बर',
   address: 'ठेगाना',
   note: 'नोट',
+  registeredDate: 'दर्ता मिति',
   saveCustomer: 'ग्राहक सेभ गर्नुहोस्',
   customerSaved: 'ग्राहक सेभ भयो',
   deleteCustomer: 'ग्राहक हटाउनुहोस्',
