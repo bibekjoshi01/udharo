@@ -61,5 +61,4 @@ export interface CustomerWithBalance extends Customer {
   balance: number;
   last_transaction_date?: string;
   transaction_count?: number;
-  expected_payment_date?: string;
 }

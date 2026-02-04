@@ -21,6 +21,8 @@ export default function App() {
   const prefs = useStore((s) => s.prefs);
   const isUnlocked = useStore((s) => s.isUnlocked);
   const setUnlocked = useStore((s) => s.setUnlocked);
+  const lastBackgroundAt = useStore((s) => s.lastBackgroundAt);
+  const setLastBackgroundAt = useStore((s) => s.setLastBackgroundAt);
   const [boundaryKey, setBoundaryKey] = React.useState(0);
   const [fontsLoaded] = useFonts({
     NotoSansDevanagari_400Regular,
@@ -45,12 +47,22 @@ export default function App() {
 
   React.useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
-      if (state !== 'active' && prefs.lockEnabled) {
-        setUnlocked(false);
+      if (!prefs.lockEnabled) return;
+      if (state === 'active') {
+        if (lastBackgroundAt == null) return;
+        const delayMs = prefs.lockDelayMs ?? 60_000;
+        if (Date.now() - lastBackgroundAt >= delayMs) {
+          setUnlocked(false);
+        }
+        setLastBackgroundAt(null);
+        return;
+      }
+      if (state === 'background' || state === 'inactive') {
+        setLastBackgroundAt(Date.now());
       }
     });
     return () => sub.remove();
-  }, [prefs.lockEnabled, setUnlocked]);
+  }, [prefs.lockEnabled, prefs.lockDelayMs, lastBackgroundAt, setUnlocked, setLastBackgroundAt]);
 
   React.useEffect(() => {
     if (prefs.lockEnabled) {

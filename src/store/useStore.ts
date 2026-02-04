@@ -9,6 +9,7 @@ export interface AppPrefs {
   lockEnabled?: boolean;
   pin?: string;
   biometricEnabled?: boolean;
+  lockDelayMs?: number;
 }
 
 interface AppState {
@@ -21,6 +22,8 @@ interface AppState {
   setSelectedCustomerId: (id: number | null) => void;
   prefs: AppPrefs;
   setPrefs: (p: Partial<AppPrefs>) => void;
+  lastBackgroundAt: number | null;
+  setLastBackgroundAt: (v: number | null) => void;
   hydratePrefs: () => Promise<void>;
 }
 
@@ -38,6 +41,8 @@ export const useStore = create<AppState>((set, get) => ({
     set({ prefs: next });
     AsyncStorage.setItem(PREFS_KEY, JSON.stringify(next));
   },
+  lastBackgroundAt: null,
+  setLastBackgroundAt: (v) => set({ lastBackgroundAt: v }),
   hydratePrefs: async () => {
     if (get().prefsHydrated) return;
     try {
