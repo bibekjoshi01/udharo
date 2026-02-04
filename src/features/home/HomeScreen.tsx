@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, SPACING } from '../../constants/theme';
@@ -12,7 +11,6 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export function HomeScreen() {
   const navigation = useNavigation<Nav>();
-  const insets = useSafeAreaInsets();
   const [totalReceivables, setTotalReceivables] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingTotal, setLoadingTotal] = useState(false);

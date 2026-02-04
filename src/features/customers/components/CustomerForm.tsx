@@ -52,21 +52,13 @@ export function CustomerForm({
     setErrors(result.errors);
   }, []);
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async () => {
     setErrors(validationResult.errors);
     setTouched({ name: true, mobile: true });
     if (!validationResult.valid) return;
     if (isSubmitting) return;
     await onSubmit(values);
-  }, [
-    validationResult.valid,
-    validationResult.errors,
-    isSubmitting,
-    values.name,
-    values.mobile,
-    values.address,
-    values.note,
-  ]);
+  };
 
   const valid = validationResult.valid;
   const showNameError = touched.name && errors.name;

@@ -20,7 +20,7 @@ export function AddCustomerScreen() {
     async (values: CustomerFormInput) => {
       setSaving(true);
       try {
-        const id = await insertCustomer({
+        await insertCustomer({
           name: values.name,
           mobile: values.mobile,
           address: values.address,

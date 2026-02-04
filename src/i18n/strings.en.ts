@@ -86,7 +86,7 @@ export const STRINGS_EN = {
   creditReportTitle: 'Report',
   totalCredits: 'Total Credits',
   totalPayments: 'Total Payments',
-  netBalance: 'Net balance',
+  netBalance: 'Total Due Amount',
   thisMonth: 'Monthly',
   thisYear: 'Yearly',
   today: 'Today',

@@ -60,16 +60,6 @@ function getNepalDateString(adDate: Date): string {
   return formatter.format(adDate); // YYYY-MM-DD
 }
 
-function getNepalTimeString(adDate: Date): string {
-  const formatter = new Intl.DateTimeFormat('en-GB', {
-    timeZone: NEPAL_TZ,
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-  return formatter.format(adDate);
-}
-
 function getNepalTimeString12(adDate: Date): string {
   const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: NEPAL_TZ,

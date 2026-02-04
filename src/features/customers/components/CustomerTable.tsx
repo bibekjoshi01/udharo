@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, ScrollView } from 'react-native';
-import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
+import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../../constants/theme';
 import { useStrings } from '../../../constants/strings';
 import type { CustomerWithBalance } from '../../../types';
 import { AppPressable } from '../../../components/AppPressable';
