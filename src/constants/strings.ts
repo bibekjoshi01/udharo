@@ -32,6 +32,8 @@ export const STRINGS = {
   transactionsTitle: 'लेनदेनहरू',
   noTransactions: 'अहिलेसम्म लेनदेन छैन।',
   editTransactionTitle: 'लेनदेन सम्पादन',
+  editCreditTitle: 'उधारो सम्पादन',
+  editPaymentTitle: 'भुक्तानी सम्पादन',
 
   // Add transaction
   addCreditTitle: 'उधारो थप्नुहोस्',
@@ -39,6 +41,11 @@ export const STRINGS = {
   amountPlaceholder: 'रकम लेख्नुहोस्',
   notePlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
   appNlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
+  expectedPaymentDate: 'भुक्तानी गर्ने मिति',
+  expectedPaymentDatePlaceholder: 'जस्तै: 2025-02-28',
+  creditDate: 'उधारो मिति',
+  paymentDate: 'भुक्तानी गरेको मिति',
+  paymentDueDate: 'भुक्तानी गर्ने मिति',
   save: 'सेभ गर्नुहोस्',
   creditAdded: 'उधारो सेभ भयो',
   paymentAdded: 'भुक्तानी सेभ भयो',

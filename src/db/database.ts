@@ -25,7 +25,7 @@ import type {
 } from '../types';
 
 let db: SQLite.SQLiteDatabase | null = null;
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 async function recordMigration(database: SQLite.SQLiteDatabase, version: number) {
   await database.execAsync(CREATE_SCHEMA_MIGRATIONS_TABLE);
@@ -64,6 +64,8 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   const creditsColSet = new Set((creditsCols as { name: string }[]).map((c) => c.name));
   if (!creditsColSet.has('note'))
     await database.runAsync('ALTER TABLE customer_credits ADD COLUMN note TEXT');
+  if (!creditsColSet.has('expected_payment_date'))
+    await database.runAsync('ALTER TABLE customer_credits ADD COLUMN expected_payment_date TEXT');
   if (!creditsColSet.has('date')) {
     await database.runAsync('ALTER TABLE customer_credits ADD COLUMN date TEXT');
     await database.runAsync("UPDATE customer_credits SET date = COALESCE(date, date('now'))");
@@ -130,6 +132,12 @@ async function migrateDatabase(database: SQLite.SQLiteDatabase) {
     await database.execAsync('PRAGMA user_version = 2');
     await recordMigration(database, 2);
     version = 2;
+  }
+
+  if (version < 3) {
+    await database.execAsync('PRAGMA user_version = 3');
+    await recordMigration(database, 3);
+    version = 3;
   }
 
   // If a legacy transactions table exists, migrate once into new tables.
@@ -349,7 +357,7 @@ export async function getTotalPaymentsForCustomer(customerId: number): Promise<n
 export async function getCreditsForCustomer(customerId: number): Promise<CustomerCredit[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerCredit>(
-    `SELECT id, customer_id, amount, note, date, created_at
+    `SELECT id, customer_id, amount, note, expected_payment_date, date, created_at
      FROM customer_credits WHERE customer_id = ?
      ORDER BY date DESC, created_at DESC`,
     [customerId],
@@ -368,7 +376,7 @@ export async function getCreditsWithCustomerPage(params: {
   const like = `%${q}%`;
   const rows = await database.getAllAsync<CustomerCreditWithCustomer>(
     `SELECT 
-      c.id, c.customer_id, c.amount, c.note, c.date, c.created_at,
+      c.id, c.customer_id, c.amount, c.note, c.expected_payment_date, c.date, c.created_at,
       cu.name as customer_name, cu.mobile as customer_mobile
      FROM customer_credits c
      JOIN customers cu ON cu.id = c.customer_id
@@ -399,7 +407,7 @@ export async function getCreditsCount(query?: string): Promise<number> {
 export async function getCreditById(id: number): Promise<CustomerCredit | null> {
   const database = db ?? (await initDatabase());
   const row = await database.getFirstAsync<CustomerCredit>(
-    `SELECT id, customer_id, amount, note, date, created_at
+    `SELECT id, customer_id, amount, note, expected_payment_date, date, created_at
      FROM customer_credits WHERE id = ?`,
     [id],
   );
@@ -411,14 +419,16 @@ export async function insertCredit(data: {
   amount: number;
   note?: string;
   date?: string;
+  expected_payment_date?: string;
 }): Promise<number> {
   const database = db ?? (await initDatabase());
   const date = data.date ?? new Date().toISOString().slice(0, 10);
   const result = await database.runAsync(
-    'INSERT INTO customer_credits (customer_id, amount, note, date) VALUES (?, ?, ?, ?)',
+    'INSERT INTO customer_credits (customer_id, amount, note, expected_payment_date, date) VALUES (?, ?, ?, ?, ?)',
     data.customer_id,
     data.amount,
     data.note ?? null,
+    data.expected_payment_date ?? null,
     date,
   );
   return Number(result.lastInsertRowId);
@@ -426,17 +436,19 @@ export async function insertCredit(data: {
 
 export async function updateCredit(
   id: number,
-  data: { amount?: number; note?: string; date?: string },
+  data: { amount?: number; note?: string; date?: string; expected_payment_date?: string },
 ): Promise<void> {
   const database = db ?? (await initDatabase());
   await database.runAsync(
     `UPDATE customer_credits 
      SET amount = COALESCE(?, amount),
          note = ?,
+         expected_payment_date = ?,
          date = COALESCE(?, date)
      WHERE id = ?`,
     data.amount ?? null,
     data.note ?? null,
+    data.expected_payment_date ?? null,
     data.date ?? null,
     id,
   );
@@ -462,7 +474,7 @@ export async function getPaymentsForCustomer(customerId: number): Promise<Custom
 export async function getCreditsByDateRange(startDate: string, endDate: string): Promise<CustomerCredit[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerCredit>(
-    `SELECT id, customer_id, amount, note, date, created_at
+    `SELECT id, customer_id, amount, note, expected_payment_date, date, created_at
      FROM customer_credits
      WHERE date >= ? AND date <= ?
      ORDER BY date DESC, created_at DESC`,

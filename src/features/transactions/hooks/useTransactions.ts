@@ -33,7 +33,7 @@ export function useTransactions(
     setError(null);
     try {
       const [count, rows] =
-        type === 'udharo'
+        type === 'credit'
           ? await Promise.all([
               getCreditsCount(query),
               getCreditsWithCustomerPage({ limit: pageSize, offset: 0, query }),
@@ -58,7 +58,7 @@ export function useTransactions(
     setLoadingMore(true);
     try {
       const next =
-        type === 'udharo'
+        type === 'credit'
           ? await getCreditsWithCustomerPage({ limit: pageSize, offset, query })
           : await getPaymentsWithCustomerPage({ limit: pageSize, offset, query });
       setTransactions((prev) => [...prev, ...next]);

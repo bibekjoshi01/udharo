@@ -5,7 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
 import { STRINGS } from '../../../constants/strings';
-import { formatNepaliDate } from '../../../utils/date';
+import { formatNepaliDate, getNepaliRange } from '../../../utils/date';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import { useTransactions } from '../hooks';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -36,6 +36,7 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
   const insets = useSafeAreaInsets();
   const [search, setSearch] = React.useState('');
   const [sortMode, setSortMode] = React.useState<'none' | 'asc' | 'desc'>('none');
+  const todayAd = getNepaliRange('today').startAD;
   const debouncedSearch = useDebouncedValue(search, 300);
   const { transactions, totalCount, loading, refreshing, loadingMore, refresh, loadMore, error } =
     useTransactions(type, { query: debouncedSearch, pageSize: 100 });
@@ -64,7 +65,7 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
         <Ionicons name="add-circle-outline" size={ICON_SIZE} color={COLORS.primary} />
         <Text style={styles.emptyButtonText}>
           {' '}
-          {type === 'udharo' ? STRINGS.addCreditTitle : STRINGS.paymentTitle}
+          {type === 'credit' ? STRINGS.addCreditTitle : STRINGS.paymentTitle}
         </Text>
       </AppPressable>
     </View>
@@ -84,18 +85,31 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
       >
         <View style={styles.rowLeft}>
           <Text style={styles.rowTitle}>{item.customer_name}</Text>
-          {item.note ? (
+          {type !== 'credit' && item.note ? (
             <Text style={styles.rowNote} numberOfLines={1}>
               {item.note}
             </Text>
           ) : null}
-          <Text style={styles.rowDate}>{formatNepaliDate(item.date)}</Text>
+          <Text style={styles.rowDate}>
+            {type === 'credit' ? STRINGS.creditDate : STRINGS.paymentDate}:{' '}
+            {formatNepaliDate(item.date)}
+          </Text>
+          {type === 'credit' && 'expected_payment_date' in item && item.expected_payment_date ? (
+            <Text style={styles.rowDate}>
+              {STRINGS.paymentDueDate}:{' '}
+              <Text
+                style={item.expected_payment_date <= todayAd ? styles.rowExpectedOverdue : undefined}
+              >
+                {formatNepaliDate(item.expected_payment_date)}
+              </Text>
+            </Text>
+          ) : null}
         </View>
         <View style={styles.rowRight}>
           <Text
             style={[
               styles.rowAmount,
-              type === 'udharo' ? styles.amountCredit : styles.amountPayment,
+              type === 'credit' ? styles.amountCredit : styles.amountPayment,
             ]}
           >
             {STRINGS.currencyPrefix}
@@ -137,11 +151,7 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
         <AppPressable style={styles.sortBtn} onPress={cycleSort}>
           <Ionicons
             name={
-              sortMode === 'asc'
-                ? 'arrow-up'
-                : sortMode === 'desc'
-                  ? 'arrow-down'
-                  : 'swap-vertical'
+              sortMode === 'asc' ? 'arrow-up' : sortMode === 'desc' ? 'arrow-down' : 'swap-vertical'
             }
             size={18}
             color={sortMode === 'none' ? COLORS.textSecondary : COLORS.text}
@@ -262,6 +272,8 @@ const styles = StyleSheet.create({
   rowTitle: { fontSize: 18, fontWeight: '700', color: COLORS.text },
   rowNote: { fontSize: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
   rowDate: { fontSize: 15, color: COLORS.textSecondary, marginTop: 4 },
+  rowExpected: { fontSize: FONTS.small, color: COLORS.textSecondary, marginTop: 2 },
+  rowExpectedOverdue: { color: COLORS.debt, fontWeight: '700' },
   rowAmount: { fontSize: FONTS.amount, fontWeight: '700' },
   amountCredit: { color: COLORS.debt },
   amountPayment: { color: COLORS.paid },

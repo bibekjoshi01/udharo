@@ -174,6 +174,15 @@ function toAdDateString(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
+export function convertBsToAdDateString(
+  bsYear: number,
+  bsMonth: number,
+  bsDay: number,
+): string | null {
+  const ad = bsToAdDate(bsYear, bsMonth, bsDay);
+  return ad ? toAdDateString(ad) : null;
+}
+
 export function getNepaliRange(range: 'today' | 'week' | 'month' | 'year'): {
   startAD: string;
   endAD: string;

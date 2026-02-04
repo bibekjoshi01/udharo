@@ -5,8 +5,8 @@ export type RootStackParamList = {
   CreditList: undefined;
   PaymentList: undefined;
   CustomerDetail: { customerId: number };
-  AddTransaction: { customerId?: number; mode: 'udharo' | 'payment'; lockMode?: boolean };
-  EditTransaction: { transactionId: number; mode: 'udharo' | 'payment' };
+  AddTransaction: { customerId?: number; mode: 'credit' | 'payment'; lockMode?: boolean };
+  EditTransaction: { transactionId: number; mode: 'credit' | 'payment' };
   AddCustomer: undefined;
   EditCustomer: { customerId: number };
   CreditReports: undefined;
@@ -16,5 +16,5 @@ export type RootStackParamList = {
   Terms: undefined;
   Support: undefined;
   LockSettings: undefined;
-  TransactionAuditLogs: { mode: 'udharo' | 'payment'; transactionId: number };
+  TransactionAuditLogs: { mode: 'credit' | 'payment'; transactionId: number };
 };

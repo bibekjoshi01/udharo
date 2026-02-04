@@ -20,6 +20,7 @@ import { useTransaction } from '../hooks';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
+import { NepaliDatePicker } from '../../../components/NepaliDatePicker';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'EditTransaction'>;
 type Route = RouteProp<RootStackParamList, 'EditTransaction'>;
@@ -30,9 +31,10 @@ export function EditTransactionScreen() {
   const { transactionId, mode } = route.params;
   const { transaction, customer, loading } = useTransaction(mode, transactionId);
 
-  const [currentMode, setCurrentMode] = useState<'udharo' | 'payment'>(mode);
+  const [currentMode, setCurrentMode] = useState<'credit' | 'payment'>(mode);
   const [amountStr, setAmountStr] = useState('');
   const [note, setNote] = useState('');
+  const [expectedPaymentDate, setExpectedPaymentDate] = useState('');
   const [saving, setSaving] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -41,6 +43,9 @@ export function EditTransactionScreen() {
       setCurrentMode(mode);
       setAmountStr(String(transaction.amount));
       setNote(transaction.note ?? '');
+      setExpectedPaymentDate(
+        (transaction as { expected_payment_date?: string })?.expected_payment_date ?? '',
+      );
     }
   }, [mode, transaction]);
 
@@ -51,10 +56,11 @@ export function EditTransactionScreen() {
     if (!transaction || !isValid || saving) return;
     setSaving(true);
     try {
-      if (currentMode === 'udharo') {
+      if (currentMode === 'credit') {
         await updateCredit(transaction.id, {
           amount,
           note: note.trim() || undefined,
+          expected_payment_date: expectedPaymentDate.trim() || undefined,
         });
       } else {
         await updatePayment(transaction.id, {
@@ -95,7 +101,7 @@ export function EditTransactionScreen() {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
       <ScreenHeader
-        title={STRINGS.editTransactionTitle}
+        title={currentMode === 'credit' ? STRINGS.editCreditTitle : STRINGS.editPaymentTitle}
         onBack={() => navigation.goBack()}
         rightElement={
           <AppPressable style={styles.iconBtn} onPress={onDelete}>
@@ -114,6 +120,16 @@ export function EditTransactionScreen() {
           onModeChange={undefined}
           amountStr={amountStr}
           onAmountChange={setAmountStr}
+          afterAmount={
+            currentMode === 'credit' ? (
+              <NepaliDatePicker
+                label={STRINGS.expectedPaymentDate}
+                value={expectedPaymentDate}
+                onChange={(next) => setExpectedPaymentDate(next ?? '')}
+                placeholder={STRINGS.expectedPaymentDatePlaceholder}
+              />
+            ) : null
+          }
           note={note}
           onNoteChange={setNote}
           onSubmit={onSave}
@@ -133,7 +149,7 @@ export function EditTransactionScreen() {
         onConfirm={async () => {
           if (!transaction) return;
           setShowDelete(false);
-          if (currentMode === 'udharo') {
+          if (currentMode === 'credit') {
             await deleteCredit(transaction.id);
           } else {
             await deletePayment(transaction.id);

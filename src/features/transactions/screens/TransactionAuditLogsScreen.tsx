@@ -16,7 +16,7 @@ export function TransactionAuditLogsScreen() {
   const navigation = useNavigation<Nav>();
   const route = useRoute();
   const { mode, transactionId } = route.params as {
-    mode: 'udharo' | 'payment';
+    mode: 'credit' | 'payment';
     transactionId: number;
   };
   const [logs, setLogs] = React.useState<(CreditLog | PaymentLog)[]>([]);
@@ -27,7 +27,7 @@ export function TransactionAuditLogsScreen() {
     (async () => {
       setLoading(true);
       const data =
-        mode === 'udharo'
+        mode === 'credit'
           ? await getCreditLogs(transactionId)
           : await getPaymentLogs(transactionId);
       if (mounted) {

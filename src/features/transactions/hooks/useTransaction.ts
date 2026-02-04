@@ -19,7 +19,7 @@ export function useTransaction(type: TransactionType, transactionId: number | nu
     }
     setLoading(true);
     const tx =
-      type === 'udharo' ? await getCreditById(transactionId) : await getPaymentById(transactionId);
+      type === 'credit' ? await getCreditById(transactionId) : await getPaymentById(transactionId);
     setTransaction(tx);
     if (tx) {
       const c = await getCustomerById(tx.customer_id);

@@ -15,6 +15,7 @@ export const CREATE_CREDITS_TABLE = `
     customer_id INTEGER NOT NULL,
     amount REAL NOT NULL,
     note TEXT,
+    expected_payment_date TEXT,
     date TEXT NOT NULL,
     created_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (customer_id) REFERENCES customers (id)

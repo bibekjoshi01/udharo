@@ -1,4 +1,4 @@
-export type TransactionType = 'udharo' | 'payment';
+export type TransactionType = 'credit' | 'payment';
 
 export interface Customer {
   id: number;
@@ -14,6 +14,7 @@ export interface CustomerCredit {
   customer_id: number;
   amount: number;
   note?: string;
+  expected_payment_date?: string;
   date: string;
   created_at: string;
 }
@@ -48,6 +49,7 @@ export interface PaymentLog {
 export interface CustomerCreditWithCustomer extends CustomerCredit {
   customer_name: string;
   customer_mobile?: string;
+  expected_payment_date?: string;
 }
 
 export interface CustomerPaymentWithCustomer extends CustomerPayment {
@@ -59,4 +61,5 @@ export interface CustomerWithBalance extends Customer {
   balance: number;
   last_transaction_date?: string;
   transaction_count?: number;
+  expected_payment_date?: string;
 }

@@ -5,10 +5,11 @@ import { STRINGS } from '../../../constants/strings';
 import { AppPressable } from '../../../components/AppPressable';
 
 export interface TransactionFormProps {
-  mode: 'udharo' | 'payment';
-  onModeChange?: (mode: 'udharo' | 'payment') => void;
+  mode: 'credit' | 'payment';
+  onModeChange?: (mode: 'credit' | 'payment') => void;
   amountStr: string;
   onAmountChange: (value: string) => void;
+  afterAmount?: React.ReactNode;
   note: string;
   onNoteChange: (value: string) => void;
   onSubmit: () => void;
@@ -23,6 +24,7 @@ export function TransactionForm({
   onModeChange,
   amountStr,
   onAmountChange,
+  afterAmount,
   note,
   onNoteChange,
   onSubmit,
@@ -38,12 +40,12 @@ export function TransactionForm({
           <AppPressable
             style={[
               styles.modeBtn,
-              mode === 'udharo' && styles.modeBtnActive,
-              mode === 'udharo' && styles.modeBtnUdharo,
+              mode === 'credit' && styles.modeBtnActive,
+              mode === 'credit' && styles.modeBtnUdharo,
             ]}
-            onPress={() => onModeChange?.('udharo')}
+            onPress={() => onModeChange?.('credit')}
           >
-            <Text style={[styles.modeBtnText, mode === 'udharo' && styles.modeBtnTextActive]}>
+            <Text style={[styles.modeBtnText, mode === 'credit' && styles.modeBtnTextActive]}>
               {STRINGS.addCreditTitle}
             </Text>
           </AppPressable>
@@ -70,6 +72,8 @@ export function TransactionForm({
         onChangeText={onAmountChange}
         keyboardType="decimal-pad"
       />
+
+      {afterAmount}
 
       <TextInput
         style={styles.noteInput}

@@ -22,6 +22,7 @@ import { useCustomers } from '../../customers/hooks';
 import { AppPressable } from '../../../components/AppPressable';
 import { showToast } from '../../../utils/toast';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
+import { NepaliDatePicker } from '../../../components/NepaliDatePicker';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AddTransaction'>;
 type Route = RouteProp<RootStackParamList, 'AddTransaction'>;
@@ -31,10 +32,11 @@ export function AddTransactionScreen() {
   const route = useRoute<Route>();
   const { customerId, mode: initialMode, lockMode } = route.params;
 
-  const [mode, setMode] = useState<'udharo' | 'payment'>(initialMode);
+  const [mode, setMode] = useState<'credit' | 'payment'>(initialMode);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(customerId ?? null);
   const [amountStr, setAmountStr] = useState('');
   const [note, setNote] = useState('');
+  const [expectedPaymentDate, setExpectedPaymentDate] = useState('');
   const [saving, setSaving] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -46,15 +48,22 @@ export function AddTransactionScreen() {
   const amount = parseFloat(amountStr.replace(/[^0-9.]/g, '')) || 0;
   const isValid = amount > 0 && selectedCustomerId != null;
 
+  React.useEffect(() => {
+    if (mode !== 'credit') {
+      setExpectedPaymentDate('');
+    }
+  }, [mode]);
+
   const onSave = async () => {
     if (!isValid || saving) return;
     setSaving(true);
     try {
-      if (mode === 'udharo') {
+      if (mode === 'credit') {
         await insertCredit({
           customer_id: selectedCustomerId as number,
           amount,
           note: note.trim() || undefined,
+          expected_payment_date: expectedPaymentDate.trim() || undefined,
         });
         showToast(STRINGS.creditAdded);
       } else {
@@ -65,7 +74,7 @@ export function AddTransactionScreen() {
         });
         showToast(STRINGS.paymentAdded);
       }
-      const targetList = mode === 'udharo' ? 'CreditList' : 'PaymentList';
+      const targetList = mode === 'credit' ? 'CreditList' : 'PaymentList';
       navigation.dispatch(
         CommonActions.reset({
           index: 1,
@@ -77,7 +86,7 @@ export function AddTransactionScreen() {
     }
   };
 
-  const title = mode === 'udharo' ? STRINGS.addCreditTitle : STRINGS.paymentTitle;
+  const title = mode === 'credit' ? STRINGS.addCreditTitle : STRINGS.paymentTitle;
 
   return (
     <KeyboardAvoidingView
@@ -109,6 +118,16 @@ export function AddTransactionScreen() {
           onModeChange={lockMode ? undefined : setMode}
           amountStr={amountStr}
           onAmountChange={setAmountStr}
+          afterAmount={
+            mode === 'credit' ? (
+              <NepaliDatePicker
+                label={STRINGS.expectedPaymentDate}
+                value={expectedPaymentDate}
+                onChange={(next) => setExpectedPaymentDate(next ?? '')}
+                placeholder={STRINGS.expectedPaymentDatePlaceholder}
+              />
+            ) : null
+          }
           note={note}
           onNoteChange={setNote}
           onSubmit={onSave}
