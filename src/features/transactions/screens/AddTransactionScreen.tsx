@@ -9,7 +9,7 @@ import {
   Text,
   TextInput,
 } from 'react-native';
-import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import { CommonActions, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
@@ -65,7 +65,13 @@ export function AddTransactionScreen() {
         });
         showToast(STRINGS.paymentAdded);
       }
-      navigation.replace(mode === 'udharo' ? 'CreditList' : 'PaymentList');
+      const targetList = mode === 'udharo' ? 'CreditList' : 'PaymentList';
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 1,
+          routes: [{ name: 'Home' }, { name: targetList }],
+        }),
+      );
     } finally {
       setSaving(false);
     }
