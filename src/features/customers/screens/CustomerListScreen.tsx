@@ -13,6 +13,7 @@ import { formatNepaliDateTime } from '../../../utils/date';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'CustomerList'>;
 
@@ -20,10 +21,26 @@ const ICON_SIZE = 24;
 
 export function CustomerListScreen() {
   const navigation = useNavigation<Nav>();
+  const insets = useSafeAreaInsets();
   const [search, setSearch] = React.useState('');
+  const [sortMode, setSortMode] = React.useState<'none' | 'asc' | 'desc'>('none');
   const debouncedSearch = useDebouncedValue(search, 300);
   const { customers, totalCount, loading, refreshing, loadingMore, refresh, loadMore, error } =
     useCustomers({ query: debouncedSearch, pageSize: 100 });
+
+  const sortedCustomers = useMemo(() => {
+    if (sortMode === 'none') return customers;
+    const next = [...customers];
+    next.sort((a, b) => {
+      const diff = (a.balance ?? 0) - (b.balance ?? 0);
+      return sortMode === 'asc' ? diff : -diff;
+    });
+    return next;
+  }, [customers, sortMode]);
+
+  const cycleSort = () => {
+    setSortMode((prev) => (prev === 'none' ? 'asc' : prev === 'asc' ? 'desc' : 'none'));
+  };
 
   const emptyComponent = useMemo(
     () => (
@@ -59,11 +76,28 @@ export function CustomerListScreen() {
           value={search}
           onChangeText={setSearch}
         />
+        <AppPressable style={styles.sortBtn} onPress={cycleSort}>
+          <Ionicons
+            name={
+              sortMode === 'asc'
+                ? 'arrow-up'
+                : sortMode === 'desc'
+                  ? 'arrow-down'
+                  : 'swap-vertical'
+            }
+            size={18}
+            color={sortMode === 'none' ? COLORS.textSecondary : COLORS.text}
+          />
+        </AppPressable>
       </View>
       <FlatList
-        data={customers}
+        data={sortedCustomers}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={customers.length === 0 ? styles.listEmpty : styles.listContent}
+        contentContainerStyle={
+          customers.length === 0
+            ? [styles.listEmpty, { paddingBottom: SPACING.xl + insets.bottom }]
+            : [styles.listContent, { paddingBottom: SPACING.xl + insets.bottom }]
+        }
         ListEmptyComponent={
           loading ? (
             <View style={styles.loadingWrap}>
@@ -139,7 +173,10 @@ export function CustomerListScreen() {
           loadingMore ? <Text style={styles.loadingMore}>लोड हुँदैछ...</Text> : null
         }
       />
-      <AppPressable style={styles.fab} onPress={() => navigation.navigate('AddCustomer')}>
+      <AppPressable
+        style={[styles.fab, { bottom: SPACING.lg + insets.bottom }]}
+        onPress={() => navigation.navigate('AddCustomer')}
+      >
         <Ionicons name="add" size={28} color={COLORS.white} />
       </AppPressable>
     </View>
@@ -172,11 +209,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
+    gap: SPACING.sm,
   },
   searchIcon: {
-    position: 'absolute',
-    left: SPACING.md + 12,
-    zIndex: 1,
+    marginLeft: 6,
   },
   searchInput: {
     flex: 1,
@@ -184,9 +220,19 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
-    paddingHorizontal: SPACING.md + 20,
+    paddingHorizontal: SPACING.md,
     fontSize: FONTS.body,
     color: COLORS.text,
+  },
+  sortBtn: {
+    width: MIN_TOUCH,
+    height: MIN_TOUCH,
+    borderRadius: BORDER_RADIUS.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.surface,
   },
   empty: {
     flex: 1,

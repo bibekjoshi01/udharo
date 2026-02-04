@@ -50,12 +50,14 @@ export function SupportScreen() {
             तपाईंको सानो सहयोगले यो एप अझ राम्रो बनाउन ऊर्जा दिन्छ। QR स्क्यान गरेर
             दान गर्न सक्नुहुन्छ।
           </Text>
+          <Text style={styles.donateMin}>न्यूनतम: रु १०</Text>
+          <Text style={styles.donateNumber}>Esewa/Khalti Number: 9841817489</Text>
           <Image
             source={require('../../assets/donate-qr.png')}
             style={styles.qr}
             resizeMode="contain"
           />
-          <Text style={styles.donateNote}>Thank you for your support.</Text>
+          <Text style={styles.donateNote}>तपाईंको सहयोगका लागि धन्यवाद।</Text>
         </View>
       </ScrollView>
     </View>
@@ -130,6 +132,19 @@ const styles = StyleSheet.create({
     fontSize: FONTS.body,
     color: COLORS.textSecondary,
     lineHeight: 22,
+  },
+  donateMin: {
+    marginTop: SPACING.xs,
+    fontSize: FONTS.body,
+    fontWeight: '700',
+    color: COLORS.text,
+    textAlign: 'center',
+  },
+  donateNumber: {
+    marginTop: SPACING.xs,
+    fontSize: FONTS.body,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
   },
   qr: {
     marginTop: SPACING.md,

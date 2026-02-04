@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation/AppNavigator';
@@ -8,6 +8,7 @@ import React from 'react';
 import { AppState, Text, TextInput } from 'react-native';
 import { useStore } from './src/store/useStore';
 import { LockScreen } from './src/screens/LockScreen';
+import { COLORS } from './src/constants/theme';
 import { useFonts } from 'expo-font';
 import {
   NotoSansDevanagari_400Regular,
@@ -73,7 +74,11 @@ export default function App() {
             <AppNavigator key={boundaryKey} />
           </ErrorBoundary>
         )}
-        <StatusBar style="dark" backgroundColor="#fff" />
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={COLORS.primary}
+          translucent={false}
+        />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

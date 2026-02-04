@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, RefreshControl } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,6 +17,7 @@ import type {
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -32,10 +33,26 @@ export interface TransactionListScreenProps {
 
 export function TransactionListScreen({ type, title }: TransactionListScreenProps) {
   const navigation = useNavigation<Nav>();
+  const insets = useSafeAreaInsets();
   const [search, setSearch] = React.useState('');
+  const [sortMode, setSortMode] = React.useState<'none' | 'asc' | 'desc'>('none');
   const debouncedSearch = useDebouncedValue(search, 300);
   const { transactions, totalCount, loading, refreshing, loadingMore, refresh, loadMore, error } =
     useTransactions(type, { query: debouncedSearch, pageSize: 100 });
+
+  const sortedTransactions = useMemo(() => {
+    if (sortMode === 'none') return transactions;
+    const next = [...transactions];
+    next.sort((a, b) => {
+      const diff = a.amount - b.amount;
+      return sortMode === 'asc' ? diff : -diff;
+    });
+    return next;
+  }, [transactions, sortMode]);
+
+  const cycleSort = () => {
+    setSortMode((prev) => (prev === 'none' ? 'asc' : prev === 'asc' ? 'desc' : 'none'));
+  };
 
   const emptyComponent = (
     <View style={styles.empty}>
@@ -117,12 +134,29 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
           value={search}
           onChangeText={setSearch}
         />
+        <AppPressable style={styles.sortBtn} onPress={cycleSort}>
+          <Ionicons
+            name={
+              sortMode === 'asc'
+                ? 'arrow-up'
+                : sortMode === 'desc'
+                  ? 'arrow-down'
+                  : 'swap-vertical'
+            }
+            size={18}
+            color={sortMode === 'none' ? COLORS.textSecondary : COLORS.text}
+          />
+        </AppPressable>
       </View>
       <FlatList
-        data={transactions}
+        data={sortedTransactions}
         keyExtractor={(item) => String(item.id)}
         renderItem={renderItem}
-        contentContainerStyle={transactions.length === 0 ? styles.listEmpty : styles.listContent}
+        contentContainerStyle={
+          transactions.length === 0
+            ? [styles.listEmpty, { paddingBottom: SPACING.xl + insets.bottom }]
+            : [styles.listContent, { paddingBottom: SPACING.xl + insets.bottom }]
+        }
         ListEmptyComponent={
           loading ? (
             <View style={styles.loadingWrap}>
@@ -148,7 +182,7 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
         }
       />
       <AppPressable
-        style={styles.fab}
+        style={[styles.fab, { bottom: SPACING.lg + insets.bottom }]}
         onPress={() => navigation.navigate('AddTransaction', { mode: type, lockMode: true })}
       >
         <Ionicons name="add" size={28} color={COLORS.white} />
@@ -183,11 +217,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.surface,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
+    gap: SPACING.sm,
   },
   searchIcon: {
-    position: 'absolute',
-    left: SPACING.md + 12,
-    zIndex: 1,
+    marginLeft: 6,
   },
   searchInput: {
     flex: 1,
@@ -195,9 +228,19 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
-    paddingHorizontal: SPACING.md + 20,
+    paddingHorizontal: SPACING.md,
     fontSize: FONTS.body,
     color: COLORS.text,
+  },
+  sortBtn: {
+    width: MIN_TOUCH,
+    height: MIN_TOUCH,
+    borderRadius: BORDER_RADIUS.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.surface,
   },
   listContent: { padding: SPACING.md, paddingBottom: SPACING.xl },
   listEmpty: { flexGrow: 1, padding: SPACING.md, paddingBottom: SPACING.xl },
