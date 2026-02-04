@@ -9,8 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
-import { CUSTOMER_STRINGS } from '../constants';
+import { useStrings } from '../../../constants/strings';
 import { AppPressable } from '../../../components/AppPressable';
 import {
   validateCustomerInput,
@@ -31,6 +30,7 @@ export function CustomerForm({
   submitLabel,
   isSubmitting = false,
 }: CustomerFormProps) {
+  const STRINGS = useStrings();
   const [name, setName] = useState(initialValues.name ?? '');
   const [mobile, setMobile] = useState(initialValues.mobile ?? '');
   const [address, setAddress] = useState(initialValues.address ?? '');
@@ -87,7 +87,7 @@ export function CustomerForm({
           <Text style={styles.label}>{STRINGS.customerName} *</Text>
           <TextInput
             style={[styles.input, showNameError && styles.inputError]}
-            placeholder={CUSTOMER_STRINGS.namePlaceholder}
+            placeholder={STRINGS.namePlaceholder}
             placeholderTextColor={COLORS.textSecondary}
             value={name}
             onChangeText={(t) => {
@@ -109,7 +109,7 @@ export function CustomerForm({
           <Text style={styles.label}>{STRINGS.mobileNumber}</Text>
           <TextInput
             style={[styles.input, showMobileError && styles.inputError]}
-            placeholder={CUSTOMER_STRINGS.mobilePlaceholder}
+            placeholder={STRINGS.mobilePlaceholder}
             placeholderTextColor={COLORS.textSecondary}
             value={mobile}
             onChangeText={(t) => {
@@ -132,7 +132,7 @@ export function CustomerForm({
           <Text style={styles.label}>{STRINGS.address}</Text>
           <TextInput
             style={[styles.input, styles.inputMultiline]}
-            placeholder={CUSTOMER_STRINGS.addressPlaceholder}
+            placeholder={STRINGS.addressPlaceholder}
             placeholderTextColor={COLORS.textSecondary}
             value={address}
             onChangeText={setAddress}
@@ -145,7 +145,7 @@ export function CustomerForm({
           <Text style={styles.label}>{STRINGS.note}</Text>
           <TextInput
             style={[styles.input, styles.inputMultiline]}
-            placeholder={CUSTOMER_STRINGS.notePlaceholder}
+            placeholder={STRINGS.notePlaceholderShort}
             placeholderTextColor={COLORS.textSecondary}
             value={note}
             onChangeText={setNote}
@@ -160,7 +160,7 @@ export function CustomerForm({
           disabled={!valid || isSubmitting}
         >
           <Text style={styles.submitBtnText}>
-            {isSubmitting ? CUSTOMER_STRINGS.saving : submitLabel}
+            {isSubmitting ? STRINGS.saving : submitLabel}
           </Text>
         </AppPressable>
       </ScrollView>

@@ -3,11 +3,12 @@ import { View, Text, StyleSheet, TextInput } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
-import { STRINGS } from '../constants/strings';
+import { useStrings } from '../constants/strings';
 import { AppPressable } from '../components/AppPressable';
 import { useStore } from '../store/useStore';
 
 export function LockScreen() {
+  const STRINGS = useStrings();
   const prefs = useStore((s) => s.prefs);
   const setUnlocked = useStore((s) => s.setUnlocked);
   const [pin, setPin] = useState('');
@@ -48,7 +49,7 @@ export function LockScreen() {
       setUnlocked(true);
       return;
     }
-    setError('PIN मिलेन, पुनः प्रयास गर्नुहोस्।');
+    setError(STRINGS.pinMismatch);
     setPin('');
   };
 
@@ -62,7 +63,7 @@ export function LockScreen() {
     if (result.success) {
       setUnlocked(true);
     } else if (result.error) {
-      setError('बायोमेट्रिक प्रमाणीकरण असफल भयो।');
+      setError(STRINGS.biometricFailed);
     }
   };
 

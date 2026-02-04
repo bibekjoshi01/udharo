@@ -6,18 +6,19 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppPressable } from '../components/AppPressable';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
-import { STRINGS } from '../constants/strings';
+import { useStrings } from '../constants/strings';
 import type { RootStackParamList } from '../navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Support'>;
 
 export function SupportScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
 
   const openEmail = async () => {
     const mailUrl = `mailto:${STRINGS.supportEmail}?subject=${encodeURIComponent(
-      STRINGS.appName,
-    )}&body=${encodeURIComponent('नमस्ते,')}`;
+      STRINGS.supportEmailSubject,
+    )}&body=${encodeURIComponent(STRINGS.supportEmailBody)}`;
     const canOpen = await Linking.canOpenURL(mailUrl);
     if (!canOpen) {
       Alert.alert(STRINGS.support, STRINGS.supportEmail);
@@ -28,7 +29,7 @@ export function SupportScreen() {
 
   const copyText = async (label: string, value: string) => {
     await Clipboard.setStringAsync(value);
-    Alert.alert('कपी भयो', `${label}: ${value}`);
+    Alert.alert(STRINGS.copiedTitle, `${label}: ${value}`);
   };
 
   return (
@@ -38,24 +39,21 @@ export function SupportScreen() {
         <View style={styles.card}>
           <Text style={styles.body}>{STRINGS.supportBody}</Text>
           <View style={styles.infoBlock}>
-            <Text style={styles.infoLabel}>Developer</Text>
+            <Text style={styles.infoLabel}>{STRINGS.developerLabel}</Text>
             <Text style={styles.infoValue}>Bibek Joshi</Text>
           </View>
           <View style={styles.emailRow}>
-            <Text style={styles.emailLabel}>Email</Text>
+            <Text style={styles.emailLabel}>{STRINGS.emailLabel}</Text>
             <Text style={styles.emailValue}>{STRINGS.supportEmail}</Text>
           </View>
           <AppPressable style={styles.button} onPress={openEmail}>
-            <Text style={styles.buttonText}>Email पठाउनुहोस्</Text>
+            <Text style={styles.buttonText}>{STRINGS.sendEmail}</Text>
           </AppPressable>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.donateTitle}>सहयोग गर्न चाहनुहुन्छ?</Text>
-          <Text style={styles.donateBody}>
-            तपाईंको रु १० को सहयोगले पनि यो एप अझ राम्रो बनाउन ऊर्जा दिन्छ। QR स्क्यान गरेर दान गर्न
-            सक्नुहुन्छ।
-          </Text>
+          <Text style={styles.donateTitle}>{STRINGS.donateTitle}</Text>
+          <Text style={styles.donateBody}>{STRINGS.donateBody}</Text>
           <Image
             source={require('../../assets/donate-qr.png')}
             style={styles.qr}
@@ -63,11 +61,13 @@ export function SupportScreen() {
           />
           <AppPressable
             style={styles.copyButton}
-            onPress={() => copyText('Esewa/Khalti', '9841817489')}
+            onPress={() => copyText(STRINGS.donateNumberLabel, '9841817489')}
           >
-            <Text style={styles.donateNumber}>Esewa/Khalti Number: 9841817489</Text>
+            <Text style={styles.donateNumber}>
+              {STRINGS.donateNumberLabel}: 9841817489
+            </Text>
           </AppPressable>
-          <Text style={styles.donateNote}>तपाईंको सहयोगका लागि धन्यवाद।</Text>
+          <Text style={styles.donateNote}>{STRINGS.donateThanks}</Text>
         </View>
       </ScrollView>
     </View>

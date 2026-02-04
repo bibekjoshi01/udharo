@@ -3,6 +3,7 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { Alert } from 'react-native';
 import { initDatabase } from './database';
+import { getStrings } from '../constants/strings';
 
 const TABLES = [
   'customers',
@@ -28,6 +29,7 @@ function buildInsert(table: string, row: Record<string, unknown>) {
 }
 
 export async function exportDatabaseToSql(): Promise<string | null> {
+  const STRINGS = getStrings();
   const db = await initDatabase();
   const parts: string[] = [];
   parts.push('-- Udharo backup');
@@ -51,15 +53,16 @@ export async function exportDatabaseToSql(): Promise<string | null> {
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(fileUri, {
       mimeType: 'application/sql',
-      dialogTitle: 'Export Backup',
+      dialogTitle: STRINGS.exportLabel,
     });
   } else {
-    Alert.alert('Backup saved', fileUri);
+    Alert.alert(STRINGS.backupReady, fileUri);
   }
   return fileUri;
 }
 
 export async function importDatabaseFromSql(): Promise<boolean> {
+  const STRINGS = getStrings();
   const pick = await DocumentPicker.getDocumentAsync({
     type: '*/*',
     copyToCacheDirectory: true,
@@ -69,7 +72,7 @@ export async function importDatabaseFromSql(): Promise<boolean> {
   const asset = pick.assets[0];
   const name = (asset.name ?? '').toLowerCase();
   if (!name.endsWith('.sql')) {
-    Alert.alert('गलत फाइल', 'कृपया .sql फाइल मात्र छान्नुहोस्।');
+    Alert.alert(STRINGS.invalidFileTitle, STRINGS.invalidFileMessage);
     return false;
   }
 

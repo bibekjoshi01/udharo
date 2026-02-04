@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const PREFS_KEY = '@udharo_prefs';
 
 export interface AppPrefs {
-  language?: string;
+  language?: 'ne' | 'en';
   sortOrder?: 'recent' | 'balance';
   lockEnabled?: boolean;
   pin?: string;

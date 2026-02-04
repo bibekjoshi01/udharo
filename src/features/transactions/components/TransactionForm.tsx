@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import { AppPressable } from '../../../components/AppPressable';
 
 export interface TransactionFormProps {
@@ -28,11 +28,13 @@ export function TransactionForm({
   note,
   onNoteChange,
   onSubmit,
-  submitLabel = STRINGS.save,
+  submitLabel,
   saving = false,
   disabled = false,
   allowModeToggle = true,
 }: TransactionFormProps) {
+  const STRINGS = useStrings();
+  const label = submitLabel ?? STRINGS.save;
   return (
     <View>
       {allowModeToggle ? (
@@ -90,7 +92,7 @@ export function TransactionForm({
         onPress={onSubmit}
         disabled={disabled || saving}
       >
-        <Text style={styles.saveBtnText}>{saving ? 'सेभ हुँदैछ...' : submitLabel}</Text>
+        <Text style={styles.saveBtnText}>{saving ? STRINGS.saving : label}</Text>
       </AppPressable>
     </View>
   );

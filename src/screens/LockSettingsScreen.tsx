@@ -6,7 +6,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppPressable } from '../components/AppPressable';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
-import { STRINGS } from '../constants/strings';
+import { useStrings } from '../constants/strings';
 import type { RootStackParamList } from '../navigation/types';
 import { useStore } from '../store/useStore';
 import { showToast } from '../utils/toast';
@@ -15,6 +15,7 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'LockSettings'>;
 
 export function LockSettingsScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const prefs = useStore((s) => s.prefs);
   const setPrefs = useStore((s) => s.setPrefs);
   const setUnlocked = useStore((s) => s.setUnlocked);

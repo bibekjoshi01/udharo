@@ -4,11 +4,10 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useCustomers } from '../hooks';
 import { ScreenHeader } from '../components';
-import { CUSTOMER_STRINGS } from '../constants';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
@@ -20,6 +19,7 @@ const ICON_SIZE = 24;
 
 export function CustomerListScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = React.useState('');
   const [sortMode, setSortMode] = React.useState<'none' | 'asc' | 'desc'>('none');
@@ -51,7 +51,7 @@ export function CustomerListScreen() {
         </AppPressable>
       </View>
     ),
-    [navigation],
+    [navigation, STRINGS],
   );
 
   const refreshControl = <RefreshControl refreshing={refreshing} onRefresh={refresh} />;
@@ -149,7 +149,7 @@ export function CustomerListScreen() {
                   <Text style={styles.cardMetaText}>{item.mobile ?? '—'}</Text>
                 </View>
                 <Text style={styles.cardMetaCount}>
-                  {CUSTOMER_STRINGS.transactionsTitle}: {txCount}
+                  {STRINGS.transactionsTitle}: {txCount}
                 </Text>
               </View>
               <View style={styles.cardMetaRow}>
@@ -168,7 +168,7 @@ export function CustomerListScreen() {
           );
         }}
         ListFooterComponent={
-          loadingMore ? <Text style={styles.loadingMore}>लोड हुँदैछ...</Text> : null
+          loadingMore ? <Text style={styles.loadingMore}>{STRINGS.loading}</Text> : null
         }
       />
       <AppPressable

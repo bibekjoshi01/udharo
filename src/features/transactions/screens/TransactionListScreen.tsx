@@ -4,7 +4,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import { formatNepaliDate, getNepaliRange } from '../../../utils/date';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import { useTransactions } from '../hooks';
@@ -33,6 +33,7 @@ export interface TransactionListScreenProps {
 
 export function TransactionListScreen({ type, title }: TransactionListScreenProps) {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = React.useState('');
   const [sortMode, setSortMode] = React.useState<'none' | 'asc' | 'desc'>('none');
@@ -65,7 +66,7 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
         <Ionicons name="add-circle-outline" size={ICON_SIZE} color={COLORS.primary} />
         <Text style={styles.emptyButtonText}>
           {' '}
-          {type === 'credit' ? STRINGS.addCreditTitle : STRINGS.paymentTitle}
+          {type === 'credit' ? STRINGS.addCreditTitle : STRINGS.addPaymentTitle}
         </Text>
       </AppPressable>
     </View>
@@ -188,7 +189,7 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
         onEndReached={() => loadMore()}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
-          loadingMore ? <Text style={styles.loadingMore}>लोड हुँदैछ...</Text> : null
+          loadingMore ? <Text style={styles.loadingMore}>{STRINGS.loading}</Text> : null
         }
       />
       <AppPressable

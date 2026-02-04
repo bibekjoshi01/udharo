@@ -3,12 +3,13 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING } from '../constants/theme';
-import { STRINGS } from '../constants/strings';
+import { useStrings } from '../constants/strings';
 import { initDatabase } from '../db/database';
 import { useStore } from '../store/useStore';
 
 export function SplashScreen({ onReady }: { onReady: () => void }) {
   const insets = useSafeAreaInsets();
+  const STRINGS = useStrings();
   const setDbReady = useStore((s) => s.setDbReady);
   const hydratePrefs = useStore((s) => s.hydratePrefs);
 

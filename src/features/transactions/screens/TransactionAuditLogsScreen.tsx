@@ -4,7 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import type { RootStackParamList } from '../../../navigation/types';
 import { getCreditLogs, getPaymentLogs } from '../../../db/database';
 import { formatNepaliDateTime } from '../../../utils/date';
@@ -14,6 +14,7 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'TransactionAuditLogs'>
 
 export function TransactionAuditLogsScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const route = useRoute();
   const { mode, transactionId } = route.params as {
     mode: 'credit' | 'payment';

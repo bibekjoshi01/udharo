@@ -4,8 +4,7 @@ import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
-import { CUSTOMER_STRINGS } from '../constants';
+import { useStrings } from '../../../constants/strings';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useCustomer } from '../hooks';
 import { ScreenHeader } from '../components';
@@ -25,6 +24,7 @@ const formatAmount = (n: number) =>
 
 export function CustomerDetailScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const route = useRoute();
   const customerId = (route.params as { customerId: number }).customerId;
   const { customer, balance, totalCredits, totalPayments, loading, refresh, error } =
@@ -74,10 +74,10 @@ export function CustomerDetailScreen() {
             <AppPressable
               style={[styles.iconBtn, styles.iconBtnSpacing]}
               onPress={() => {
-                Alert.alert('PDF डाउनलोड', 'PDF डाउनलोड गर्न चाहनुहुन्छ?', [
+                Alert.alert(STRINGS.pdfDownloadTitle, STRINGS.pdfDownloadConfirm, [
                   { text: STRINGS.cancel, style: 'cancel' },
                   {
-                    text: 'डाउनलोड',
+                    text: STRINGS.download,
                     onPress: async () => {
                       try {
                         const credits = await getCreditsForCustomer(customerId);
@@ -91,7 +91,7 @@ export function CustomerDetailScreen() {
                           payments,
                         });
                       } catch (e: any) {
-                        Alert.alert('PDF असफल', String(e?.message ?? e));
+                        Alert.alert(STRINGS.pdfFailed, String(e?.message ?? e));
                       }
                     },
                   },

@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { getStrings } from '../constants/strings';
 
 const CHANNEL_ID = 'daily-reminder';
 
@@ -28,16 +29,17 @@ export async function scheduleDailyReminderAtNine() {
   const allowed = await ensureNotificationPermission();
   if (!allowed) return;
 
+  const STRINGS = getStrings();
   const existing = await Notifications.getAllScheduledNotificationsAsync();
   const alreadyScheduled = existing.some(
-    (n) => n.content?.data?.type === 'daily-reminder' || n.content?.title === 'लेनदेन याद दिलाउने',
+    (n) => n.content?.data?.type === 'daily-reminder',
   );
   if (alreadyScheduled) return;
 
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'हेर्नु भयो?',
-      body: 'आजको उधारो–भुक्तानी लेख्न बाँकी छ है',
+      title: STRINGS.dailyReminderTitle,
+      body: STRINGS.dailyReminderBody,
       data: { type: 'daily-reminder' },
       sound: true,
     },

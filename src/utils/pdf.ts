@@ -3,30 +3,40 @@ import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 import { formatNepaliDate, formatNepaliDateLong } from './date';
 import type { Customer, CustomerCredit, CustomerPayment } from '../types';
+import { getStrings } from '../constants/strings';
+import type { Strings } from '../constants/strings';
 
-function currency(n: number) {
-  return `रू ${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+function currency(n: number, prefix: string) {
+  return `${prefix}${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 }
 
-function tableRows(items: { date: string; amount: number; note?: string }[]) {
+function tableRows(
+  items: { date: string; amount: number; note?: string }[],
+  strings: Strings,
+  prefix: string,
+) {
   if (items.length === 0) {
-    return `<tr><td colspan="3" class="empty">कुनै लेनदेन छैन</td></tr>`;
+    return `<tr><td colspan=\"3\" class=\"empty\">${strings.noTransactions}</td></tr>`;
   }
   return items
     .map(
       (i) => `
     <tr>
       <td>${formatNepaliDate(i.date)}</td>
-      <td>${currency(i.amount)}</td>
+      <td>${currency(i.amount, prefix)}</td>
       <td>${i.note ?? ''}</td>
     </tr>`,
     )
     .join('');
 }
 
-function creditRows(items: { date: string; amount: number; note?: string; expected_payment_date?: string }[]) {
+function creditRows(
+  items: { date: string; amount: number; note?: string; expected_payment_date?: string }[],
+  strings: Strings,
+  prefix: string,
+) {
   if (items.length === 0) {
-    return `<tr><td colspan="4" class="empty">कुनै लेनदेन छैन</td></tr>`;
+    return `<tr><td colspan=\"4\" class=\"empty\">${strings.noTransactions}</td></tr>`;
   }
   return items
     .map(
@@ -34,7 +44,7 @@ function creditRows(items: { date: string; amount: number; note?: string; expect
     <tr>
       <td>${formatNepaliDate(i.date)}</td>
       <td>${formatNepaliDate(i.expected_payment_date || '')}</td>
-      <td>${currency(i.amount)}</td>
+      <td>${currency(i.amount, prefix)}</td>
       <td>${i.note ?? ''}</td>
     </tr>`,
     )
@@ -73,7 +83,11 @@ function baseHtml(title: string, body: string) {
 }
 
 function safeFileName(value: string) {
-  return value.replace(/[^a-zA-Z0-9\u0900-\u097F_-]+/g, '_');
+  const match = value.match(/(\.[a-zA-Z0-9]+)$/);
+  const ext = match ? match[1] : '';
+  const base = match ? value.slice(0, -ext.length) : value;
+  const safeBase = base.replace(/[^a-zA-Z0-9\u0900-\u097F_-]+/g, '_');
+  return `${safeBase}${ext}`;
 }
 
 async function sharePdf(html: string, fileName: string) {
@@ -103,27 +117,29 @@ export async function exportCustomerPdf(params: {
   credits: CustomerCredit[];
   payments: CustomerPayment[];
 }) {
+  const STRINGS = getStrings();
+  const prefix = STRINGS.currencyPrefix;
   const { customer, totalCredits, totalPayments, balance, credits, payments } = params;
-  const title = `ग्राहक विवरण`;
+  const title = STRINGS.customerReportTitle;
   const body = `
     <div class="muted">${formatNepaliDateLong()}</div>
     <div class="summary">
-      <div class="summary-row"><span class="summary-label">नाम:</span><span class="summary-value">${customer.name}</span></div>
-      <div class="summary-row"><span class="summary-label">मोबाइल:</span><span class="summary-value">${customer.mobile ?? '-'}</span></div>
-      <div class="summary-row"><span class="summary-label">ठेगाना:</span><span class="summary-value">${customer.address ?? '-'}</span></div>
-      <div class="summary-row"><span class="summary-label">कुल उधारो:</span><span class="summary-value">${currency(totalCredits)}</span></div>
-      <div class="summary-row"><span class="summary-label">कुल भुक्तानी:</span><span class="summary-value">${currency(totalPayments)}</span></div>
-      <div class="summary-row"><span class="summary-label">बाँकी:</span><span class="summary-value">${currency(balance)}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.customerName}:</span><span class="summary-value">${customer.name}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.mobileNumber}:</span><span class="summary-value">${customer.mobile ?? '-'}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.address}:</span><span class="summary-value">${customer.address ?? '-'}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.totalCredits}:</span><span class="summary-value">${currency(totalCredits, prefix)}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.totalPayments}:</span><span class="summary-value">${currency(totalPayments, prefix)}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.outstandingBalance}:</span><span class="summary-value">${currency(balance, prefix)}</span></div>
     </div>
-    <h2>उधारो विवरण</h2>
+    <h2>${STRINGS.creditDetailsTitle}</h2>
     <table>
-      <thead><tr><th class="col-date">मिति</th><th class="col-due">भुक्तानी गर्ने मिति</th><th class="col-amount">रकम</th><th class="col-note">टिप्पणी</th></tr></thead>
-      <tbody>${creditRows(credits)}</tbody>
+      <thead><tr><th class="col-date">${STRINGS.dateLabel}</th><th class="col-due">${STRINGS.paymentDueDate}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
+      <tbody>${creditRows(credits, STRINGS, prefix)}</tbody>
     </table>
-    <h2>भुक्तानी विवरण</h2>
+    <h2>${STRINGS.paymentDetailsTitle}</h2>
     <table>
-      <thead><tr><th class="col-date">मिति</th><th class="col-amount">रकम</th><th class="col-note">टिप्पणी</th></tr></thead>
-      <tbody>${tableRows(payments)}</tbody>
+      <thead><tr><th class="col-date">${STRINGS.dateLabel}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
+      <tbody>${tableRows(payments, STRINGS, prefix)}</tbody>
     </table>
   `;
   const fileName = `${params.customer.name}-report.pdf`;
@@ -139,23 +155,25 @@ export async function exportReportPdf(params: {
   payments: CustomerPayment[];
   rangeLabel?: string;
 }) {
+  const STRINGS = getStrings();
+  const prefix = STRINGS.currencyPrefix;
   const { title, totalCredits, totalPayments, netBalance, credits, payments, rangeLabel } = params;
   const body = `
     <div class="muted">${formatNepaliDateLong()}</div>
     <div class="summary">
-      <div class="summary-row"><span class="summary-label">कुल उधारो:</span><span class="summary-value">${currency(totalCredits)}</span></div>
-      <div class="summary-row"><span class="summary-label">कुल भुक्तानी:</span><span class="summary-value">${currency(totalPayments)}</span></div>
-      <div class="summary-row"><span class="summary-label">शेष रकम:</span><span class="summary-value">${currency(netBalance)}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.totalCredits}:</span><span class="summary-value">${currency(totalCredits, prefix)}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.totalPayments}:</span><span class="summary-value">${currency(totalPayments, prefix)}</span></div>
+      <div class="summary-row"><span class="summary-label">${STRINGS.netBalance}:</span><span class="summary-value">${currency(netBalance, prefix)}</span></div>
     </div>
-    <h2>उधारो तालिका</h2>
+    <h2>${STRINGS.creditTableTitle}</h2>
     <table>
-      <thead><tr><th class="col-date">मिति</th><th class="col-due">भुक्तानी गर्ने मिति</th><th class="col-amount">रकम</th><th class="col-note">टिप्पणी</th></tr></thead>
-      <tbody>${creditRows(credits)}</tbody>
+      <thead><tr><th class="col-date">${STRINGS.dateLabel}</th><th class="col-due">${STRINGS.paymentDueDate}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
+      <tbody>${creditRows(credits, STRINGS, prefix)}</tbody>
     </table>
-    <h2>भुक्तानी तालिका</h2>
+    <h2>${STRINGS.paymentTableTitle}</h2>
     <table>
-      <thead><tr><th class="col-date">मिति</th><th class="col-amount">रकम</th><th class="col-note">टिप्पणी</th></tr></thead>
-      <tbody>${tableRows(payments)}</tbody>
+      <thead><tr><th class="col-date">${STRINGS.dateLabel}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
+      <tbody>${tableRows(payments, STRINGS, prefix)}</tbody>
     </table>
   `;
   const fileName = rangeLabel

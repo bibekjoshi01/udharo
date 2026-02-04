@@ -11,7 +11,7 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, MIN_TOUCH } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import { TransactionForm } from '../components';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -27,6 +27,7 @@ type Route = RouteProp<RootStackParamList, 'EditTransaction'>;
 
 export function EditTransactionScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const route = useRoute<Route>();
   const { transactionId, mode } = route.params;
   const { transaction, customer, loading } = useTransaction(mode, transactionId);

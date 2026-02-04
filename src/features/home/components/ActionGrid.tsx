@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import { AppPressable } from '../../../components/AppPressable';
 
 const ICON_SIZE_LG = 28;
@@ -15,6 +15,7 @@ export interface ActionGridProps {
 }
 
 export function ActionGrid({ onCustomers, onUdharo, onBhuktani, onReports }: ActionGridProps) {
+  const STRINGS = useStrings();
   return (
     <View style={styles.actionGrid}>
       <AppPressable style={styles.actionCard} onPress={onCustomers}>

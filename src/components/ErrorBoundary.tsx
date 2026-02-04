@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from "../constants/theme";
 import { AppPressable } from "./AppPressable";
+import { getStrings } from "../constants/strings";
 
 type ErrorBoundaryProps = {
   children: React.ReactNode;
@@ -32,11 +33,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   render() {
     if (!this.state.hasError) return this.props.children;
 
+    const STRINGS = getStrings();
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>केही त्रुटि भयो</Text>
+        <Text style={styles.title}>{STRINGS.errorTitle}</Text>
         <Text style={styles.subtitle}>
-          कृपया पुनः प्रयास गर्नुहोस्।
+          {STRINGS.errorSubtitle}
         </Text>
         {this.state.message ? (
           <Text style={styles.message} numberOfLines={3}>
@@ -44,7 +46,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           </Text>
         ) : null}
         <AppPressable style={styles.button} onPress={this.handleReset}>
-          <Text style={styles.buttonText}>पुनः खोल्नुहोस्</Text>
+          <Text style={styles.buttonText}>{STRINGS.errorRetry}</Text>
         </AppPressable>
       </View>
     );

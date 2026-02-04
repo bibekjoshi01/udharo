@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { View, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import { insertCustomer } from '../../../db/database';
 import type { RootStackParamList } from '../../../navigation/types';
 import type { CustomerFormInput } from '../validation';
@@ -13,6 +13,7 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'AddCustomer'>;
 
 export function AddCustomerScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const [saving, setSaving] = React.useState(false);
 
   const handleSubmit = useCallback(
@@ -28,12 +29,12 @@ export function AddCustomerScreen() {
         showToast(STRINGS.customerSaved);
         navigation.goBack();
       } catch (e: any) {
-        Alert.alert('Save failed', String(e?.message ?? e));
+        Alert.alert(STRINGS.saveFailed, String(e?.message ?? e));
       } finally {
         setSaving(false);
       }
     },
-    [navigation],
+    [navigation, STRINGS],
   );
 
   return (

@@ -8,4 +8,3 @@ export { ScreenHeader, CustomerTable, CustomerForm } from './components';
 export { useCustomers, useCustomer } from './hooks';
 export { validateCustomerInput, CUSTOMER_VALIDATION } from './validation';
 export type { CustomerFormInput, ValidationResult } from './validation';
-export { CUSTOMER_STRINGS } from './constants';

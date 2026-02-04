@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, RefreshControl, Alert } from 'react
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../constants/theme';
-import { STRINGS } from '../../constants/strings';
+import { useStrings } from '../../constants/strings';
 import { getReportTotals, getCreditsByDateRange, getPaymentsByDateRange } from '../../db/database';
 import type { RootStackParamList } from '../../navigation/types';
 import { AppPressable } from '../../components/AppPressable';
@@ -19,6 +19,7 @@ type Range = 'today' | 'week' | 'month' | 'year';
 
 export function CreditReportsScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const [range, setRange] = useState<Range>('month');
   const [totals, setTotals] = useState({
     totalCredits: 0,
@@ -78,10 +79,10 @@ export function CreditReportsScreen() {
           <AppPressable
             style={styles.downloadBtn}
             onPress={() => {
-              Alert.alert('PDF डाउनलोड', 'PDF डाउनलोड गर्न चाहनुहुन्छ?', [
+              Alert.alert(STRINGS.pdfDownloadTitle, STRINGS.pdfDownloadConfirm, [
                 { text: STRINGS.cancel, style: 'cancel' },
                 {
-                  text: 'डाउनलोड',
+                  text: STRINGS.download,
                   onPress: async () => {
                     try {
                       const { startAD, endAD } = getNepaliRange(range);
@@ -100,7 +101,7 @@ export function CreditReportsScreen() {
                         rangeLabel,
                       });
                     } catch (e: any) {
-                      Alert.alert('PDF असफल', String(e?.message ?? e));
+                      Alert.alert(STRINGS.pdfFailed, String(e?.message ?? e));
                     }
                   },
                 },
@@ -190,7 +191,7 @@ export function CreditReportsScreen() {
             </View>
 
             <View style={styles.chartCard}>
-              <Text style={styles.chartTitle}>समग्र तुलना</Text>
+              <Text style={styles.chartTitle}>{STRINGS.summaryComparisonTitle}</Text>
               <View style={styles.chartRow}>
                 <View style={styles.chartBarWrap}>
                   <View style={[styles.chartBar, { height: barHeight(totals.totalCredits) }]} />

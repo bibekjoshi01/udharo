@@ -4,6 +4,7 @@ import { CalendarPicker, BsToAd, AdToBs } from 'react-native-nepali-picker';
 import { AppPressable } from './AppPressable';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
 import { getNepaliRange } from '../utils/date';
+import { useStrings } from '../constants/strings';
 
 type Props = {
   label: string;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export function NepaliDatePicker({ label, value, onChange, placeholder }: Props) {
+  const STRINGS = useStrings();
   const [open, setOpen] = React.useState(false);
   const displayValue = React.useMemo(() => {
     if (!value) return '';
@@ -23,12 +25,12 @@ export function NepaliDatePicker({ label, value, onChange, placeholder }: Props)
   const handleSelect = (bsDate: string) => {
     const ad = BsToAd(bsDate);
     if (!ad) {
-      Alert.alert('मिति मिलेन', 'भुक्तानी मिति मिलेन। कृपया फेरि प्रयास गर्नुहोस्।');
+      Alert.alert(STRINGS.dateMismatchTitle, STRINGS.dateMismatchMessage);
       return;
     }
     const todayAd = getNepaliRange('today').startAD;
     if (ad < todayAd) {
-      Alert.alert('मिति अमान्य', 'भुक्तानी मिति आज वा आजपछि मात्र हुन सक्छ।');
+      Alert.alert(STRINGS.dateInvalidTitle, STRINGS.dateInvalidMessage);
       return;
     }
     onChange(ad);

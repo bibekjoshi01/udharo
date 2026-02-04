@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../constants/theme';
-import { STRINGS } from '../constants/strings';
+import { useStrings } from '../constants/strings';
 import type { RootStackParamList } from '../navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AboutApp'>;
@@ -14,6 +14,7 @@ const appVersion = appConfig?.expo?.version ?? '1.0.0';
 
 export function AboutAppScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
 
   return (
     <View style={styles.container}>
@@ -28,7 +29,9 @@ export function AboutAppScreen() {
             <Text style={styles.infoLabel}>
               {STRINGS.appVersion}: {appVersion}
             </Text>
-            <Text style={styles.developer}>Developer: Bibek Joshi</Text>
+            <Text style={styles.developer}>
+              {STRINGS.developerLabel}: Bibek Joshi
+            </Text>
           </View>
         </View>
       </ScrollView>

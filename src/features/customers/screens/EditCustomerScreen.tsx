@@ -1,13 +1,12 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, FONTS, SPACING } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
-import { getCustomerById, updateCustomer } from '../../../db/database';
+import { useStrings } from '../../../constants/strings';
+import { updateCustomer } from '../../../db/database';
 import type { RootStackParamList } from '../../../navigation/types';
 import type { CustomerFormInput } from '../validation';
-import { CUSTOMER_STRINGS } from '../constants';
 import { useCustomer } from '../hooks';
 import { ScreenHeader, CustomerForm } from '../components';
 import { Skeleton } from '../../../components/Skeleton';
@@ -16,6 +15,7 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'EditCustomer'>;
 
 export function EditCustomerScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const route = useRoute();
   const customerId = (route.params as { customerId: number }).customerId;
   const { customer, loading, reload } = useCustomer(customerId);

@@ -13,7 +13,7 @@ import { CommonActions, useNavigation, useRoute, type RouteProp } from '@react-n
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import { insertCredit, insertPayment } from '../../../db/database';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScreenHeader } from '../../../components/ScreenHeader';
@@ -29,6 +29,7 @@ type Route = RouteProp<RootStackParamList, 'AddTransaction'>;
 
 export function AddTransactionScreen() {
   const navigation = useNavigation<Nav>();
+  const STRINGS = useStrings();
   const route = useRoute<Route>();
   const { customerId, mode: initialMode, lockMode } = route.params;
 

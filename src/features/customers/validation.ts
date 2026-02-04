@@ -4,6 +4,8 @@
  * Mobile: if provided, must be exactly 10 digits (Nepali mobile).
  */
 
+import { getStrings } from '../../constants/strings';
+
 const MIN_NAME_LENGTH = 3;
 const MOBILE_LENGTH = 10;
 const MOBILE_DIGITS_ONLY = /^\d+$/;
@@ -26,19 +28,20 @@ export const CUSTOMER_VALIDATION = {
 } as const;
 
 export function validateCustomerInput(input: CustomerFormInput): ValidationResult {
+  const STRINGS = getStrings();
   const errors: ValidationResult['errors'] = {};
   const name = input.name?.trim() ?? '';
   const mobile = input.mobile?.trim() ?? '';
 
   if (name.length < MIN_NAME_LENGTH) {
-    errors.name = `नाम कम्तीमा ${MIN_NAME_LENGTH} अक्षर हुनुपर्छ।`;
+    errors.name = STRINGS.nameMinLength(MIN_NAME_LENGTH);
   }
 
   if (mobile.length > 0) {
     if (!MOBILE_DIGITS_ONLY.test(mobile)) {
-      errors.mobile = 'मोबाइल नम्बर सङ्ख्या मात्र हुनुपर्छ।';
+      errors.mobile = STRINGS.mobileDigitsOnly;
     } else if (mobile.length !== MOBILE_LENGTH) {
-      errors.mobile = `मोबाइल नम्बर ${MOBILE_LENGTH} अङ्कको हुनुपर्छ।`;
+      errors.mobile = STRINGS.mobileLength(MOBILE_LENGTH);
     }
   }
 

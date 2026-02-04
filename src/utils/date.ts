@@ -81,8 +81,7 @@ function getNepalTimeString12(adDate: Date): string {
   const hour = parts.find((p) => p.type === 'hour')?.value ?? '';
   const minute = parts.find((p) => p.type === 'minute')?.value ?? '';
   const dayPeriod = parts.find((p) => p.type === 'dayPeriod')?.value ?? '';
-  const nepPeriod = dayPeriod === 'AM' ? 'पूर्वाह्न' : dayPeriod === 'PM' ? 'अपराह्न' : dayPeriod;
-  return `${hour}:${minute} ${nepPeriod}`.trim();
+  return `${hour}:${minute} ${dayPeriod}`.trim();
 }
 
 export function getNepaliGreeting(date: Date = new Date()): string {

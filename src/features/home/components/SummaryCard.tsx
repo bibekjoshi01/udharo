@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../../constants/theme';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import { Skeleton } from '../../../components/Skeleton';
 
 export interface SummaryCardProps {
@@ -16,6 +16,7 @@ const formatAmount = (n: number) =>
   });
 
 export function SummaryCard({ total, loading = false }: SummaryCardProps) {
+  const STRINGS = useStrings();
   return (
     <View style={styles.summaryCard}>
       <Text style={styles.summaryLabel}>{STRINGS.totalReceivables}</Text>

@@ -5,11 +5,12 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
-import { STRINGS } from '../constants/strings';
+import { useStrings } from '../constants/strings';
 import type { RootStackParamList } from '../navigation/types';
 import { AppPressable } from '../components/AppPressable';
 import { exportDatabaseToSql, importDatabaseFromSql } from '../db/backup';
 import { showToast } from '../utils/toast';
+import { useStore } from '../store/useStore';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Menu'>;
 
@@ -26,10 +27,10 @@ type MenuItem = {
 
 export function MenuScreen() {
   const navigation = useNavigation<Nav>();
-
-  const handleComingSoon = () => {
-    Alert.alert(STRINGS.menuTitle, STRINGS.comingSoon);
-  };
+  const STRINGS = useStrings();
+  const prefs = useStore((s) => s.prefs);
+  const setPrefs = useStore((s) => s.setPrefs);
+  const language = prefs.language === 'en' ? 'en' : 'ne';
 
   const handleRate = async () => {
     const url = playStoreUrl;
@@ -98,47 +99,84 @@ export function MenuScreen() {
     <View style={styles.container}>
       <ScreenHeader title={STRINGS.menuTitle} onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.languageRow}>
+          <Text style={styles.languageLabel}>{STRINGS.languageTitle}</Text>
+          <View style={styles.languageToggleInline}>
+            <AppPressable
+              style={[
+                styles.languageOption,
+                language === 'en' ? styles.languageOptionActive : styles.languageOptionInactive,
+              ]}
+              onPress={() => setPrefs({ language: 'en' })}
+            >
+              <Text
+                style={[
+                  styles.languageText,
+                  language === 'en' && styles.languageTextActive,
+                ]}
+              >
+                EN
+              </Text>
+            </AppPressable>
+            <AppPressable
+              style={[
+                styles.languageOption,
+                language === 'ne' ? styles.languageOptionActive : styles.languageOptionInactive,
+              ]}
+              onPress={() => setPrefs({ language: 'ne' })}
+            >
+              <Text
+                style={[
+                  styles.languageText,
+                  language === 'ne' && styles.languageTextActive,
+                ]}
+              >
+                NP
+              </Text>
+            </AppPressable>
+          </View>
+        </View>
         <View style={styles.backupCard}>
-          <Text style={styles.backupTitle}>{STRINGS.dataBackup}</Text>
+          <Text style={styles.sectionTitle}>{STRINGS.dataBackup}</Text>
           <View style={styles.backupRow}>
             <AppPressable
               style={styles.backupBtn}
               onPress={() => {
-                Alert.alert(STRINGS.dataBackup, 'डाटा एक्सपोर्ट गर्न चाहनुहुन्छ?', [
+                Alert.alert(STRINGS.dataBackup, STRINGS.backupExportConfirm, [
                   { text: STRINGS.cancel, style: 'cancel' },
                   {
-                    text: 'Export',
+                    text: STRINGS.exportLabel,
                     onPress: async () => {
                       try {
                         await exportDatabaseToSql();
-                        showToast('ब्याकअप तयार भयो');
+                        showToast(STRINGS.backupReady);
                       } catch (e: any) {
-                        Alert.alert('ब्याकअप असफल', String(e?.message ?? e));
+                        Alert.alert(STRINGS.backupFailed, String(e?.message ?? e));
                       }
                     },
                   },
                 ]);
               }}
             >
-              <Text style={styles.backupBtnText}>Export</Text>
+              <Text style={styles.backupBtnText}>{STRINGS.exportLabel}</Text>
             </AppPressable>
             <AppPressable
               style={[styles.backupBtn, styles.backupBtnSecondary]}
               onPress={() => {
                 Alert.alert(
                   STRINGS.dataBackup,
-                  'इम्पोर्ट गर्दा पुरानो डाटा मेटिन्छ। पहिले ब्याकअप लिनुहोस्। जारी राख्नुहुन्छ?',
+                  STRINGS.backupImportConfirm,
                   [
                     { text: STRINGS.cancel, style: 'cancel' },
                     {
-                      text: 'Import',
+                      text: STRINGS.importLabel,
                       style: 'destructive',
                       onPress: async () => {
                         try {
                           const ok = await importDatabaseFromSql();
-                          if (ok) showToast('डाटा इम्पोर्ट भयो');
+                          if (ok) showToast(STRINGS.importSuccess);
                         } catch (e: any) {
-                          Alert.alert('इम्पोर्ट असफल', String(e?.message ?? e));
+                          Alert.alert(STRINGS.importFailed, String(e?.message ?? e));
                         }
                       },
                     },
@@ -147,7 +185,7 @@ export function MenuScreen() {
               }}
             >
               <Text style={[styles.backupBtnText, styles.backupBtnTextSecondary]}>
-                Import
+                {STRINGS.importLabel}
               </Text>
             </AppPressable>
           </View>
@@ -162,6 +200,57 @@ export function MenuScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   scrollContent: { padding: SPACING.md, paddingBottom: SPACING.xl },
+  languageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    marginBottom: SPACING.lg,
+  },
+  languageLabel: {
+    fontSize: FONTS.body,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  languageToggleInline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: 2,
+    gap: 2,
+  },
+  languageOption: {
+    minWidth: 38,
+    height: 28,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  languageOptionActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  languageOptionInactive: {
+    backgroundColor: COLORS.surface,
+  },
+  languageText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+  languageTextActive: {
+    color: COLORS.white,
+  },
   backupCard: {
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,
@@ -170,7 +259,7 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
     marginBottom: SPACING.lg,
   },
-  backupTitle: {
+  sectionTitle: {
     fontSize: FONTS.body,
     fontWeight: '700',
     color: COLORS.text,

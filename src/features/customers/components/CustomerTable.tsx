@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, ScrollView } from 'react-native';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../../../constants/theme';
-import { CUSTOMER_STRINGS } from '../constants';
-import { STRINGS } from '../../../constants/strings';
+import { useStrings } from '../../../constants/strings';
 import type { CustomerWithBalance } from '../../../types';
 import { AppPressable } from '../../../components/AppPressable';
 
@@ -24,6 +23,7 @@ export function CustomerTable({
   emptyComponent,
   refreshControl,
 }: CustomerTableProps) {
+  const STRINGS = useStrings();
   const renderRow = ({ item }: { item: CustomerWithBalance }) => {
     const isDebt = item.balance > 0;
     return (
@@ -66,16 +66,16 @@ export function CustomerTable({
         <View style={styles.tableInner}>
           <View style={styles.headerRow}>
             <Text style={[styles.headerCell, styles.cellName]}>
-              {CUSTOMER_STRINGS.tableHeaderName}
+              {STRINGS.tableHeaderName}
             </Text>
             <Text style={[styles.headerCell, styles.cellMobile]}>
-              {CUSTOMER_STRINGS.tableHeaderMobile}
+              {STRINGS.tableHeaderMobile}
             </Text>
             <Text style={[styles.headerCell, styles.cellBalance]}>
-              {CUSTOMER_STRINGS.tableHeaderBalance}
+              {STRINGS.tableHeaderBalance}
             </Text>
             <Text style={[styles.headerCell, styles.cellAddress]}>
-              {CUSTOMER_STRINGS.tableHeaderAddress}
+              {STRINGS.tableHeaderAddress}
             </Text>
           </View>
           <FlatList
