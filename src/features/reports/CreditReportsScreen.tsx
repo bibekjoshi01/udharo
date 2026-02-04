@@ -9,7 +9,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { AppPressable } from '../../components/AppPressable';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenHeader } from '../../components/ScreenHeader';
-import { getNepaliRange } from '../../utils/date';
+import { formatNepaliDate, getNepaliRange } from '../../utils/date';
 import { exportReportPdf } from '../../utils/pdf';
 import { Skeleton } from '../../components/Skeleton';
 
@@ -79,6 +79,9 @@ export function CreditReportsScreen() {
                       const { startAD, endAD } = getNepaliRange(range);
                       const credits = await getCreditsByDateRange(startAD, endAD);
                       const payments = await getPaymentsByDateRange(startAD, endAD);
+                      const startNep = formatNepaliDate(startAD);
+                      const endNep = formatNepaliDate(endAD);
+                      const rangeLabel = `from-${startNep}-to-${endNep}`;
                       await exportReportPdf({
                         title: STRINGS.creditReportTitle,
                         totalCredits: totals.totalCredits,
@@ -86,6 +89,7 @@ export function CreditReportsScreen() {
                         netBalance: totals.netBalance,
                         credits,
                         payments,
+                        rangeLabel,
                       });
                     } catch (e: any) {
                       Alert.alert('PDF असफल', String(e?.message ?? e));
