@@ -1,6 +1,31 @@
-# Udharo – सजिलो उधारो खाता
+# उधारो (Udharo) – Simple Nepali Ledger
 
-A simple digital khata (ledger) for Nepali shopkeepers to manage udharo (credit) and payments. Android-first, offline-first, Nepali UI.
+A Nepali‑first, offline‑first khata app for shopkeepers to manage **customers, credits, and payments** with clean reports, backup/restore, and PDFs.
+
+---
+
+## Highlights
+
+- **Offline‑first**: all data stored locally in SQLite
+- **Customers, Credits, Payments** (with due/expected payment date)
+- **Reports** with filters (Today / Week / Month / Year)
+- **PDF export** for customer detail + reports
+- **Backup / Restore** (SQL export/import)
+- **App Lock** (PIN + biometric)
+- **Daily reminder notification**
+- **Language toggle** (Nepali default, English optional)
+
+---
+
+## Tech Stack
+
+- Expo (React Native) + TypeScript
+- React Navigation (Native Stack)
+- Zustand + AsyncStorage
+- SQLite (`expo-sqlite`)
+- Notifications, Print, Sharing, File System
+
+---
 
 ## Setup
 
@@ -8,43 +33,61 @@ A simple digital khata (ledger) for Nepali shopkeepers to manage udharo (credit)
 npm install
 ```
 
-## Run
+## Run (Development)
 
-- **Android (Expo Go):** `npx expo start` then press `a`, or `npx expo start --android`
-- **iOS:** `npx expo start` then press `i`
-- **Development build:** `npx expo run:android` (requires Android SDK)
+```bash
+npx expo start
+```
 
-## Screens
+- Android (Expo Go): press `a` or use `npx expo start --android`
+- iOS: press `i`
 
-1. **Splash** – App name and tagline; loads SQLite; auto-navigates to Home after ~1.5s
-2. **Home** – Total receivables (कुल बाँकी रकम), action cards (ग्राहकहरू, उधारो, भुक्तानी, उधारो रिपोर्ट), footer with + FAB
-3. **Customer list (ग्राहक सूची)** – Search, list with name/mobile/address/balance, tap → detail, FAB → add customer
-4. **Customer detail (ग्राहक विवरण)** – Balance, Add Credit / Payment, transaction history, edit customer
-5. **Add Credit / Payment** – Mode toggle (उधारो | भुक्तानी), amount, optional note, Save
-6. **Add / Edit customer** – Name (required), mobile, address, note
-7. **Credit reports (उधारो रिपोर्ट)** – Month/Year filter, total credits, total payments, net balance
+---
 
-## Stack
-
-- React Native (Expo), TypeScript
-- React Navigation (native stack), Zustand, AsyncStorage
-- expo-sqlite (local DB), react-native-safe-area-context, react-native-gesture-handler
-
-Data is stored only on device (offline-first). No backend in v1.
-
-### Linting
-
-````bash
-npm run lint
-npm run format```
-````
-
-
-### Building APK
+## Build
 
 ```bash
 npx eas-cli login
-npx eas-cli build -p android --profile preview
-npx eas-cli build -p android --local
-npx eas-cli build -p android --profile production
+npx eas-cli build -p android --profile preview   # APK for testing
+npx eas-cli build -p android --profile production # AAB for Play Store
 ```
+
+---
+
+## Lint & Type Check
+
+```bash
+npm run lint
+npx tsc -p tsconfig.json --noEmit
+```
+
+---
+
+## Key Screens
+
+- **Home**: total receivables, quick actions
+- **Customers**: list, search, detail, add/edit
+- **Credits / Payments**: add/edit, audit logs, due dates
+- **Reports**: totals + export
+- **Menu**: backup, language, support, lock settings, about
+
+---
+
+## Data & Privacy
+
+- Data is stored **only on device**
+- No backend in v1
+- Backup/restore is manual via SQL file
+
+---
+
+## Release Guide
+
+See `docs/release-guide.md` for:
+- versioning
+- database migration safety
+- build + Play Store flow
+
+---
+
+If you want to contribute or extend features, see `TODO.md`.
