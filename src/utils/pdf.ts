@@ -1,6 +1,6 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 import { formatNepaliDate, formatNepaliDateLong } from './date';
 import type { Customer, CustomerCredit, CustomerPayment } from '../types';
 import { getStrings } from '../constants/strings';
@@ -93,13 +93,14 @@ function safeFileName(value: string) {
 async function sharePdf(html: string, fileName: string) {
   const file = await Print.printToFileAsync({ html });
   const cleanName = safeFileName(fileName);
-  const dest = `${FileSystem.documentDirectory}${cleanName}`;
+  const destFile = new File(Paths.document, cleanName);
   try {
-    await FileSystem.copyAsync({ from: file.uri, to: dest });
+    const sourceFile = new File(file.uri);
+    sourceFile.copy(destFile);
   } catch {
     // fallback to original file uri
   }
-  const shareUri = (await FileSystem.getInfoAsync(dest)).exists ? dest : file.uri;
+  const shareUri = destFile.exists ? destFile.uri : file.uri;
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(shareUri, {
       mimeType: 'application/pdf',

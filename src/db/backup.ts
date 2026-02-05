@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { Alert } from 'react-native';
@@ -47,18 +47,18 @@ export async function exportDatabaseToSql(): Promise<string | null> {
   const sql = parts.join('\n');
 
   const fileName = `udharo-backup-${new Date().toISOString().slice(0, 10)}.sql`;
-  const fileUri = `${FileSystem.documentDirectory}${fileName}`;
-  await FileSystem.writeAsStringAsync(fileUri, sql, { encoding: FileSystem.EncodingType.UTF8 });
+  const backupFile = new File(Paths.document, fileName);
+  backupFile.write(sql, { encoding: 'utf8' });
 
   if (await Sharing.isAvailableAsync()) {
-    await Sharing.shareAsync(fileUri, {
+    await Sharing.shareAsync(backupFile.uri, {
       mimeType: 'application/sql',
       dialogTitle: STRINGS.exportLabel,
     });
   } else {
-    Alert.alert(STRINGS.backupReady, fileUri);
+    Alert.alert(STRINGS.backupReady, backupFile.uri);
   }
-  return fileUri;
+  return backupFile.uri;
 }
 
 export async function importDatabaseFromSql(): Promise<boolean> {
@@ -76,9 +76,8 @@ export async function importDatabaseFromSql(): Promise<boolean> {
     return false;
   }
 
-  const sql = await FileSystem.readAsStringAsync(asset.uri, {
-    encoding: FileSystem.EncodingType.UTF8,
-  });
+  const importFile = new File(asset.uri);
+  const sql = await importFile.text();
   const statements = sql
     .split(';')
     .map((s: string) => s.trim())
