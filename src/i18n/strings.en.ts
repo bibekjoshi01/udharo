@@ -175,7 +175,7 @@ export const STRINGS_EN = {
   biometricFailed: 'Biometric authentication failed.',
 
   // Audit logs
-  auditLogsTitle: 'Audit logs',
+  auditLogsTitle: 'Audit Logs',
   auditLogsEmpty: 'No audit logs yet.',
   oldAmount: 'Old Amount',
   newAmount: 'New Amount',
