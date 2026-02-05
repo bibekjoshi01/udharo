@@ -118,7 +118,7 @@ export const STRINGS_EN = {
   privacyPolicy: 'Privacy policy',
   privacyBody:
     'Your data stays securely on your device. We do not share your personal information with third parties. If cloud backup is added in the future, your data will never be uploaded without your consent.',
-  termsOfUse: 'Terms of use',
+  termsOfUse: 'Terms of Use',
   termsBody:
     'This app is provided for personal and business bookkeeping. You are responsible for the accuracy and management of the data you enter. Please follow applicable laws and regulations while using the app.',
   dataBackup: 'Data Backup',
@@ -126,8 +126,8 @@ export const STRINGS_EN = {
   supportBody:
     'If you have any issues or suggestions, email us. We will respond as soon as possible.',
   supportEmail: 'bibekjoshi34@gmail.com',
-  rateApp: 'Rate app',
-  shareApp: 'Share app',
+  rateApp: 'Rate App',
+  shareApp: 'Share App',
   shareMessage:
     'Try Udharo: simple credit ledger, customer management and reports. Download: ',
   comingSoon: 'Coming Soon',
