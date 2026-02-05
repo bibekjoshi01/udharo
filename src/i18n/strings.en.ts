@@ -15,7 +15,7 @@ export const STRINGS_EN = {
   menuTitle: 'Menu',
 
   // Language
-  languageTitle: 'Choose language',
+  languageTitle: 'Choose Language',
   languageNepali: 'Nepali',
   languageEnglish: 'English',
 
@@ -36,8 +36,8 @@ export const STRINGS_EN = {
   transactionsTitle: 'Transactions',
   noTransactions: 'No transactions yet.',
   editTransactionTitle: 'Edit transaction',
-  editCreditTitle: 'Edit credit',
-  editPaymentTitle: 'Edit payment',
+  editCreditTitle: 'Edit Credit',
+  editPaymentTitle: 'Edit Payment',
 
   // Add transaction
   addCreditTitle: 'Add Credit',
@@ -46,7 +46,7 @@ export const STRINGS_EN = {
   amountPlaceholder: 'Enter Amount',
   notePlaceholder: 'Note (e.g., oil, potatoes)',
   appNlaceholder: 'Note (e.g., oil, potatoes)',
-  expectedPaymentDate: 'Payment due date',
+  expectedPaymentDate: 'Payment Due Date',
   expectedPaymentDatePlaceholder: 'e.g., 2025-02-28',
   creditDate: 'Credit Date',
   paymentDate: 'Payment Date',
@@ -66,8 +66,8 @@ export const STRINGS_EN = {
   customerSaved: 'Customer Saved',
   deleteCustomer: 'Delete Customer',
   deleteTransaction: 'Delete Transaction',
-  confirmDeleteCustomer: 'Delete this customer and all transactions?',
-  confirmDeleteTransaction: 'Delete this transaction?',
+  confirmDeleteCustomer: 'Delete this customer and all related transactions?',
+  confirmDeleteTransaction: 'Are you sure want to delete this transaction?',
   delete: 'Delete',
 
   // Customer form placeholders
@@ -121,7 +121,7 @@ export const STRINGS_EN = {
   termsOfUse: 'Terms of use',
   termsBody:
     'This app is provided for personal and business bookkeeping. You are responsible for the accuracy and management of the data you enter. Please follow applicable laws and regulations while using the app.',
-  dataBackup: 'Data backup',
+  dataBackup: 'Data Backup',
   support: 'Support',
   supportBody:
     'If you have any issues or suggestions, email us. We will respond as soon as possible.',
@@ -148,7 +148,7 @@ export const STRINGS_EN = {
   developerLabel: 'Developer',
   emailLabel: 'Email',
   sendEmail: 'Send Email',
-  donateTitle: 'Want to support?',
+  donateTitle: 'Want to Support?',
   donateBody:
     'Even your Rs. 10 support helps us improve this app. You can donate by scanning the QR.',
   donateThanks: 'Thank you for your support.',
@@ -159,7 +159,7 @@ export const STRINGS_EN = {
 
   // App lock
   appLockTitle: 'App Lock',
-  enableAppLock: 'Enable app lock',
+  enableAppLock: 'Enable App Lock',
   setPin: 'New PIN',
   confirmPin: 'Confirm PIN',
   biometricUnlock: 'Biometric Unlock',
@@ -167,7 +167,7 @@ export const STRINGS_EN = {
   pinMismatch: "PIN doesn't match. Please try again.",
   lockEnabled: 'App lock enabled',
   lockDisabled: 'App lock disabled',
-  lockDisableConfirm: 'Disable app lock?',
+  lockDisableConfirm: 'Disable App Lock?',
   disable: 'Disable',
   enterPin: 'Enter PIN',
   unlockApp: 'Unlock App',
@@ -177,8 +177,8 @@ export const STRINGS_EN = {
   // Audit logs
   auditLogsTitle: 'Audit logs',
   auditLogsEmpty: 'No audit logs yet.',
-  oldAmount: 'Old amount',
-  newAmount: 'New amount',
+  oldAmount: 'Old Amount',
+  newAmount: 'New Amount',
   loading: 'Loading...',
 
   // Error boundary
