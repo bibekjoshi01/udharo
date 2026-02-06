@@ -1,6 +1,6 @@
 export const STRINGS_EN = {
   // App
-  appName: 'उधारो',
+  appName: 'Udharo',
   tagline: 'Simple Credit Ledger',
 
   // Home
