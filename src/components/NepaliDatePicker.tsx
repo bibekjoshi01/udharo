@@ -11,9 +11,22 @@ type Props = {
   value?: string;
   onChange: (adDate?: string) => void;
   placeholder?: string;
+  minDateAd?: string | null;
+  maxDateAd?: string | null;
+  minErrorMessage?: string;
+  maxErrorMessage?: string;
 };
 
-export function NepaliDatePicker({ label, value, onChange, placeholder }: Props) {
+export function NepaliDatePicker({
+  label,
+  value,
+  onChange,
+  placeholder,
+  minDateAd,
+  maxDateAd,
+  minErrorMessage,
+  maxErrorMessage,
+}: Props) {
   const STRINGS = useStrings();
   const [open, setOpen] = React.useState(false);
   const displayValue = React.useMemo(() => {
@@ -28,9 +41,15 @@ export function NepaliDatePicker({ label, value, onChange, placeholder }: Props)
       Alert.alert(STRINGS.dateMismatchTitle, STRINGS.dateMismatchMessage);
       return;
     }
-    const todayAd = getNepaliRange('today').startAD;
-    if (ad < todayAd) {
-      Alert.alert(STRINGS.dateInvalidTitle, STRINGS.dateInvalidMessage);
+    const defaultMin = getNepaliRange('today').startAD;
+    const minAllowed = minDateAd === undefined ? defaultMin : minDateAd;
+    const maxAllowed = maxDateAd ?? null;
+    if (minAllowed && ad < minAllowed) {
+      Alert.alert(STRINGS.dateInvalidTitle, minErrorMessage ?? STRINGS.dateInvalidMessage);
+      return;
+    }
+    if (maxAllowed && ad > maxAllowed) {
+      Alert.alert(STRINGS.dateInvalidTitle, maxErrorMessage ?? STRINGS.dateInvalidMessage);
       return;
     }
     onChange(ad);

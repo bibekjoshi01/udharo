@@ -92,6 +92,8 @@ export const STRINGS_EN = {
   today: 'Today',
   thisWeek: 'Weekly',
   customRange: 'Choose Dates',
+  fromDate: 'From',
+  toDate: 'To',
   summaryComparisonTitle: 'Summary Comparison',
 
   // PDF
@@ -195,6 +197,7 @@ export const STRINGS_EN = {
   dateMismatchMessage: 'Payment Date did not match. Please try again.',
   dateInvalidTitle: 'Invalid Date',
   dateInvalidMessage: 'Payment Date must be today or later.',
+  dateMustBeTodayOrEarlier: 'Date must be today or earlier.',
 
   // Validation
   nameMinLength: (min: number) => `Name must be at least ${min} characters.`,

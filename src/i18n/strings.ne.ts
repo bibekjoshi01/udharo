@@ -93,6 +93,8 @@ export const STRINGS_NE = {
   today: 'आज',
   thisWeek: 'यो हप्ता',
   customRange: 'मिति छान्नुहोस्',
+  fromDate: 'देखि',
+  toDate: 'सम्म',
   summaryComparisonTitle: 'समग्र तुलना',
 
   // PDF
@@ -196,6 +198,7 @@ export const STRINGS_NE = {
   dateMismatchMessage: 'भुक्तानी मिति मिलेन। कृपया फेरि प्रयास गर्नुहोस्।',
   dateInvalidTitle: 'मिति अमान्य',
   dateInvalidMessage: 'भुक्तानी मिति आज वा आजपछि मात्र हुन सक्छ।',
+  dateMustBeTodayOrEarlier: 'मिति आज वा आजअगाडि मात्र हुन सक्छ।',
 
   // Validation
   nameMinLength: (min: number) => `नाम कम्तीमा ${min} अक्षर हुनुपर्छ।`,

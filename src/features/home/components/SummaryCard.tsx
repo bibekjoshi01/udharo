@@ -17,15 +17,19 @@ const formatAmount = (n: number) =>
 
 export function SummaryCard({ total, loading = false }: SummaryCardProps) {
   const STRINGS = useStrings();
+  const directionArrow = total > 0 ? '↑' : total < 0 ? '↓' : '';
   return (
     <View style={styles.summaryCard}>
       <Text style={styles.summaryLabel}>{STRINGS.totalReceivables}</Text>
       {loading ? (
         <Skeleton height={28} width="55%" radius={10} style={styles.skeletonAmount} />
       ) : (
-        <Text style={styles.summaryAmount}>
-          {`${STRINGS.currencyPrefix}${formatAmount(total)}`}
-        </Text>
+        <View style={styles.summaryAmountRow}>
+          <Text style={styles.summaryAmount}>
+            {`${STRINGS.currencyPrefix}${formatAmount(total)}`}
+          </Text>
+          {directionArrow ? <Text style={styles.summaryArrow}>{directionArrow}</Text> : null}
+        </View>
       )}
     </View>
   );
@@ -49,6 +53,17 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '700',
     color: COLORS.white,
+  },
+  summaryAmountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  summaryArrow: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: COLORS.white,
+    opacity: 0.9,
   },
   skeletonAmount: {
     backgroundColor: 'rgba(255,255,255,0.4)',

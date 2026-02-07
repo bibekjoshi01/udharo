@@ -134,12 +134,12 @@ export async function exportCustomerPdf(params: {
     </div>
     <h2>${STRINGS.creditDetailsTitle}</h2>
     <table>
-      <thead><tr><th class="col-date">${STRINGS.dateLabel}</th><th class="col-due">${STRINGS.paymentDueDate}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
+      <thead><tr><th class="col-date">${STRINGS.creditDate}</th><th class="col-due">${STRINGS.paymentDueDate}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
       <tbody>${creditRows(credits, STRINGS, prefix)}</tbody>
     </table>
     <h2>${STRINGS.paymentDetailsTitle}</h2>
     <table>
-      <thead><tr><th class="col-date">${STRINGS.dateLabel}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
+      <thead><tr><th class="col-date">${STRINGS.paymentDate}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
       <tbody>${tableRows(payments, STRINGS, prefix)}</tbody>
     </table>
   `;
@@ -168,12 +168,12 @@ export async function exportReportPdf(params: {
     </div>
     <h2>${STRINGS.creditTableTitle}</h2>
     <table>
-      <thead><tr><th class="col-date">${STRINGS.dateLabel}</th><th class="col-due">${STRINGS.paymentDueDate}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
+      <thead><tr><th class="col-date">${STRINGS.creditDate}</th><th class="col-due">${STRINGS.paymentDueDate}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
       <tbody>${creditRows(credits, STRINGS, prefix)}</tbody>
     </table>
     <h2>${STRINGS.paymentTableTitle}</h2>
     <table>
-      <thead><tr><th class="col-date">${STRINGS.dateLabel}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
+      <thead><tr><th class="col-date">${STRINGS.paymentDate}</th><th class="col-amount">${STRINGS.amountLabel}</th><th class="col-note">${STRINGS.note}</th></tr></thead>
       <tbody>${tableRows(payments, STRINGS, prefix)}</tbody>
     </table>
   `;

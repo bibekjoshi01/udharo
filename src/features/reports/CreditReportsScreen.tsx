@@ -10,17 +10,21 @@ import { AppPressable } from '../../components/AppPressable';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { formatNepaliDate, getNepaliRange } from '../../utils/date';
+import { NepaliDatePicker } from '../../components/NepaliDatePicker';
 import { exportReportPdf } from '../../utils/pdf';
 import { Skeleton } from '../../components/Skeleton';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'CreditReports'>;
 
-type Range = 'today' | 'week' | 'month' | 'year';
+type Range = 'today' | 'custom';
 
 export function CreditReportsScreen() {
   const navigation = useNavigation<Nav>();
   const STRINGS = useStrings();
-  const [range, setRange] = useState<Range>('month');
+  const [range, setRange] = useState<Range>('today');
+  const todayRange = getNepaliRange('today');
+  const [customStart, setCustomStart] = useState<string>(todayRange.startAD);
+  const [customEnd, setCustomEnd] = useState<string>(todayRange.endAD);
   const [totals, setTotals] = useState({
     totalCredits: 0,
     totalPayments: 0,
@@ -35,7 +39,12 @@ export function CreditReportsScreen() {
         setLoading(true);
       }
       try {
-        const { startAD, endAD } = getNepaliRange(range);
+        const { startAD, endAD } = range === 'today'
+          ? getNepaliRange('today')
+          : {
+              startAD: customStart,
+              endAD: customEnd >= customStart ? customEnd : customStart,
+            };
         const t = await getReportTotals(startAD, endAD);
         setTotals(t);
       } catch {
@@ -46,7 +55,7 @@ export function CreditReportsScreen() {
         }
       }
     },
-    [range],
+    [range, customStart, customEnd],
   );
 
   React.useEffect(() => {
@@ -85,7 +94,12 @@ export function CreditReportsScreen() {
                   text: STRINGS.download,
                   onPress: async () => {
                     try {
-                      const { startAD, endAD } = getNepaliRange(range);
+                      const { startAD, endAD } = range === 'today'
+                        ? getNepaliRange('today')
+                        : {
+                            startAD: customStart,
+                            endAD: customEnd >= customStart ? customEnd : customStart,
+                          };
                       const credits = await getCreditsByDateRange(startAD, endAD);
                       const payments = await getPaymentsByDateRange(startAD, endAD);
                       const startNep = formatNepaliDate(startAD);
@@ -123,30 +137,50 @@ export function CreditReportsScreen() {
           </Text>
         </AppPressable>
         <AppPressable
-          style={[styles.rangeBtn, range === 'week' && styles.rangeBtnActive]}
-          onPress={() => setRange('week')}
+          style={[styles.rangeBtn, range === 'custom' && styles.rangeBtnActive]}
+          onPress={() => setRange('custom')}
         >
-          <Text style={[styles.rangeBtnText, range === 'week' && styles.rangeBtnTextActive]}>
-            {STRINGS.thisWeek}
-          </Text>
-        </AppPressable>
-        <AppPressable
-          style={[styles.rangeBtn, range === 'month' && styles.rangeBtnActive]}
-          onPress={() => setRange('month')}
-        >
-          <Text style={[styles.rangeBtnText, range === 'month' && styles.rangeBtnTextActive]}>
-            {STRINGS.thisMonth}
-          </Text>
-        </AppPressable>
-        <AppPressable
-          style={[styles.rangeBtn, range === 'year' && styles.rangeBtnActive]}
-          onPress={() => setRange('year')}
-        >
-          <Text style={[styles.rangeBtnText, range === 'year' && styles.rangeBtnTextActive]}>
-            {STRINGS.thisYear}
+          <Text style={[styles.rangeBtnText, range === 'custom' && styles.rangeBtnTextActive]}>
+            {STRINGS.customRange}
           </Text>
         </AppPressable>
       </View>
+      {range === 'custom' ? (
+        <View style={styles.customRange}>
+          <View style={styles.dateColumn}>
+            <NepaliDatePicker
+              label={STRINGS.fromDate}
+              value={customStart}
+              minDateAd={null}
+              maxDateAd={todayRange.endAD}
+              maxErrorMessage={STRINGS.dateMustBeTodayOrEarlier}
+              onChange={(next) => {
+                if (!next) return;
+                setCustomStart(next);
+                if (customEnd < next) {
+                  setCustomEnd(next);
+                }
+              }}
+            />
+          </View>
+          <View style={styles.dateColumn}>
+            <NepaliDatePicker
+              label={STRINGS.toDate}
+              value={customEnd}
+              minDateAd={null}
+              maxDateAd={todayRange.endAD}
+              maxErrorMessage={STRINGS.dateMustBeTodayOrEarlier}
+              onChange={(next) => {
+                if (!next) return;
+                setCustomEnd(next);
+                if (next < customStart) {
+                  setCustomStart(next);
+                }
+              }}
+            />
+          </View>
+        </View>
+      ) : null}
 
       <ScrollView
         style={styles.scroll}
@@ -218,25 +252,6 @@ export function CreditReportsScreen() {
                   <Text style={styles.chartLabel}>{STRINGS.netBalance}</Text>
                 </View>
               </View>
-              <View style={styles.chartLegend}>
-                <View style={styles.legendItem}>
-                  <View style={[styles.legendDot, styles.chartBarDebt]} />
-                  <Text style={styles.legendText}>{STRINGS.totalCredits}</Text>
-                </View>
-                <View style={styles.legendItem}>
-                  <View style={[styles.legendDot, styles.chartBarPaid]} />
-                  <Text style={styles.legendText}>{STRINGS.totalPayments}</Text>
-                </View>
-                <View style={styles.legendItem}>
-                  <View
-                    style={[
-                      styles.legendDot,
-                      totals.netBalance >= 0 ? styles.chartBarDebt : styles.chartBarPaid,
-                    ]}
-                  />
-                  <Text style={styles.legendText}>{STRINGS.netBalance}</Text>
-                </View>
-              </View>
             </View>
           </>
         )}
@@ -275,6 +290,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: SPACING.md,
     gap: SPACING.sm,
+  },
+  customRange: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    paddingBottom: SPACING.sm,
+  },
+  dateColumn: {
+    flex: 1,
   },
   rangeBtn: {
     flex: 1,
@@ -359,26 +383,6 @@ const styles = StyleSheet.create({
     fontSize: FONTS.small,
     color: COLORS.textSecondary,
     textAlign: 'center',
-  },
-  chartLegend: {
-    marginTop: SPACING.md,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.sm,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.xs,
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  legendText: {
-    fontSize: FONTS.small,
-    color: COLORS.textSecondary,
   },
   downloadBtn: {
     minHeight: 36,
