@@ -26,6 +26,7 @@
       },
       "package": "com.udharo.app",
       "versionCode": 1,
+      "permissions": ["POST_NOTIFICATIONS"],
       "edgeToEdgeEnabled": false,
       "predictiveBackGestureEnabled": false
     },
