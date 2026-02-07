@@ -23,6 +23,9 @@ import { AppPressable } from '../../../components/AppPressable';
 import { showToast } from '../../../utils/toast';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { NepaliDatePicker } from '../../../components/NepaliDatePicker';
+import { AttachmentViewer } from '../../../components/AttachmentViewer';
+import { pickAttachment, type Attachment } from '../../../utils/attachments';
+import { ConfirmDialog } from '../../../components/ConfirmDialog';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'AddTransaction'>;
 type Route = RouteProp<RootStackParamList, 'AddTransaction'>;
@@ -38,6 +41,9 @@ export function AddTransactionScreen() {
   const [amountStr, setAmountStr] = useState('');
   const [note, setNote] = useState('');
   const [expectedPaymentDate, setExpectedPaymentDate] = useState('');
+  const [attachment, setAttachment] = useState<Attachment | null>(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [confirmRemoveAttachment, setConfirmRemoveAttachment] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -52,6 +58,8 @@ export function AddTransactionScreen() {
   React.useEffect(() => {
     if (mode !== 'credit') {
       setExpectedPaymentDate('');
+    } else {
+      setAttachment(null);
     }
   }, [mode]);
 
@@ -72,6 +80,9 @@ export function AddTransactionScreen() {
           customer_id: selectedCustomerId as number,
           amount,
           note: note.trim() || undefined,
+          attachment_uri: attachment?.uri,
+          attachment_name: attachment?.name,
+          attachment_mime: attachment?.mimeType,
         });
         showToast(STRINGS.paymentAdded);
       }
@@ -131,12 +142,71 @@ export function AddTransactionScreen() {
           }
           note={note}
           onNoteChange={setNote}
+          afterNote={
+            mode === 'payment' ? (
+              <View style={styles.attachmentWrap}>
+                <Text style={styles.label}>{STRINGS.attachmentLabel}</Text>
+                <View style={styles.attachmentRow}>
+                  <AppPressable
+                    style={styles.attachmentBtn}
+                    onPress={async () => {
+                      const next = await pickAttachment();
+                      if (next) setAttachment(next);
+                    }}
+                  >
+                    <Ionicons name="attach-outline" size={18} color={COLORS.text} />
+                    <Text style={styles.attachmentBtnText}> {STRINGS.attachmentAdd}</Text>
+                  </AppPressable>
+                  {attachment ? (
+                    <View style={styles.attachmentActions}>
+                      <AppPressable
+                        style={styles.attachmentActionBtn}
+                        onPress={() => setViewerOpen(true)}
+                      >
+                        <Ionicons name="eye-outline" size={18} color={COLORS.text} />
+                      </AppPressable>
+                      <AppPressable
+                        style={styles.attachmentActionBtn}
+                        onPress={() => setConfirmRemoveAttachment(true)}
+                      >
+                        <Ionicons name="trash-outline" size={18} color={COLORS.debt} />
+                      </AppPressable>
+                    </View>
+                  ) : null}
+                </View>
+                {attachment ? (
+                  <Text style={styles.attachmentName} numberOfLines={1}>
+                    {attachment.name}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null
+          }
           onSubmit={onSave}
           saving={saving}
           disabled={!isValid}
           allowModeToggle={!lockMode}
         />
       </ScrollView>
+
+      <AttachmentViewer
+        visible={viewerOpen}
+        attachment={attachment}
+        onClose={() => setViewerOpen(false)}
+      />
+      <ConfirmDialog
+        visible={confirmRemoveAttachment}
+        title={STRINGS.attachmentDeleteTitle}
+        message={STRINGS.attachmentDeleteMessage}
+        confirmLabel={STRINGS.delete}
+        cancelLabel={STRINGS.cancel}
+        destructive
+        onCancel={() => setConfirmRemoveAttachment(false)}
+        onConfirm={() => {
+          setAttachment(null);
+          setConfirmRemoveAttachment(false);
+        }}
+      />
 
       <Modal
         visible={pickerOpen}
@@ -232,6 +302,50 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
   },
   selectPlaceholder: {
+    color: COLORS.textSecondary,
+  },
+  attachmentWrap: {
+    marginBottom: SPACING.lg,
+  },
+  attachmentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    flexWrap: 'wrap',
+  },
+  attachmentBtn: {
+    minHeight: MIN_TOUCH,
+    paddingHorizontal: SPACING.md,
+    borderRadius: BORDER_RADIUS.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+  },
+  attachmentBtnText: {
+    fontSize: FONTS.body,
+    color: COLORS.text,
+    fontWeight: '600',
+  },
+  attachmentActions: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    alignItems: 'center',
+  },
+  attachmentActionBtn: {
+    minHeight: MIN_TOUCH,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: BORDER_RADIUS.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.surface,
+  },
+  attachmentName: {
+    marginTop: SPACING.xs,
+    fontSize: FONTS.caption,
     color: COLORS.textSecondary,
   },
   modalOverlay: { flex: 1, justifyContent: 'flex-end' },

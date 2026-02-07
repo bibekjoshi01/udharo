@@ -74,7 +74,7 @@ export const STRINGS_EN = {
   namePlaceholder: 'Enter Name',
   mobilePlaceholder: '98XXXXXXXX',
   addressPlaceholder: 'Address',
-  notePlaceholderShort: 'Note',
+  notePlaceholderShort: 'Any additional information about customer...',
 
   // Customer table
   tableHeaderName: 'Name',
@@ -199,6 +199,20 @@ export const STRINGS_EN = {
   dateInvalidMessage: 'Payment Date must be today or later.',
   dateMustBeTodayOrEarlier: 'Date must be today or earlier.',
 
+  // Attachments
+  attachmentLabel: 'Attachment (optional)',
+  attachmentAdd: 'Add Attachment',
+  attachmentReplace: 'Replace Attachment',
+  attachmentView: 'View',
+  attachmentRemove: 'Remove',
+  attachmentInvalidTitle: 'Invalid File',
+  attachmentInvalidMessage: 'Please select an image or PDF file.',
+  attachmentOpenFailedTitle: 'Unable to Open',
+  attachmentOpenFailedMessage: 'Could not open the attachment.',
+  attachmentPdfInfo: 'PDF preview is not available. Tap View to open the file.',
+  attachmentDeleteTitle: 'Remove Attachment?',
+  attachmentDeleteMessage: 'This will remove the attachment from the payment.',
+
   // Validation
   nameMinLength: (min: number) => `Name must be at least ${min} characters.`,
   mobileDigitsOnly: 'Mobile Number must contain digits only.',
@@ -207,5 +221,6 @@ export const STRINGS_EN = {
   // Common
   back: 'Back',
   cancel: 'Cancel',
+  close: 'Close',
   saveFailed: 'Save Failed',
 } as const;

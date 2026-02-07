@@ -12,6 +12,7 @@ export interface TransactionFormProps {
   afterAmount?: React.ReactNode;
   note: string;
   onNoteChange: (value: string) => void;
+  afterNote?: React.ReactNode;
   onSubmit: () => void;
   submitLabel?: string;
   saving?: boolean;
@@ -27,6 +28,7 @@ export function TransactionForm({
   afterAmount,
   note,
   onNoteChange,
+  afterNote,
   onSubmit,
   submitLabel,
   saving = false,
@@ -86,6 +88,8 @@ export function TransactionForm({
         multiline
         numberOfLines={4}
       />
+
+      {afterNote}
 
       <AppPressable
         style={[styles.saveBtn, (disabled || saving) && styles.saveBtnDisabled]}

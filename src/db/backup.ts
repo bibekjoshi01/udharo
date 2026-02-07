@@ -101,6 +101,19 @@ export async function importDatabaseFromSql(): Promise<boolean> {
   if (!creditsColSet.has('expected_payment_date')) {
     await db.execAsync('ALTER TABLE customer_credits ADD COLUMN expected_payment_date TEXT');
   }
+  const paymentsCols = await db.getAllAsync<{ name: string }>(
+    'PRAGMA table_info(customer_payments)',
+  );
+  const paymentsColSet = new Set((paymentsCols as { name: string }[]).map((c) => c.name));
+  if (!paymentsColSet.has('attachment_uri')) {
+    await db.execAsync('ALTER TABLE customer_payments ADD COLUMN attachment_uri TEXT');
+  }
+  if (!paymentsColSet.has('attachment_name')) {
+    await db.execAsync('ALTER TABLE customer_payments ADD COLUMN attachment_name TEXT');
+  }
+  if (!paymentsColSet.has('attachment_mime')) {
+    await db.execAsync('ALTER TABLE customer_payments ADD COLUMN attachment_mime TEXT');
+  }
   await db.execAsync('PRAGMA foreign_keys=OFF;');
   await db.execAsync('BEGIN;');
   try {

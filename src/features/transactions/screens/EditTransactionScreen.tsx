@@ -21,6 +21,8 @@ import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { NepaliDatePicker } from '../../../components/NepaliDatePicker';
+import { pickAttachment, type Attachment } from '../../../utils/attachments';
+import { AttachmentViewer } from '../../../components/AttachmentViewer';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'EditTransaction'>;
 type Route = RouteProp<RootStackParamList, 'EditTransaction'>;
@@ -36,6 +38,9 @@ export function EditTransactionScreen() {
   const [amountStr, setAmountStr] = useState('');
   const [note, setNote] = useState('');
   const [expectedPaymentDate, setExpectedPaymentDate] = useState('');
+  const [attachment, setAttachment] = useState<Attachment | null>(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [confirmRemoveAttachment, setConfirmRemoveAttachment] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -46,6 +51,19 @@ export function EditTransactionScreen() {
       setNote(transaction.note ?? '');
       setExpectedPaymentDate(
         (transaction as { expected_payment_date?: string })?.expected_payment_date ?? '',
+      );
+      setAttachment(
+        (transaction as { attachment_uri?: string; attachment_name?: string; attachment_mime?: string })
+          ?.attachment_uri
+          ? {
+              uri: (transaction as { attachment_uri?: string }).attachment_uri as string,
+              name:
+                (transaction as { attachment_name?: string }).attachment_name ??
+                (transaction as { attachment_uri?: string }).attachment_uri ??
+                '',
+              mimeType: (transaction as { attachment_mime?: string }).attachment_mime ?? undefined,
+            }
+          : null,
       );
     }
   }, [mode, transaction]);
@@ -67,6 +85,9 @@ export function EditTransactionScreen() {
         await updatePayment(transaction.id, {
           amount,
           note: note.trim() || undefined,
+          attachment_uri: attachment?.uri ?? null,
+          attachment_name: attachment?.name ?? null,
+          attachment_mime: attachment?.mimeType ?? null,
         });
       }
       navigation.goBack();
@@ -133,12 +154,73 @@ export function EditTransactionScreen() {
           }
           note={note}
           onNoteChange={setNote}
+          afterNote={
+            currentMode === 'payment' ? (
+              <View style={styles.attachmentWrap}>
+                <Text style={styles.attachmentLabel}>{STRINGS.attachmentLabel}</Text>
+                <View style={styles.attachmentRow}>
+                  <AppPressable
+                    style={styles.attachmentBtn}
+                    onPress={async () => {
+                      const next = await pickAttachment();
+                      if (next) setAttachment(next);
+                    }}
+                  >
+                    <Ionicons name="attach-outline" size={18} color={COLORS.text} />
+                    <Text style={styles.attachmentBtnText}>
+                      {' '}
+                      {attachment ? STRINGS.attachmentReplace : STRINGS.attachmentAdd}
+                    </Text>
+                  </AppPressable>
+                  {attachment ? (
+                    <View style={styles.attachmentActions}>
+                      <AppPressable
+                        style={styles.attachmentActionBtn}
+                        onPress={() => setViewerOpen(true)}
+                      >
+                        <Ionicons name="eye-outline" size={18} color={COLORS.text} />
+                      </AppPressable>
+                      <AppPressable
+                        style={styles.attachmentActionBtn}
+                        onPress={() => setConfirmRemoveAttachment(true)}
+                      >
+                        <Ionicons name="trash-outline" size={18} color={COLORS.debt} />
+                      </AppPressable>
+                    </View>
+                  ) : null}
+                </View>
+                {attachment ? (
+                  <Text style={styles.attachmentName} numberOfLines={1}>
+                    {attachment.name}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null
+          }
           onSubmit={onSave}
           saving={saving}
           disabled={!isValid}
           allowModeToggle={false}
         />
       </ScrollView>
+      <AttachmentViewer
+        visible={viewerOpen}
+        attachment={attachment}
+        onClose={() => setViewerOpen(false)}
+      />
+      <ConfirmDialog
+        visible={confirmRemoveAttachment}
+        title={STRINGS.attachmentDeleteTitle}
+        message={STRINGS.attachmentDeleteMessage}
+        confirmLabel={STRINGS.delete}
+        cancelLabel={STRINGS.cancel}
+        destructive
+        onCancel={() => setConfirmRemoveAttachment(false)}
+        onConfirm={() => {
+          setAttachment(null);
+          setConfirmRemoveAttachment(false);
+        }}
+      />
       <ConfirmDialog
         visible={showDelete}
         title={STRINGS.deleteTransaction}
@@ -196,5 +278,54 @@ const styles = StyleSheet.create({
     height: MIN_TOUCH,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  attachmentWrap: {
+    marginBottom: SPACING.lg,
+  },
+  attachmentLabel: {
+    fontSize: FONTS.caption,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.xs,
+  },
+  attachmentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    flexWrap: 'wrap',
+  },
+  attachmentBtn: {
+    minHeight: MIN_TOUCH,
+    paddingHorizontal: SPACING.md,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+  },
+  attachmentBtnText: {
+    fontSize: FONTS.body,
+    color: COLORS.text,
+    fontWeight: '600',
+  },
+  attachmentActions: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    alignItems: 'center',
+  },
+  attachmentActionBtn: {
+    minHeight: MIN_TOUCH,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.surface,
+  },
+  attachmentName: {
+    marginTop: SPACING.xs,
+    fontSize: FONTS.caption,
+    color: COLORS.textSecondary,
   },
 });

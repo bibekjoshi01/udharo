@@ -28,6 +28,9 @@ export const CREATE_PAYMENTS_TABLE = `
     customer_id INTEGER NOT NULL,
     amount REAL NOT NULL,
     note TEXT,
+    attachment_uri TEXT,
+    attachment_name TEXT,
+    attachment_mime TEXT,
     date TEXT NOT NULL,
     created_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (customer_id) REFERENCES customers (id)

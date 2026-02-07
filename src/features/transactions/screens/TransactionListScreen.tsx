@@ -116,14 +116,16 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
             {STRINGS.currencyPrefix}
             {formatAmount(item.amount)}
           </Text>
-          <AppPressable
-            style={styles.logBtn}
-            onPress={() =>
-              navigation.navigate('TransactionAuditLogs', { mode: type, transactionId: item.id })
-            }
-          >
-            <Ionicons name="time-outline" size={18} color={COLORS.textSecondary} />
-          </AppPressable>
+          <View style={styles.rowActions}>
+            <AppPressable
+              style={styles.actionBtn}
+              onPress={() =>
+                navigation.navigate('TransactionAuditLogs', { mode: type, transactionId: item.id })
+              }
+            >
+              <Ionicons name="time-outline" size={18} color={COLORS.textSecondary} />
+            </AppPressable>
+          </View>
         </View>
       </AppPressable>
     );
@@ -273,6 +275,12 @@ const styles = StyleSheet.create({
   rowRight: {
     alignItems: 'flex-end',
   },
+  rowActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginTop: 6,
+  },
   rowTitle: { fontSize: FONTS.title, fontWeight: '700', color: COLORS.text },
   rowNote: { fontSize: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
   rowDate: { fontSize: FONTS.body, color: COLORS.textSecondary, marginTop: 4 },
@@ -281,8 +289,7 @@ const styles = StyleSheet.create({
   rowAmount: { fontSize: FONTS.title, fontWeight: '700' },
   amountCredit: { color: COLORS.debt },
   amountPayment: { color: COLORS.paid },
-  logBtn: {
-    marginTop: 6,
+  actionBtn: {
     padding: 6,
     borderRadius: 12,
     backgroundColor: '#F1F5F9',

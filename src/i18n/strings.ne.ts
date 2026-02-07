@@ -74,8 +74,8 @@ export const STRINGS_NE = {
   // Customer form placeholders
   namePlaceholder: 'नाम लेख्नुहोस्',
   mobilePlaceholder: '९८XXXXXXXX',
-  addressPlaceholder: 'ठेगाना',
-  notePlaceholderShort: 'टिप्पणी',
+  addressPlaceholder: 'जस्तै: वडा ५, टोलेजुङ, पोखरा',
+  notePlaceholderShort: 'ग्राहकबारे थप जानकारी...',
 
   // Customer table
   tableHeaderName: 'नाम',
@@ -200,6 +200,20 @@ export const STRINGS_NE = {
   dateInvalidMessage: 'भुक्तानी मिति आज वा आजपछि मात्र हुन सक्छ।',
   dateMustBeTodayOrEarlier: 'मिति आज वा आजअगाडि मात्र हुन सक्छ।',
 
+  // Attachments
+  attachmentLabel: 'संलग्न फाइल (वैकल्पिक)',
+  attachmentAdd: 'फाइल थप्नुहोस्',
+  attachmentReplace: 'फाइल परिवर्तन गर्नुहोस्',
+  attachmentView: 'हेर्नुहोस्',
+  attachmentRemove: 'हटाउनुहोस्',
+  attachmentInvalidTitle: 'अमान्य फाइल',
+  attachmentInvalidMessage: 'कृपया फोटो वा PDF फाइल मात्र छान्नुहोस्।',
+  attachmentOpenFailedTitle: 'खोल्न सकेन',
+  attachmentOpenFailedMessage: 'संलग्न फाइल खोल्न सकेन।',
+  attachmentPdfInfo: 'PDF पूर्वावलोकन उपलब्ध छैन। फाइल खोल्न “हेर्नुहोस्” थिच्नुहोस्।',
+  attachmentDeleteTitle: 'संलग्न फाइल हटाउने?',
+  attachmentDeleteMessage: 'यसले भुक्तानीको संलग्न फाइल हटाउँछ।',
+
   // Validation
   nameMinLength: (min: number) => `नाम कम्तीमा ${min} अक्षर हुनुपर्छ।`,
   mobileDigitsOnly: 'मोबाइल नम्बर सङ्ख्या मात्र हुनुपर्छ।',
@@ -208,5 +222,6 @@ export const STRINGS_NE = {
   // Common
   back: 'पछि',
   cancel: 'रद्द गर्नुहोस्',
+  close: 'बन्द गर्नुहोस्',
   saveFailed: 'सेभ असफल',
 } as const;

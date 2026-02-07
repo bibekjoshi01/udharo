@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   balanceValue: {
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   balanceDebt: { color: COLORS.debt },
   balancePaid: { color: COLORS.paid },

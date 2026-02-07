@@ -24,6 +24,9 @@ export interface CustomerPayment {
   customer_id: number;
   amount: number;
   note?: string;
+  attachment_uri?: string;
+  attachment_name?: string;
+  attachment_mime?: string;
   date: string;
   created_at: string;
 }

@@ -25,7 +25,7 @@ import type {
 } from '../types';
 
 let db: SQLite.SQLiteDatabase | null = null;
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 async function recordMigration(database: SQLite.SQLiteDatabase, version: number) {
   await database.execAsync(CREATE_SCHEMA_MIGRATIONS_TABLE);
@@ -89,6 +89,12 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   const paymentsColSet = new Set((paymentsCols as { name: string }[]).map((c) => c.name));
   if (!paymentsColSet.has('note'))
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN note TEXT');
+  if (!paymentsColSet.has('attachment_uri'))
+    await database.runAsync('ALTER TABLE customer_payments ADD COLUMN attachment_uri TEXT');
+  if (!paymentsColSet.has('attachment_name'))
+    await database.runAsync('ALTER TABLE customer_payments ADD COLUMN attachment_name TEXT');
+  if (!paymentsColSet.has('attachment_mime'))
+    await database.runAsync('ALTER TABLE customer_payments ADD COLUMN attachment_mime TEXT');
   if (!paymentsColSet.has('date')) {
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN date TEXT');
     await database.runAsync("UPDATE customer_payments SET date = COALESCE(date, date('now'))");
@@ -463,7 +469,7 @@ export async function deleteCredit(id: number): Promise<void> {
 export async function getPaymentsForCustomer(customerId: number): Promise<CustomerPayment[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerPayment>(
-    `SELECT id, customer_id, amount, note, date, created_at
+    `SELECT id, customer_id, amount, note, attachment_uri, attachment_name, attachment_mime, date, created_at
      FROM customer_payments WHERE customer_id = ?
      ORDER BY date DESC, created_at DESC`,
     [customerId],
@@ -486,7 +492,7 @@ export async function getCreditsByDateRange(startDate: string, endDate: string):
 export async function getPaymentsByDateRange(startDate: string, endDate: string): Promise<CustomerPayment[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerPayment>(
-    `SELECT id, customer_id, amount, note, date, created_at
+    `SELECT id, customer_id, amount, note, attachment_uri, attachment_name, attachment_mime, date, created_at
      FROM customer_payments
      WHERE date >= ? AND date <= ?
      ORDER BY date DESC, created_at DESC`,
@@ -506,7 +512,7 @@ export async function getPaymentsWithCustomerPage(params: {
   const like = `%${q}%`;
   const rows = await database.getAllAsync<CustomerPaymentWithCustomer>(
     `SELECT 
-      p.id, p.customer_id, p.amount, p.note, p.date, p.created_at,
+      p.id, p.customer_id, p.amount, p.note, p.attachment_uri, p.attachment_name, p.attachment_mime, p.date, p.created_at,
       cu.name as customer_name, cu.mobile as customer_mobile
      FROM customer_payments p
      JOIN customers cu ON cu.id = p.customer_id
@@ -537,7 +543,7 @@ export async function getPaymentsCount(query?: string): Promise<number> {
 export async function getPaymentById(id: number): Promise<CustomerPayment | null> {
   const database = db ?? (await initDatabase());
   const row = await database.getFirstAsync<CustomerPayment>(
-    `SELECT id, customer_id, amount, note, date, created_at
+    `SELECT id, customer_id, amount, note, attachment_uri, attachment_name, attachment_mime, date, created_at
      FROM customer_payments WHERE id = ?`,
     [id],
   );
@@ -548,15 +554,21 @@ export async function insertPayment(data: {
   customer_id: number;
   amount: number;
   note?: string;
+  attachment_uri?: string;
+  attachment_name?: string;
+  attachment_mime?: string;
   date?: string;
 }): Promise<number> {
   const database = db ?? (await initDatabase());
   const date = data.date ?? new Date().toISOString().slice(0, 10);
   const result = await database.runAsync(
-    'INSERT INTO customer_payments (customer_id, amount, note, date) VALUES (?, ?, ?, ?)',
+    'INSERT INTO customer_payments (customer_id, amount, note, attachment_uri, attachment_name, attachment_mime, date) VALUES (?, ?, ?, ?, ?, ?, ?)',
     data.customer_id,
     data.amount,
     data.note ?? null,
+    data.attachment_uri ?? null,
+    data.attachment_name ?? null,
+    data.attachment_mime ?? null,
     date,
   );
   return Number(result.lastInsertRowId);
@@ -564,17 +576,30 @@ export async function insertPayment(data: {
 
 export async function updatePayment(
   id: number,
-  data: { amount?: number; note?: string; date?: string },
+  data: {
+    amount?: number;
+    note?: string;
+    attachment_uri?: string | null;
+    attachment_name?: string | null;
+    attachment_mime?: string | null;
+    date?: string;
+  },
 ): Promise<void> {
   const database = db ?? (await initDatabase());
   await database.runAsync(
     `UPDATE customer_payments 
      SET amount = COALESCE(?, amount),
          note = ?,
+         attachment_uri = ?,
+         attachment_name = ?,
+         attachment_mime = ?,
          date = COALESCE(?, date)
      WHERE id = ?`,
     data.amount ?? null,
     data.note ?? null,
+    data.attachment_uri ?? null,
+    data.attachment_name ?? null,
+    data.attachment_mime ?? null,
     data.date ?? null,
     id,
   );
