@@ -122,7 +122,7 @@ export function CreditReportsScreen() {
               ]);
             }}
           >
-            <Ionicons name="download-outline" size={20} color={COLORS.text} />
+            <Ionicons name="download-outline" size={20} color={COLORS.primary} />
           </AppPressable>
         }
       />
@@ -249,7 +249,7 @@ export function CreditReportsScreen() {
                       { height: barHeight(totals.netBalance) },
                     ]}
                   />
-                  <Text style={styles.chartLabel}>{STRINGS.netBalance}</Text>
+                  <Text style={styles.chartLabel}>{STRINGS.outstandingBalance}</Text>
                 </View>
               </View>
             </View>
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
   chartCard: {
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.lg,
+    padding: SPACING.md,
     marginBottom: SPACING.md,
     borderWidth: 1,
     borderColor: COLORS.border,
@@ -387,6 +387,7 @@ const styles = StyleSheet.create({
   downloadBtn: {
     minHeight: 36,
     paddingHorizontal: SPACING.sm,
+    marginRight: 5,
     borderRadius: BORDER_RADIUS.sm,
     borderWidth: 1,
     borderColor: COLORS.border,

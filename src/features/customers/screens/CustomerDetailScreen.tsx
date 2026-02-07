@@ -213,12 +213,13 @@ const styles = StyleSheet.create({
   },
   balanceLabel: {
     fontSize: 18,
+    fontWeight: "800",
     color: COLORS.textSecondary,
     marginBottom: SPACING.xs,
   },
   balanceValue: {
     fontSize: 28,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   balanceDebt: { color: COLORS.debt },
   balancePaid: { color: COLORS.paid },
