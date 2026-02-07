@@ -6,6 +6,7 @@ import {
   Platform,
   ScrollView,
   Text,
+  Alert,
 } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -33,6 +34,7 @@ export function EditTransactionScreen() {
   const route = useRoute<Route>();
   const { transactionId, mode } = route.params;
   const { transaction, customer, loading } = useTransaction(mode, transactionId);
+  const MAX_AMOUNT = 10_000_000;
 
   const [currentMode, setCurrentMode] = useState<'credit' | 'payment'>(mode);
   const [amountStr, setAmountStr] = useState('');
@@ -73,6 +75,10 @@ export function EditTransactionScreen() {
 
   const onSave = async () => {
     if (!transaction || !isValid || saving) return;
+    if (amount > MAX_AMOUNT) {
+      Alert.alert(STRINGS.amountLimitExceededTitle, STRINGS.amountLimitExceededBody);
+      return;
+    }
     setSaving(true);
     try {
       if (currentMode === 'credit') {

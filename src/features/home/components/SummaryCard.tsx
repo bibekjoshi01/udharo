@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS } from '../../../constants/theme';
 import { useStrings } from '../../../constants/strings';
 import { Skeleton } from '../../../components/Skeleton';
+import { AppPressable } from '../../../components/AppPressable';
 
 export interface SummaryCardProps {
   total: number;
@@ -18,9 +20,17 @@ const formatAmount = (n: number) =>
 export function SummaryCard({ total, loading = false }: SummaryCardProps) {
   const STRINGS = useStrings();
   const directionArrow = total > 0 ? '↑' : total < 0 ? '↓' : '';
+  const showInfo = () => {
+    Alert.alert(STRINGS.balanceInfoTitle, STRINGS.balanceInfoBody);
+  };
   return (
     <View style={styles.summaryCard}>
-      <Text style={styles.summaryLabel}>{STRINGS.totalReceivables}</Text>
+      <View style={styles.summaryHeader}>
+        <Text style={styles.summaryLabel}>{STRINGS.totalReceivables}</Text>
+        <AppPressable style={styles.infoBtn} onPress={showInfo}>
+          <Ionicons name="information-circle-outline" size={20} color={COLORS.white} />
+        </AppPressable>
+      </View>
       {loading ? (
         <Skeleton height={28} width="55%" radius={10} style={styles.skeletonAmount} />
       ) : (
@@ -47,6 +57,18 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     opacity: 0.9,
     fontWeight: '600',
+    marginBottom: SPACING.xs,
+  },
+  summaryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  infoBtn: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: SPACING.xs,
   },
   summaryAmount: {

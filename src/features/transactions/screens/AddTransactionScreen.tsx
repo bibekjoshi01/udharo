@@ -8,6 +8,7 @@ import {
   Modal,
   Text,
   TextInput,
+  Alert,
 } from 'react-native';
 import { CommonActions, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -35,6 +36,7 @@ export function AddTransactionScreen() {
   const STRINGS = useStrings();
   const route = useRoute<Route>();
   const { customerId, mode: initialMode, lockMode } = route.params;
+  const MAX_AMOUNT = 10_000_000;
 
   const [mode, setMode] = useState<'credit' | 'payment'>(initialMode);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(customerId ?? null);
@@ -72,6 +74,10 @@ export function AddTransactionScreen() {
 
   const onSave = async () => {
     if (!isValid || saving) return;
+    if (amount > MAX_AMOUNT) {
+      Alert.alert(STRINGS.amountLimitExceededTitle, STRINGS.amountLimitExceededBody);
+      return;
+    }
     setSaving(true);
     try {
       if (mode === 'credit') {

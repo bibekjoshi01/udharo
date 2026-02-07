@@ -1,10 +1,6 @@
 Version 1.0.0 – Release Tasks
 -------------------------------------------------
-1. Final regression test (add customer/credit/payment, reports, PDF, backup)
-2. Verify backup/import on real device
-3. Confirm DB migration safety for new fields (no data loss)
-4. Verify notifications (daily reminder) on release build
-5. Confirm app.json version + versionCode before Play Store
+1. Verify notifications (daily reminder) on release build
 
 Version 2.0.0 – Future (non‑blocking)
 -------------------------------------------------

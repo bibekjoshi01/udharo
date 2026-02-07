@@ -5,7 +5,7 @@ export const STRINGS_NE = {
   tagline: 'सजिलो उधारो खाता',
 
   // Home
-  totalReceivables: 'कुल बाँकी रकम',
+  totalReceivables: 'कुल लिन बाँकी रकम',
   currencyPrefix: 'रू ',
   customers: 'ग्राहकहरू',
   udharoharu: 'उधारोहरू',
@@ -14,6 +14,14 @@ export const STRINGS_NE = {
   viewPayments: 'भुक्तानी',
   creditReports: 'रिपोर्ट',
   menuTitle: 'मेनु',
+  creditInfoTitle: 'उधारो जानकारी',
+  creditInfoBody:
+    'उधारो भनेको तपाईँले उधारो दिएको रकम हो। यो रकम ग्राहकले पछि तपाईँलाई तिर्नुपर्ने हुन्छ। यो रकम भविष्यमा तपाईँले प्राप्त गर्नुहुनेछ।',
+  paymentInfoTitle: 'भुक्तानी जानकारी',
+  paymentInfoBody: 'भुक्तानी भनेको ग्राहकले तपाईँलाई उधारो तिर्न दिएको रकम हो।',
+  balanceInfoTitle: 'रकमको जानकारी',
+  balanceInfoBody:
+    'यदि रकम माइनस (-) छ भने तपाईँले तिर्नुपर्ने (बाहिर जाने) रकम हो। यदि प्लस छ भने लिन बाँकी रकम हो।',
 
   // Language
   languageTitle: 'भाषा छान्नुहोस्',
@@ -27,7 +35,7 @@ export const STRINGS_NE = {
   searchPlaceholder: 'नाम वा फोनले खोज्नुहोस्',
 
   // Customer detail
-  outstandingBalance: 'बाँकी रकम',
+  outstandingBalance: 'लिन बाँकी रकम',
   addCredit: 'उधारो थप्नुहोस्',
   payment: 'भुक्तानी',
   editCustomer: 'ग्राहक सम्पादन',
@@ -56,6 +64,8 @@ export const STRINGS_NE = {
   saving: 'सेभ हुँदैछ...',
   creditAdded: 'उधारो सेभ भयो',
   paymentAdded: 'भुक्तानी सेभ भयो',
+  amountLimitExceededTitle: 'रकम धेरै भयो',
+  amountLimitExceededBody: 'अधिकतम अनुमति दिएको रकम १ करोड (१०,००,०००) हो।',
 
   // Add/Edit customer
   customerName: 'ग्राहकको नाम',
@@ -87,7 +97,7 @@ export const STRINGS_NE = {
   creditReportTitle: 'रिपोर्ट',
   totalCredits: 'कुल उधारो',
   totalPayments: 'कुल भुक्तानी',
-  netBalance: 'शेष रकम',
+  netBalance: 'कुल लिन बाँकी रकम',
   thisMonth: 'यो महिना',
   thisYear: 'यो वर्ष',
   today: 'आज',

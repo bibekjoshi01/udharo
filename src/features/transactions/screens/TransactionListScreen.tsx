@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, RefreshControl, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -141,7 +141,23 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
 
   return (
     <View style={styles.container}>
-      <ScreenHeader title={`${title} (${totalCount})`} onBack={() => navigation.goBack()} />
+      <ScreenHeader
+        title={`${title} (${totalCount})`}
+        onBack={() => navigation.goBack()}
+        rightElement={
+          <AppPressable
+            style={styles.infoBtn}
+            onPress={() =>
+              Alert.alert(
+                type === 'credit' ? STRINGS.creditInfoTitle : STRINGS.paymentInfoTitle,
+                type === 'credit' ? STRINGS.creditInfoBody : STRINGS.paymentInfoBody,
+              )
+            }
+          >
+            <Ionicons name="information-circle-outline" size={22} color={COLORS.primary} />
+          </AppPressable>
+        }
+      />
       <View style={styles.searchWrap}>
         <Ionicons name="search" size={20} color={COLORS.textSecondary} style={styles.searchIcon} />
         <TextInput
@@ -231,6 +247,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
     gap: SPACING.sm,
+  },
+  infoBtn: {
+    width: MIN_TOUCH,
+    height: MIN_TOUCH,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchIcon: {
     position: 'absolute',

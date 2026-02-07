@@ -4,7 +4,7 @@ export const STRINGS_EN = {
   tagline: 'Simple Credit Ledger',
 
   // Home
-  totalReceivables: 'Total Due Amount',
+  totalReceivables: 'Total Receivables',
   currencyPrefix: 'Rs. ',
   customers: 'Customers',
   udharoharu: 'Credits',
@@ -13,6 +13,15 @@ export const STRINGS_EN = {
   viewPayments: 'Payments',
   creditReports: 'Reports',
   menuTitle: 'Menu',
+  creditInfoTitle: 'Credits Info',
+  creditInfoBody:
+    'Credits are amounts you gave on credit. This is money customers need to pay you later.',
+  paymentInfoTitle: 'Payments Info',
+  paymentInfoBody:
+    'Payments are amounts you received from customers to settle their credits.',
+  balanceInfoTitle: 'Amount Info',
+  balanceInfoBody:
+    'If the amount is negative (-), it means you need to pay that amount (outgoing). If it is positive, it means you will receive that amount.',
 
   // Language
   languageTitle: 'Choose Language',
@@ -26,7 +35,7 @@ export const STRINGS_EN = {
   searchPlaceholder: 'Search by name or phone',
 
   // Customer detail
-  outstandingBalance: 'Due Amount',
+  outstandingBalance: 'Receivable Amount',
   addCredit: 'Add Credit',
   payment: 'Payment',
   editCustomer: 'Edit Customer',
@@ -55,6 +64,8 @@ export const STRINGS_EN = {
   saving: 'Saving...',
   creditAdded: 'Credit Saved',
   paymentAdded: 'Payment Saved',
+  amountLimitExceededTitle: 'Amount Too Large',
+  amountLimitExceededBody: 'Maximum allowed amount is 1,00,00,000 (1 crore).',
 
   // Add/Edit customer
   customerName: 'Customer Name',
@@ -86,7 +97,7 @@ export const STRINGS_EN = {
   creditReportTitle: 'Report',
   totalCredits: 'Total Credits',
   totalPayments: 'Total Payments',
-  netBalance: 'Total Due Amount',
+  netBalance: 'Total Receivables',
   thisMonth: 'Monthly',
   thisYear: 'Yearly',
   today: 'Today',
