@@ -49,7 +49,7 @@ export function AddTransactionScreen() {
   const [search, setSearch] = useState('');
 
   const debouncedSearch = useDebouncedValue(search, 300);
-  const { customers } = useCustomers({ query: debouncedSearch, pageSize: 200 });
+  const { customers, reload } = useCustomers({ query: debouncedSearch, pageSize: 200 });
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId) ?? null;
 
   const amount = parseFloat(amountStr.replace(/[^0-9.]/g, '')) || 0;
@@ -62,6 +62,13 @@ export function AddTransactionScreen() {
       setAttachment(null);
     }
   }, [mode]);
+
+  React.useEffect(() => {
+    if (route.params?.customerId != null) {
+      setSelectedCustomerId(route.params.customerId);
+      reload();
+    }
+  }, [route.params?.customerId, reload]);
 
   const onSave = async () => {
     if (!isValid || saving) return;
@@ -221,7 +228,19 @@ export function AddTransactionScreen() {
             disableRipple
           />
           <View style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>{STRINGS.selectCustomerTitle}</Text>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{STRINGS.selectCustomerTitle}</Text>
+              <AppPressable
+                style={styles.modalAddCustomer}
+                onPress={() => {
+                  setPickerOpen(false);
+                  navigation.navigate('AddCustomer', { returnTo: 'AddTransaction', mode, lockMode });
+                }}
+              >
+                <Ionicons name="person-add-outline" size={18} color={COLORS.primary} />
+                <Text style={styles.modalAddCustomerText}> {STRINGS.addCustomer}</Text>
+              </AppPressable>
+            </View>
             <View style={styles.searchWrap}>
               <Ionicons
                 name="search"
@@ -359,11 +378,31 @@ const styles = StyleSheet.create({
     borderTopRightRadius: BORDER_RADIUS.lg,
     maxHeight: '70%',
   },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
+  },
   modalTitle: {
     fontSize: FONTS.body,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: SPACING.sm,
+  },
+  modalAddCustomer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: BORDER_RADIUS.sm,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  modalAddCustomerText: {
+    fontSize: FONTS.small,
+    color: COLORS.primary,
+    fontWeight: '600',
   },
   searchWrap: {
     flexDirection: 'row',

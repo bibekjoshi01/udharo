@@ -7,7 +7,7 @@ export type RootStackParamList = {
   CustomerDetail: { customerId: number };
   AddTransaction: { customerId?: number; mode: 'credit' | 'payment'; lockMode?: boolean };
   EditTransaction: { transactionId: number; mode: 'credit' | 'payment' };
-  AddCustomer: undefined;
+  AddCustomer: { returnTo?: 'AddTransaction'; mode?: 'credit' | 'payment'; lockMode?: boolean } | undefined;
   EditCustomer: { customerId: number };
   CreditReports: undefined;
   Menu: undefined;
