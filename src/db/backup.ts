@@ -28,8 +28,7 @@ function buildInsert(table: string, row: Record<string, unknown>) {
   return `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${values.join(', ')});`;
 }
 
-export async function exportDatabaseToSql(): Promise<string | null> {
-  const STRINGS = getStrings();
+export async function createBackupSqlFile(): Promise<File> {
   const db = await initDatabase();
   const parts: string[] = [];
   parts.push('-- Udharo backup');
@@ -49,7 +48,12 @@ export async function exportDatabaseToSql(): Promise<string | null> {
   const fileName = `udharo-backup-${new Date().toISOString().slice(0, 10)}.sql`;
   const backupFile = new File(Paths.document, fileName);
   backupFile.write(sql, { encoding: 'utf8' });
+  return backupFile;
+}
 
+export async function exportDatabaseToSql(): Promise<string | null> {
+  const STRINGS = getStrings();
+  const backupFile = await createBackupSqlFile();
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(backupFile.uri, {
       mimeType: 'application/sql',
@@ -78,6 +82,16 @@ export async function importDatabaseFromSql(): Promise<boolean> {
 
   const importFile = new File(asset.uri);
   const sql = await importFile.text();
+  return importDatabaseFromSqlContent(sql);
+}
+
+export async function importDatabaseFromSqlFile(uri: string): Promise<boolean> {
+  const importFile = new File(uri);
+  const sql = await importFile.text();
+  return importDatabaseFromSqlContent(sql);
+}
+
+async function importDatabaseFromSqlContent(sql: string): Promise<boolean> {
   const statements = sql
     .split(';')
     .map((s: string) => s.trim())

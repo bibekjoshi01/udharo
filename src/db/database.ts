@@ -25,7 +25,7 @@ import type {
 } from '../types';
 
 let db: SQLite.SQLiteDatabase | null = null;
-const DB_VERSION = 4;
+export const DB_VERSION = 4;
 
 async function recordMigration(database: SQLite.SQLiteDatabase, version: number) {
   await database.execAsync(CREATE_SCHEMA_MIGRATIONS_TABLE);
@@ -477,6 +477,23 @@ export async function getPaymentsForCustomer(customerId: number): Promise<Custom
   return (rows as CustomerPayment[]) ?? [];
 }
 
+export async function getPaymentAttachments(): Promise<
+  { id: number; attachment_uri: string; attachment_name?: string | null; attachment_mime?: string | null }[]
+> {
+  const database = db ?? (await initDatabase());
+  const rows = await database.getAllAsync(
+    `SELECT id, attachment_uri, attachment_name, attachment_mime
+     FROM customer_payments
+     WHERE attachment_uri IS NOT NULL AND attachment_uri != ''`,
+  );
+  return (rows as {
+    id: number;
+    attachment_uri: string;
+    attachment_name?: string | null;
+    attachment_mime?: string | null;
+  }[]) ?? [];
+}
+
 export async function getCreditsByDateRange(startDate: string, endDate: string): Promise<CustomerCredit[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerCredit>(
@@ -601,6 +618,20 @@ export async function updatePayment(
     data.attachment_name ?? null,
     data.attachment_mime ?? null,
     data.date ?? null,
+    id,
+  );
+}
+
+export async function updatePaymentAttachment(
+  id: number,
+  data: { attachment_uri: string | null; attachment_name?: string | null; attachment_mime?: string | null },
+): Promise<void> {
+  const database = db ?? (await initDatabase());
+  await database.runAsync(
+    'UPDATE customer_payments SET attachment_uri = ?, attachment_name = ?, attachment_mime = ? WHERE id = ?',
+    data.attachment_uri,
+    data.attachment_name ?? null,
+    data.attachment_mime ?? null,
     id,
   );
 }

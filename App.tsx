@@ -11,6 +11,7 @@ import { LockScreen } from './src/screens/LockScreen';
 import { COLORS } from './src/constants/theme';
 import { useFonts } from 'expo-font';
 import { initializeNotifications, scheduleDailyReminderAtNine } from './src/utils/notifications';
+import { maybeRunAutoOnlineBackup } from './src/utils/onlineBackup';
 import {
   NotoSansDevanagari_400Regular,
   NotoSansDevanagari_600SemiBold,
@@ -25,6 +26,7 @@ export default function App() {
   const lastBackgroundAt = useStore((s) => s.lastBackgroundAt);
   const setLastBackgroundAt = useStore((s) => s.setLastBackgroundAt);
   const [boundaryKey, setBoundaryKey] = React.useState(0);
+  const autoBackupRan = React.useRef(false);
   const [fontsLoaded] = useFonts({
     NotoSansDevanagari_400Regular,
     NotoSansDevanagari_600SemiBold,
@@ -77,6 +79,12 @@ export default function App() {
       await scheduleDailyReminderAtNine();
     })();
   }, []);
+
+  React.useEffect(() => {
+    if (!isDbReady || autoBackupRan.current) return;
+    autoBackupRan.current = true;
+    maybeRunAutoOnlineBackup();
+  }, [isDbReady]);
 
   const showLock = isDbReady && prefs.lockEnabled && !isUnlocked;
 

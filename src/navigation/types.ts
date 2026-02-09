@@ -11,6 +11,7 @@ export type RootStackParamList = {
   EditCustomer: { customerId: number };
   CreditReports: undefined;
   Menu: undefined;
+  OnlineBackup: undefined;
   AboutApp: undefined;
   PrivacyPolicy: undefined;
   Terms: undefined;

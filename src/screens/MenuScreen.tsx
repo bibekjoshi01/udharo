@@ -55,6 +55,11 @@ export function MenuScreen() {
 
   const mainItems: MenuItem[] = [
     {
+      label: STRINGS.onlineBackupTitle,
+      icon: 'cloud-outline',
+      onPress: () => navigation.navigate('OnlineBackup'),
+    },
+    {
       label: STRINGS.aboutApp,
       icon: 'information-circle-outline',
       onPress: () => navigation.navigate('AboutApp'),

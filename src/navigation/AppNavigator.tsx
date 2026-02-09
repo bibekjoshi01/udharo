@@ -17,6 +17,7 @@ import {
 } from '../features/transactions';
 import { CreditReportsScreen } from '../features/reports/CreditReportsScreen';
 import { MenuScreen } from '../screens/MenuScreen';
+import { OnlineBackupScreen } from '../screens/OnlineBackupScreen';
 import { AboutAppScreen } from '../screens/AboutAppScreen';
 import { TermsScreen } from '../screens/TermsScreen';
 import { SupportScreen } from '../screens/SupportScreen';
@@ -54,6 +55,7 @@ export function AppNavigator() {
         <Stack.Screen name="EditCustomer" component={EditCustomerScreen} />
         <Stack.Screen name="CreditReports" component={CreditReportsScreen} />
         <Stack.Screen name="Menu" component={MenuScreen} />
+        <Stack.Screen name="OnlineBackup" component={OnlineBackupScreen} />
         <Stack.Screen name="AboutApp" component={AboutAppScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />
         <Stack.Screen name="Support" component={SupportScreen} />
