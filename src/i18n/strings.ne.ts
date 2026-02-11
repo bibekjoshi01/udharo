@@ -203,6 +203,15 @@ export const STRINGS_NE = {
   dailyReminderTitle: 'हेर्नु भयो?',
   dailyReminderBody: 'आजको उधारो–भुक्तानी लेख्न बाँकी छ है',
 
+  // App update
+  updateAvailableTitle: 'नयाँ संस्करण उपलब्ध',
+  updateAvailableMessage: 'नयाँ संस्करण उपलब्ध छ। राम्रो अनुभवका लागि अपडेट गर्नुहोस्।',
+  updateRequiredTitle: 'अपडेट आवश्यक',
+  updateRequiredMessage: 'एप प्रयोग गर्न जारी राख्न अपडेट गर्नुपर्छ।',
+  updateNow: 'अपडेट गर्नुहोस्',
+  updateLater: 'पछि',
+  updateOpenStoreFailed: 'प्ले स्टोर खोल्न सकेन',
+
   // Date picker alerts
   dateMismatchTitle: 'मिति मिलेन',
   dateMismatchMessage: 'भुक्तानी मिति मिलेन। कृपया फेरि प्रयास गर्नुहोस्।',
