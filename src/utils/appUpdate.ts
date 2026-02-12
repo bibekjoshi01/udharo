@@ -1,4 +1,3 @@
-import * as Network from 'expo-network';
 import * as Application from 'expo-application';
 import { Linking, Platform } from 'react-native';
 
@@ -33,7 +32,6 @@ const DEFAULT_BUILD: number = appConfig?.expo?.android?.versionCode ?? 0;
 
 export async function checkForAppUpdate(): Promise<UpdateCheckResult | null> {
   if (!UPDATE_CONFIG_URL) return null;
-  if (!(await isOnline())) return null;
 
   const appInfo = getCurrentAppInfo();
   const url = appendQuery(UPDATE_CONFIG_URL, {
@@ -79,15 +77,6 @@ export async function openStoreUrl(url: string): Promise<boolean> {
     if (!canOpen) return false;
     await Linking.openURL(url);
     return true;
-  } catch {
-    return false;
-  }
-}
-
-async function isOnline(): Promise<boolean> {
-  try {
-    const state = await Network.getNetworkStateAsync();
-    return !!state.isConnected && state.isInternetReachable !== false;
   } catch {
     return false;
   }
