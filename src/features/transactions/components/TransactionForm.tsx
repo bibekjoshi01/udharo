@@ -81,7 +81,7 @@ export function TransactionForm({
 
       <TextInput
         style={styles.noteInput}
-        placeholder={STRINGS.notePlaceholder}
+        placeholder={mode === 'payment' ? STRINGS.paymentNotePlaceholder : STRINGS.notePlaceholder}
         placeholderTextColor={COLORS.textSecondary}
         value={note}
         onChangeText={onNoteChange}

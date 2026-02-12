@@ -132,9 +132,22 @@ export function EditTransactionScreen() {
         title={currentMode === 'credit' ? STRINGS.editCreditTitle : STRINGS.editPaymentTitle}
         onBack={() => navigation.goBack()}
         rightElement={
-          <AppPressable style={styles.iconBtn} onPress={onDelete}>
-            <Ionicons name="trash-outline" size={24} color={COLORS.debt} />
-          </AppPressable>
+          <View style={styles.headerActions}>
+            <AppPressable
+              style={styles.iconBtn}
+              onPress={() =>
+                navigation.navigate('TransactionAuditLogs', {
+                  mode: currentMode,
+                  transactionId: transaction.id,
+                })
+              }
+            >
+              <Ionicons name="time-outline" size={24} color={COLORS.textSecondary} />
+            </AppPressable>
+            <AppPressable style={styles.iconBtn} onPress={onDelete}>
+              <Ionicons name="trash-outline" size={24} color={COLORS.debt} />
+            </AppPressable>
+          </View>
         }
       />
       <ScrollView
@@ -284,6 +297,11 @@ const styles = StyleSheet.create({
     height: MIN_TOUCH,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
   },
   attachmentWrap: {
     marginBottom: SPACING.lg,

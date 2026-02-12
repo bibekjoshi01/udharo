@@ -54,6 +54,7 @@ export const STRINGS_NE = {
   addPaymentTitle: 'भुक्तानी थप्नुहोस्',
   amountPlaceholder: 'रकम लेख्नुहोस्',
   notePlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
+  paymentNotePlaceholder: 'Transaction ID वा टिप्पणी',
   appNlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
   expectedPaymentDate: 'भुक्तानी गर्ने मिति',
   expectedPaymentDatePlaceholder: 'जस्तै: 2025-02-28',

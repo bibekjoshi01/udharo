@@ -54,6 +54,7 @@ export const STRINGS_EN = {
   addPaymentTitle: 'Add Payment',
   amountPlaceholder: 'Enter Amount',
   notePlaceholder: 'Note (e.g., oil, potatoes)',
+  paymentNotePlaceholder: 'Transaction ID or Note',
   appNlaceholder: 'Note (e.g., oil, potatoes)',
   expectedPaymentDate: 'Payment Due Date',
   expectedPaymentDatePlaceholder: 'e.g., 2025-02-28',
