@@ -163,8 +163,12 @@ export function CustomerDetailScreen() {
         onCancel={() => setShowDelete(false)}
         onConfirm={async () => {
           setShowDelete(false);
-          await deleteCustomer(customerId);
-          navigation.goBack();
+          try {
+            await deleteCustomer(customerId);
+            navigation.goBack();
+          } catch (e: any) {
+            Alert.alert(STRINGS.saveFailed, String(e?.message ?? e));
+          }
         }}
       />
     </View>

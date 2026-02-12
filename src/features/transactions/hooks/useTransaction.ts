@@ -9,8 +9,10 @@ export function useTransaction(type: TransactionType, transactionId: number | nu
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    setError(null);
     if (transactionId == null) {
       setTransaction(null);
       setCustomer(null);
@@ -18,27 +20,37 @@ export function useTransaction(type: TransactionType, transactionId: number | nu
       return;
     }
     setLoading(true);
-    const tx =
-      type === 'credit' ? await getCreditById(transactionId) : await getPaymentById(transactionId);
-    setTransaction(tx);
-    if (tx) {
-      const c = await getCustomerById(tx.customer_id);
-      setCustomer(c);
-    } else {
+    try {
+      const tx =
+        type === 'credit' ? await getCreditById(transactionId) : await getPaymentById(transactionId);
+      setTransaction(tx);
+      if (tx) {
+        const c = await getCustomerById(tx.customer_id);
+        setCustomer(c);
+      } else {
+        setCustomer(null);
+      }
+    } catch (e: any) {
+      setTransaction(null);
       setCustomer(null);
+      setError(String(e?.message ?? e));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [transactionId, type]);
 
   const refresh = useCallback(async () => {
     setRefreshing(true);
-    await load();
-    setRefreshing(false);
+    try {
+      await load();
+    } finally {
+      setRefreshing(false);
+    }
   }, [load]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  return { transaction, customer, loading, refreshing, refresh, reload: load };
+  return { transaction, customer, loading, refreshing, refresh, reload: load, error };
 }

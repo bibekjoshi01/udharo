@@ -24,6 +24,8 @@ export interface CustomerPayment {
   customer_id: number;
   amount: number;
   note?: string;
+  is_verified?: number;
+  verified_at?: string | null;
   attachment_uri?: string;
   attachment_name?: string;
   attachment_mime?: string;
@@ -58,6 +60,13 @@ export interface CustomerCreditWithCustomer extends CustomerCredit {
 export interface CustomerPaymentWithCustomer extends CustomerPayment {
   customer_name: string;
   customer_mobile?: string;
+}
+
+export interface CollectionPriorityCustomer {
+  id: number;
+  name: string;
+  balance: number;
+  oldest_due_date?: string | null;
 }
 
 export interface CustomerWithBalance extends Customer {

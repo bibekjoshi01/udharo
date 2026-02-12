@@ -22,6 +22,9 @@ export const STRINGS_NE = {
   balanceInfoTitle: 'रकमको जानकारी',
   balanceInfoBody:
     'यदि रकम माइनस (-) छ भने तपाईँले तिर्नुपर्ने (बाहिर जाने) रकम हो। यदि प्लस छ भने लिन बाँकी रकम हो।',
+  collectionPriorityTitle: 'उठाउनुपर्ने प्राथमिकता',
+  collectionPriorityEmpty: 'लिन बाँकी ग्राहक छैनन्।',
+  oldestDueLabel: 'सबैभन्दा पुरानो देय मिति',
 
   // Language
   languageTitle: 'भाषा छान्नुहोस्',
@@ -33,6 +36,7 @@ export const STRINGS_NE = {
   addCustomer: 'ग्राहक थप्नुहोस्',
   emptyCustomers: 'अहिलेसम्म ग्राहक छैनन्। + थप्नुहोस्',
   searchPlaceholder: 'नाम वा फोनले खोज्नुहोस्',
+  paymentSearchPlaceholder: 'ग्राहक वा भुक्तानी नं. ले खोज्नुहोस्',
 
   // Customer detail
   outstandingBalance: 'लिन बाँकी रकम',
@@ -55,7 +59,6 @@ export const STRINGS_NE = {
   amountPlaceholder: 'रकम लेख्नुहोस्',
   notePlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
   paymentNotePlaceholder: 'Transaction ID वा टिप्पणी',
-  appNlaceholder: 'टिप्पणी (जस्तै: तेल, आलु)',
   expectedPaymentDate: 'भुक्तानी गर्ने मिति',
   expectedPaymentDatePlaceholder: 'जस्तै: 2025-02-28',
   creditDate: 'उधारो मिति',

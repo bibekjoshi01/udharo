@@ -28,6 +28,8 @@ export const CREATE_PAYMENTS_TABLE = `
     customer_id INTEGER NOT NULL,
     amount REAL NOT NULL,
     note TEXT,
+    is_verified INTEGER DEFAULT 0,
+    verified_at TEXT,
     attachment_uri TEXT,
     attachment_name TEXT,
     attachment_mime TEXT,

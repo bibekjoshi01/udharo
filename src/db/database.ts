@@ -18,6 +18,7 @@ import {
 import type {
   Customer,
   CustomerWithBalance,
+  CollectionPriorityCustomer,
   CustomerCredit,
   CustomerPayment,
   CustomerCreditWithCustomer,
@@ -95,6 +96,10 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN attachment_name TEXT');
   if (!paymentsColSet.has('attachment_mime'))
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN attachment_mime TEXT');
+  if (!paymentsColSet.has('is_verified'))
+    await database.runAsync('ALTER TABLE customer_payments ADD COLUMN is_verified INTEGER DEFAULT 0');
+  if (!paymentsColSet.has('verified_at'))
+    await database.runAsync('ALTER TABLE customer_payments ADD COLUMN verified_at TEXT');
   if (!paymentsColSet.has('date')) {
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN date TEXT');
     await database.runAsync("UPDATE customer_payments SET date = COALESCE(date, date('now'))");
@@ -111,6 +116,7 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   await database.runAsync(
     "UPDATE customer_payments SET created_at = COALESCE(created_at, datetime('now'))",
   );
+  await database.runAsync("UPDATE customer_payments SET is_verified = COALESCE(is_verified, 0)");
 
   // Indexes last: older DBs might not have the indexed columns until we migrate above.
   await database.execAsync(CREATE_INDEX_CREDITS_CUSTOMER_ID);
@@ -195,43 +201,7 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
   return db;
 }
 
-export function getDb(): SQLite.SQLiteDatabase | null {
-  return db;
-}
-
 // --- Customers ---
-export async function getAllCustomers(): Promise<Customer[]> {
-  const database = db ?? (await initDatabase());
-  const rows = await database.getAllAsync<Customer>(
-    'SELECT id, name, mobile, address, note, created_at FROM customers ORDER BY name COLLATE NOCASE',
-  );
-  return rows as Customer[];
-}
-
-export async function getCustomersWithBalance(): Promise<CustomerWithBalance[]> {
-  const database = db ?? (await initDatabase());
-  // Single query (avoids N+1) so the customer list doesn't feel "stuck loading"
-  // on larger datasets.
-  const rows = await database.getAllAsync<CustomerWithBalance>(
-    `SELECT
-      c.id, c.name, c.mobile, c.address, c.note, c.created_at,
-      COALESCE((SELECT SUM(amount) FROM customer_credits WHERE customer_id = c.id), 0) -
-      COALESCE((SELECT SUM(amount) FROM customer_payments WHERE customer_id = c.id), 0) as balance,
-      (
-        SELECT MAX(d) FROM (
-          SELECT MAX(date) as d FROM customer_credits WHERE customer_id = c.id
-          UNION ALL
-          SELECT MAX(date) as d FROM customer_payments WHERE customer_id = c.id
-        )
-      ) as last_transaction_date,
-      COALESCE((SELECT COUNT(*) FROM customer_credits WHERE customer_id = c.id), 0) +
-      COALESCE((SELECT COUNT(*) FROM customer_payments WHERE customer_id = c.id), 0) as transaction_count
-     FROM customers c
-     ORDER BY COALESCE(last_transaction_date, c.created_at) DESC, balance DESC`,
-  );
-  return (rows as CustomerWithBalance[]) ?? [];
-}
-
 export async function getCustomersWithBalancePage(params: {
   limit: number;
   offset: number;
@@ -279,6 +249,39 @@ export async function getCustomersCount(query?: string): Promise<number> {
   return Number(row?.total ?? 0);
 }
 
+export async function getCollectionPriorityCustomers(
+  limit = 5,
+): Promise<CollectionPriorityCustomer[]> {
+  const database = db ?? (await initDatabase());
+  const rows = await database.getAllAsync<CollectionPriorityCustomer>(
+    `SELECT id, name, balance, oldest_due_date
+     FROM (
+       SELECT
+         c.id,
+         c.name,
+         COALESCE((SELECT SUM(amount) FROM customer_credits WHERE customer_id = c.id), 0) -
+         COALESCE((SELECT SUM(amount) FROM customer_payments WHERE customer_id = c.id), 0) as balance,
+         (
+           SELECT MIN(expected_payment_date)
+           FROM customer_credits cr
+           WHERE cr.customer_id = c.id
+             AND cr.expected_payment_date IS NOT NULL
+             AND trim(cr.expected_payment_date) <> ''
+         ) as oldest_due_date
+       FROM customers c
+     )
+     WHERE balance > 0
+     ORDER BY
+       balance DESC,
+       CASE WHEN oldest_due_date IS NULL OR trim(oldest_due_date) = '' THEN 1 ELSE 0 END ASC,
+       oldest_due_date ASC,
+       name COLLATE NOCASE ASC
+     LIMIT ?`,
+    limit,
+  );
+  return (rows as CollectionPriorityCustomer[]) ?? [];
+}
+
 export async function getCustomerById(id: number): Promise<Customer | null> {
   const database = db ?? (await initDatabase());
   const row = await database.getFirstAsync<Customer>(
@@ -324,21 +327,18 @@ export async function updateCustomer(
 
 export async function deleteCustomer(id: number): Promise<void> {
   const database = db ?? (await initDatabase());
-  await database.runAsync('DELETE FROM customer_credits WHERE customer_id = ?', id);
-  await database.runAsync('DELETE FROM customer_payments WHERE customer_id = ?', id);
-  await database.runAsync('DELETE FROM customers WHERE id = ?', id);
-}
-
-// --- Balance ---
-export async function getBalanceForCustomer(customerId: number): Promise<number> {
-  const database = db ?? (await initDatabase());
-  const row = await database.getFirstAsync<{ balance: number }>(
-    `SELECT
-       COALESCE((SELECT SUM(amount) FROM customer_credits WHERE customer_id = ?), 0) -
-       COALESCE((SELECT SUM(amount) FROM customer_payments WHERE customer_id = ?), 0) as balance`,
-    [customerId],
-  );
-  return row?.balance ?? 0;
+  await database.execAsync('BEGIN');
+  try {
+    await database.runAsync('DELETE FROM customer_credit_logs WHERE customer_id = ?', id);
+    await database.runAsync('DELETE FROM customer_payment_logs WHERE customer_id = ?', id);
+    await database.runAsync('DELETE FROM customer_credits WHERE customer_id = ?', id);
+    await database.runAsync('DELETE FROM customer_payments WHERE customer_id = ?', id);
+    await database.runAsync('DELETE FROM customers WHERE id = ?', id);
+    await database.execAsync('COMMIT');
+  } catch (e) {
+    await database.execAsync('ROLLBACK');
+    throw e;
+  }
 }
 
 export async function getTotalCreditsForCustomer(customerId: number): Promise<number> {
@@ -462,14 +462,22 @@ export async function updateCredit(
 
 export async function deleteCredit(id: number): Promise<void> {
   const database = db ?? (await initDatabase());
-  await database.runAsync('DELETE FROM customer_credits WHERE id = ?', id);
+  await database.execAsync('BEGIN');
+  try {
+    await database.runAsync('DELETE FROM customer_credit_logs WHERE credit_id = ?', id);
+    await database.runAsync('DELETE FROM customer_credits WHERE id = ?', id);
+    await database.execAsync('COMMIT');
+  } catch (e) {
+    await database.execAsync('ROLLBACK');
+    throw e;
+  }
 }
 
 // --- Payments ---
 export async function getPaymentsForCustomer(customerId: number): Promise<CustomerPayment[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerPayment>(
-    `SELECT id, customer_id, amount, note, attachment_uri, attachment_name, attachment_mime, date, created_at
+    `SELECT id, customer_id, amount, note, is_verified, verified_at, attachment_uri, attachment_name, attachment_mime, date, created_at
      FROM customer_payments WHERE customer_id = ?
      ORDER BY date DESC, created_at DESC`,
     [customerId],
@@ -492,7 +500,7 @@ export async function getCreditsByDateRange(startDate: string, endDate: string):
 export async function getPaymentsByDateRange(startDate: string, endDate: string): Promise<CustomerPayment[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerPayment>(
-    `SELECT id, customer_id, amount, note, attachment_uri, attachment_name, attachment_mime, date, created_at
+    `SELECT id, customer_id, amount, note, is_verified, verified_at, attachment_uri, attachment_name, attachment_mime, date, created_at
      FROM customer_payments
      WHERE date >= ? AND date <= ?
      ORDER BY date DESC, created_at DESC`,
@@ -512,14 +520,18 @@ export async function getPaymentsWithCustomerPage(params: {
   const like = `%${q}%`;
   const rows = await database.getAllAsync<CustomerPaymentWithCustomer>(
     `SELECT 
-      p.id, p.customer_id, p.amount, p.note, p.attachment_uri, p.attachment_name, p.attachment_mime, p.date, p.created_at,
+      p.id, p.customer_id, p.amount, p.note, p.is_verified, p.verified_at, p.attachment_uri, p.attachment_name, p.attachment_mime, p.date, p.created_at,
       cu.name as customer_name, cu.mobile as customer_mobile
      FROM customer_payments p
      JOIN customers cu ON cu.id = p.customer_id
-     ${hasQuery ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?' : ''}
+     ${
+       hasQuery
+         ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ? OR lower(COALESCE(p.note, \'\')) LIKE ?'
+         : ''
+     }
      ORDER BY p.date DESC, p.created_at DESC
      LIMIT ? OFFSET ?`,
-    ...(hasQuery ? [like, like] : []),
+    ...(hasQuery ? [like, like, like] : []),
     params.limit,
     params.offset,
   );
@@ -534,8 +546,12 @@ export async function getPaymentsCount(query?: string): Promise<number> {
   const row = await database.getFirstAsync<{ total: number }>(
     `SELECT COUNT(*) as total FROM customer_payments p
      JOIN customers cu ON cu.id = p.customer_id
-     ${hasQuery ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ?' : ''}`,
-    ...(hasQuery ? [like, like] : []),
+     ${
+       hasQuery
+         ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ? OR lower(COALESCE(p.note, \'\')) LIKE ?'
+         : ''
+     }`,
+    ...(hasQuery ? [like, like, like] : []),
   );
   return Number(row?.total ?? 0);
 }
@@ -543,7 +559,7 @@ export async function getPaymentsCount(query?: string): Promise<number> {
 export async function getPaymentById(id: number): Promise<CustomerPayment | null> {
   const database = db ?? (await initDatabase());
   const row = await database.getFirstAsync<CustomerPayment>(
-    `SELECT id, customer_id, amount, note, attachment_uri, attachment_name, attachment_mime, date, created_at
+    `SELECT id, customer_id, amount, note, is_verified, verified_at, attachment_uri, attachment_name, attachment_mime, date, created_at
      FROM customer_payments WHERE id = ?`,
     [id],
   );
@@ -554,6 +570,8 @@ export async function insertPayment(data: {
   customer_id: number;
   amount: number;
   note?: string;
+  is_verified?: number;
+  verified_at?: string | null;
   attachment_uri?: string;
   attachment_name?: string;
   attachment_mime?: string;
@@ -562,10 +580,12 @@ export async function insertPayment(data: {
   const database = db ?? (await initDatabase());
   const date = data.date ?? new Date().toISOString().slice(0, 10);
   const result = await database.runAsync(
-    'INSERT INTO customer_payments (customer_id, amount, note, attachment_uri, attachment_name, attachment_mime, date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO customer_payments (customer_id, amount, note, is_verified, verified_at, attachment_uri, attachment_name, attachment_mime, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
     data.customer_id,
     data.amount,
     data.note ?? null,
+    data.is_verified ?? 0,
+    data.verified_at ?? null,
     data.attachment_uri ?? null,
     data.attachment_name ?? null,
     data.attachment_mime ?? null,
@@ -607,7 +627,36 @@ export async function updatePayment(
 
 export async function deletePayment(id: number): Promise<void> {
   const database = db ?? (await initDatabase());
-  await database.runAsync('DELETE FROM customer_payments WHERE id = ?', id);
+  await database.execAsync('BEGIN');
+  try {
+    await database.runAsync('DELETE FROM customer_payment_logs WHERE payment_id = ?', id);
+    await database.runAsync('DELETE FROM customer_payments WHERE id = ?', id);
+    await database.execAsync('COMMIT');
+  } catch (e) {
+    await database.execAsync('ROLLBACK');
+    throw e;
+  }
+}
+
+export async function setPaymentVerification(id: number, verified: boolean): Promise<void> {
+  const database = db ?? (await initDatabase());
+  if (verified) {
+    await database.runAsync(
+      `UPDATE customer_payments
+       SET is_verified = 1,
+           verified_at = datetime('now')
+       WHERE id = ?`,
+      id,
+    );
+    return;
+  }
+  await database.runAsync(
+    `UPDATE customer_payments
+     SET is_verified = 0,
+         verified_at = NULL
+     WHERE id = ?`,
+    id,
+  );
 }
 
 export async function getCreditLogs(creditId: number) {

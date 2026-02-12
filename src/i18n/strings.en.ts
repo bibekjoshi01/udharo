@@ -22,6 +22,9 @@ export const STRINGS_EN = {
   balanceInfoTitle: 'Amount Info',
   balanceInfoBody:
     'If the amount is negative (-), it means you need to pay that amount (outgoing). If it is positive, it means you will receive that amount.',
+  collectionPriorityTitle: 'Collection Priority',
+  collectionPriorityEmpty: 'No outstanding customers yet.',
+  oldestDueLabel: 'Oldest Due',
 
   // Language
   languageTitle: 'Choose Language',
@@ -33,6 +36,7 @@ export const STRINGS_EN = {
   addCustomer: 'Add Customer',
   emptyCustomers: 'No Customers yet. Tap + to add',
   searchPlaceholder: 'Search by name or phone',
+  paymentSearchPlaceholder: 'Search by customer or tx no.',
 
   // Customer detail
   outstandingBalance: 'Receivable Amount',
@@ -55,7 +59,6 @@ export const STRINGS_EN = {
   amountPlaceholder: 'Enter Amount',
   notePlaceholder: 'Note (e.g., oil, potatoes)',
   paymentNotePlaceholder: 'Transaction ID or Note',
-  appNlaceholder: 'Note (e.g., oil, potatoes)',
   expectedPaymentDate: 'Payment Due Date',
   expectedPaymentDatePlaceholder: 'e.g., 2025-02-28',
   creditDate: 'Credit Date',

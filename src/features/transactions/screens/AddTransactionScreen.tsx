@@ -106,6 +106,8 @@ export function AddTransactionScreen() {
           routes: [{ name: 'Home' }, { name: targetList }],
         }),
       );
+    } catch (e: any) {
+      Alert.alert(STRINGS.saveFailed, String(e?.message ?? e));
     } finally {
       setSaving(false);
     }
@@ -240,7 +242,11 @@ export function AddTransactionScreen() {
                 style={styles.modalAddCustomer}
                 onPress={() => {
                   setPickerOpen(false);
-                  navigation.navigate('AddCustomer', { returnTo: 'AddTransaction', mode, lockMode });
+                  navigation.navigate('AddCustomer', {
+                    returnTo: 'AddTransaction',
+                    mode,
+                    lockMode,
+                  });
                 }}
               >
                 <Ionicons name="person-add-outline" size={18} color={COLORS.primary} />
@@ -279,16 +285,6 @@ export function AddTransactionScreen() {
               {customers.length === 0 ? (
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyText}>{STRINGS.emptyCustomers}</Text>
-                  <AppPressable
-                    style={styles.emptyButton}
-                    onPress={() => {
-                      setPickerOpen(false);
-                      navigation.navigate('AddCustomer');
-                    }}
-                  >
-                    <Ionicons name="add-circle-outline" size={20} color={COLORS.primary} />
-                    <Text style={styles.emptyButtonText}> {STRINGS.addCustomer}</Text>
-                  </AppPressable>
                 </View>
               ) : null}
             </ScrollView>

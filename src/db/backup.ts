@@ -114,6 +114,12 @@ export async function importDatabaseFromSql(): Promise<boolean> {
   if (!paymentsColSet.has('attachment_mime')) {
     await db.execAsync('ALTER TABLE customer_payments ADD COLUMN attachment_mime TEXT');
   }
+  if (!paymentsColSet.has('is_verified')) {
+    await db.execAsync('ALTER TABLE customer_payments ADD COLUMN is_verified INTEGER DEFAULT 0');
+  }
+  if (!paymentsColSet.has('verified_at')) {
+    await db.execAsync('ALTER TABLE customer_payments ADD COLUMN verified_at TEXT');
+  }
   await db.execAsync('PRAGMA foreign_keys=OFF;');
   await db.execAsync('BEGIN;');
   try {

@@ -16,7 +16,13 @@ import { useStrings } from '../../../constants/strings';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import { TransactionForm } from '../components';
 import type { RootStackParamList } from '../../../navigation/types';
-import { deleteCredit, deletePayment, updateCredit, updatePayment } from '../../../db/database';
+import {
+  deleteCredit,
+  deletePayment,
+  setPaymentVerification,
+  updateCredit,
+  updatePayment,
+} from '../../../db/database';
 import { useTransaction } from '../hooks';
 import { AppPressable } from '../../../components/AppPressable';
 import { Skeleton } from '../../../components/Skeleton';
@@ -33,7 +39,7 @@ export function EditTransactionScreen() {
   const STRINGS = useStrings();
   const route = useRoute<Route>();
   const { transactionId, mode } = route.params;
-  const { transaction, customer, loading } = useTransaction(mode, transactionId);
+  const { transaction, customer, loading, error } = useTransaction(mode, transactionId);
   const MAX_AMOUNT = 10_000_000;
 
   const [currentMode, setCurrentMode] = useState<'credit' | 'payment'>(mode);
@@ -44,6 +50,8 @@ export function EditTransactionScreen() {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [confirmRemoveAttachment, setConfirmRemoveAttachment] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [togglingVerified, setTogglingVerified] = useState(false);
+  const [isPaymentVerified, setIsPaymentVerified] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
@@ -66,6 +74,9 @@ export function EditTransactionScreen() {
               mimeType: (transaction as { attachment_mime?: string }).attachment_mime ?? undefined,
             }
           : null,
+      );
+      setIsPaymentVerified(
+        Number((transaction as { is_verified?: number }).is_verified ?? 0) === 1,
       );
     }
   }, [mode, transaction]);
@@ -97,6 +108,8 @@ export function EditTransactionScreen() {
         });
       }
       navigation.goBack();
+    } catch (e: any) {
+      Alert.alert(STRINGS.saveFailed, String(e?.message ?? e));
     } finally {
       setSaving(false);
     }
@@ -107,7 +120,21 @@ export function EditTransactionScreen() {
     setShowDelete(true);
   };
 
-  if (loading || !transaction) {
+  const onToggleVerification = async () => {
+    if (!transaction || currentMode !== 'payment' || togglingVerified) return;
+    const next = !isPaymentVerified;
+    setTogglingVerified(true);
+    try {
+      await setPaymentVerification(transaction.id, next);
+      setIsPaymentVerified(next);
+    } catch (e: any) {
+      Alert.alert(STRINGS.saveFailed, String(e?.message ?? e));
+    } finally {
+      setTogglingVerified(false);
+    }
+  };
+
+  if (loading) {
     return (
       <View style={styles.container}>
         <ScreenHeader title="" onBack={() => navigation.goBack()} />
@@ -117,6 +144,17 @@ export function EditTransactionScreen() {
             <Skeleton height={48} radius={10} style={styles.skeletonField} />
             <Skeleton height={120} radius={12} style={styles.skeletonField} />
           </View>
+        </View>
+      </View>
+    );
+  }
+
+  if (!transaction) {
+    return (
+      <View style={styles.container}>
+        <ScreenHeader title="" onBack={() => navigation.goBack()} />
+        <View style={styles.loadingWrap}>
+          <Text style={styles.loadingText}>{error ?? STRINGS.noTransactions}</Text>
         </View>
       </View>
     );
@@ -155,7 +193,26 @@ export function EditTransactionScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        {customer ? <Text style={styles.customerName}>{customer.name}</Text> : null}
+        {customer ? (
+          <View style={styles.customerRow}>
+            <Text style={styles.customerName} numberOfLines={1}>
+              {customer.name}
+            </Text>
+            {currentMode === 'payment' ? (
+              <AppPressable
+                style={styles.customerVerifyBtn}
+                onPress={onToggleVerification}
+                disabled={togglingVerified}
+              >
+                <Ionicons
+                  name={isPaymentVerified ? 'checkmark-circle' : 'checkmark-circle-outline'}
+                  size={22}
+                  color={isPaymentVerified ? COLORS.paid : COLORS.textSecondary}
+                />
+              </AppPressable>
+            ) : null}
+          </View>
+        ) : null}
         <TransactionForm
           mode={currentMode}
           onModeChange={undefined}
@@ -251,12 +308,16 @@ export function EditTransactionScreen() {
         onConfirm={async () => {
           if (!transaction) return;
           setShowDelete(false);
-          if (currentMode === 'credit') {
-            await deleteCredit(transaction.id);
-          } else {
-            await deletePayment(transaction.id);
+          try {
+            if (currentMode === 'credit') {
+              await deleteCredit(transaction.id);
+            } else {
+              await deletePayment(transaction.id);
+            }
+            navigation.goBack();
+          } catch (e: any) {
+            Alert.alert(STRINGS.saveFailed, String(e?.message ?? e));
           }
-          navigation.goBack();
         }}
       />
     </KeyboardAvoidingView>
@@ -286,11 +347,24 @@ const styles = StyleSheet.create({
   skeletonField: {
     marginBottom: SPACING.md,
   },
+  customerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.md,
+  },
   customerName: {
+    flex: 1,
     fontSize: FONTS.title,
     fontWeight: '600',
     color: COLORS.text,
-    marginBottom: SPACING.md,
+  },
+  customerVerifyBtn: {
+    width: MIN_TOUCH,
+    height: MIN_TOUCH,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: SPACING.xs,
   },
   iconBtn: {
     width: MIN_TOUCH,

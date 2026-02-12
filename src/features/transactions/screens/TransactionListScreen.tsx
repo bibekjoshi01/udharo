@@ -77,6 +77,8 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
   }: {
     item: CustomerCreditWithCustomer | CustomerPaymentWithCustomer;
   }) => {
+    const paymentItem = type === 'payment' ? (item as CustomerPaymentWithCustomer) : null;
+    const isVerified = paymentItem ? Number(paymentItem.is_verified ?? 0) === 1 : false;
     return (
       <AppPressable
         style={styles.row}
@@ -86,9 +88,9 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
       >
         <View style={styles.rowLeft}>
           <Text style={styles.rowTitle}>{item.customer_name}</Text>
-          {type !== 'credit' && item.note ? (
+          {paymentItem?.note ? (
             <Text style={styles.rowNote} numberOfLines={1}>
-              {item.note}
+              {paymentItem.note}
             </Text>
           ) : null}
           <Text style={styles.rowDate}>
@@ -107,6 +109,14 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
           ) : null}
         </View>
         <View style={styles.rowRight}>
+          {paymentItem && isVerified ? (
+            <Ionicons
+              name="checkmark-circle"
+              size={20}
+              color={COLORS.paid}
+              style={styles.verifiedIcon}
+            />
+          ) : null}
           <Text
             style={[
               styles.rowAmount,
@@ -152,7 +162,7 @@ export function TransactionListScreen({ type, title }: TransactionListScreenProp
         <Ionicons name="search" size={20} color={COLORS.textSecondary} style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder={STRINGS.searchPlaceholder}
+          placeholder={type === 'payment' ? STRINGS.paymentSearchPlaceholder : STRINGS.searchPlaceholder}
           placeholderTextColor={COLORS.textSecondary}
           value={search}
           onChangeText={setSearch}
@@ -257,6 +267,8 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     paddingLeft: SPACING.lg + 16,
     paddingRight: SPACING.md,
+    paddingVertical: 0,
+    textAlignVertical: 'center',
     fontSize: FONTS.body,
     color: COLORS.text,
   },
@@ -287,10 +299,12 @@ const styles = StyleSheet.create({
   rowRight: {
     alignItems: 'flex-end',
   },
+  verifiedIcon: {
+    marginBottom: 4,
+  },
   rowTitle: { fontSize: FONTS.title, fontWeight: '700', color: COLORS.text },
   rowNote: { fontSize: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
   rowDate: { fontSize: FONTS.body, color: COLORS.textSecondary, marginTop: 4 },
-  rowExpected: { fontSize: FONTS.small, color: COLORS.textSecondary, marginTop: 2 },
   rowExpectedOverdue: { color: COLORS.debt, fontWeight: '700' },
   rowAmount: { fontSize: FONTS.title, fontWeight: '700' },
   amountCredit: { color: COLORS.debt },
