@@ -49,6 +49,7 @@ npx expo start
 ```bash
 npx eas-cli login
 npx eas-cli build -p android --profile preview   # APK for testing
+npx eas-cli build -p ios --profile preview
 npx eas-cli build -p android --profile production # AAB for Play Store
 ```
 
