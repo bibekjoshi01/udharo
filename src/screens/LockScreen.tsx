@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Image } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
@@ -70,7 +70,7 @@ export function LockScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.logoWrap}>
-        <Ionicons name="book-outline" size={28} color={COLORS.primary} />
+        <Image source={require('../../assets/logo.png')} style={styles.logoImage} />
       </View>
       <Text style={styles.title}>{STRINGS.appName}</Text>
       <Text style={styles.subtitle}>{STRINGS.enterPin}</Text>
@@ -112,6 +112,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.md,
+  },
+  logoImage: {
+    width: 38,
+    height: 38,
   },
   title: {
     fontSize: 22,

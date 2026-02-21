@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING } from '../constants/theme';
 import { useStrings } from '../constants/strings';
 import { initDatabase } from '../db/database';
@@ -46,7 +45,7 @@ export function SplashScreen({ onReady }: { onReady: () => void }) {
       ]}
     >
       <View style={styles.logoWrap}>
-        <Ionicons name="book-outline" size={32} color={COLORS.primary} />
+        <Image source={require('../../assets/logo.png')} style={styles.logoImage} />
       </View>
       <Text style={styles.appName}>{STRINGS.appName}</Text>
       <Text style={styles.tagline}>{STRINGS.tagline}</Text>
@@ -69,6 +68,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.md,
+  },
+  logoImage: {
+    width: 42,
+    height: 42,
   },
   appName: {
     fontSize: 36,

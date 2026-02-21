@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, MIN_TOUCH } from '../../../constants/theme';
 import { AppPressable } from '../../../components/AppPressable';
@@ -21,7 +21,7 @@ export function HomeHeader({ onMenuPress }: HomeHeaderProps) {
     <View style={[styles.header, { paddingTop }]}>
       <View style={styles.headerLeft}>
         <View style={styles.logoWrap}>
-          <Ionicons name="book-outline" size={20} color={COLORS.primary} />
+          <Image source={require('../../../../assets/logo.png')} style={styles.logoImage} />
         </View>
       </View>
       <View style={styles.headerCenter}>
@@ -62,6 +62,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#E2F3F1',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  logoImage: {
+    width: 22,
+    height: 22,
   },
   headerCenter: {
     flex: 1,
