@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { AppState, StatusBar, Text, TextInput } from 'react-native';
+import { AppState, Platform, StatusBar, Text, TextInput } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -11,7 +11,11 @@ import { LockScreen } from './src/screens/LockScreen';
 import { useStore } from './src/store/useStore';
 import { COLORS } from './src/constants/theme';
 import { useStrings } from './src/constants/strings';
-import { initializeNotifications, scheduleDailyReminderAtNine } from './src/utils/notifications';
+import {
+  ensureNotificationPermission,
+  initializeNotifications,
+  scheduleDailyReminderAtNine,
+} from './src/utils/notifications';
 
 import { useFonts } from 'expo-font';
 import {
@@ -102,6 +106,10 @@ export default function App() {
   React.useEffect(() => {
     (async () => {
       await initializeNotifications();
+      if (Platform.OS === 'android') await ensureChannel();
+      const allowed = await ensureNotificationPermission();
+      if (!allowed) return;
+
       await scheduleDailyReminderAtNine();
     })();
   }, []);
@@ -124,4 +132,7 @@ export default function App() {
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
+}
+function ensureChannel() {
+  throw new Error('Function not implemented.');
 }
