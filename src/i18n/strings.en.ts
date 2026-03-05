@@ -208,7 +208,7 @@ export const STRINGS_EN = {
   dailyReminderBody: "Log today's credits and payments",
 
   // App update
-  updateAvailableTitle: 'Update available',
+  updateAvailableTitle: 'Update Available',
   updateAvailableMessage: 'A newer version is available. Update now for the best experience.',
   updateRequiredTitle: 'Update required',
   updateRequiredMessage: 'Please update the app to continue.',
