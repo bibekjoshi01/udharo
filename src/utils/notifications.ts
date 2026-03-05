@@ -47,7 +47,7 @@ export async function ensureNotificationPermission(): Promise<boolean> {
 /**
  * Android notification channel
  */
-async function ensureChannel() {
+export async function ensureChannel() {
   if (Platform.OS !== 'android') return;
   await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
     name: 'Daily Reminder',
@@ -70,18 +70,11 @@ export async function scheduleDailyReminderAtNine() {
       }
     }
 
-    // Calculate next 9 AM
-    const now = new Date();
-    const next9AM = new Date();
-    next9AM.setHours(9, 0, 0, 0);
-    if (now >= next9AM) next9AM.setDate(next9AM.getDate() + 1);
-
-    // Calendar trigger
-    const trigger: Notifications.CalendarTriggerInput = {
-      type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-      hour: next9AM.getHours(),
-      minute: next9AM.getMinutes(),
-      repeats: true,
+    // Daily trigger fires when the hour/minute match (will pick the next occurrence automatically).
+    const trigger: Notifications.DailyTriggerInput = {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
+      hour: 9,
+      minute: 0,
     };
 
     // Schedule notification

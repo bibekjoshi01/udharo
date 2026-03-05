@@ -12,6 +12,7 @@ import { useStore } from './src/store/useStore';
 import { COLORS } from './src/constants/theme';
 import { useStrings } from './src/constants/strings';
 import {
+  ensureChannel,
   ensureNotificationPermission,
   initializeNotifications,
   scheduleDailyReminderAtNine,
@@ -97,13 +98,11 @@ export default function App() {
     }
   }, [prefs.lockEnabled, setUnlocked]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
   // Notifications
   // ------------------------------------------------------------------
   React.useEffect(() => {
+    if (!fontsLoaded) return;
+
     (async () => {
       await initializeNotifications();
       if (Platform.OS === 'android') await ensureChannel();
@@ -112,7 +111,11 @@ export default function App() {
 
       await scheduleDailyReminderAtNine();
     })();
-  }, []);
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   const showLock = isDbReady && prefs.lockEnabled && !isUnlocked;
 
@@ -132,7 +135,4 @@ export default function App() {
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
-}
-function ensureChannel() {
-  throw new Error('Function not implemented.');
 }
