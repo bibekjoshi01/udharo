@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Share, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,11 +14,6 @@ import { useStore } from '../store/useStore';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Menu'>;
 
-const appConfig = require('../../app.json');
-const packageName = appConfig?.expo?.android?.package ?? 'com.udharo.app';
-const playStoreUrl = `https://play.google.com/store/apps/details?id=${packageName}`;
-const shareUrl = playStoreUrl;
-
 type MenuItem = {
   label: string;
   icon: keyof typeof Ionicons.glyphMap;
@@ -32,27 +27,6 @@ export function MenuScreen() {
   const setPrefs = useStore((s) => s.setPrefs);
   const language = prefs.language === 'en' ? 'en' : 'ne';
 
-  const handleRate = async () => {
-    const url = playStoreUrl;
-    const canOpen = await Linking.canOpenURL(url);
-    if (!canOpen) {
-      Alert.alert(STRINGS.rateApp, url);
-      return;
-    }
-    await Linking.openURL(url);
-  };
-
-  const handleShare = async () => {
-    try {
-      await Share.share({
-        message: `${STRINGS.shareMessage}${shareUrl}`,
-        url: shareUrl,
-      });
-    } catch {
-      Alert.alert(STRINGS.shareApp, shareUrl);
-    }
-  };
-
   const mainItems: MenuItem[] = [
     {
       label: STRINGS.aboutApp,
@@ -65,23 +39,14 @@ export function MenuScreen() {
       onPress: () => navigation.navigate('LockSettings'),
     },
     {
-      label: STRINGS.termsOfUse,
-      icon: 'document-text-outline',
-      onPress: () => navigation.navigate('Terms'),
-    },
-  ];
-
-  const supportItems: MenuItem[] = [
-    {
       label: STRINGS.support,
       icon: 'help-circle-outline',
       onPress: () => navigation.navigate('Support'),
     },
-    { label: STRINGS.rateApp, icon: 'star-outline', onPress: handleRate },
     {
-      label: STRINGS.shareApp,
-      icon: 'share-social-outline',
-      onPress: handleShare,
+      label: STRINGS.termsOfUse,
+      icon: 'help-circle-outline',
+      onPress: () => navigation.navigate('Terms'),
     },
   ];
 
@@ -109,12 +74,7 @@ export function MenuScreen() {
               ]}
               onPress={() => setPrefs({ language: 'en' })}
             >
-              <Text
-                style={[
-                  styles.languageText,
-                  language === 'en' && styles.languageTextActive,
-                ]}
-              >
+              <Text style={[styles.languageText, language === 'en' && styles.languageTextActive]}>
                 EN
               </Text>
             </AppPressable>
@@ -125,12 +85,7 @@ export function MenuScreen() {
               ]}
               onPress={() => setPrefs({ language: 'ne' })}
             >
-              <Text
-                style={[
-                  styles.languageText,
-                  language === 'ne' && styles.languageTextActive,
-                ]}
-              >
+              <Text style={[styles.languageText, language === 'ne' && styles.languageTextActive]}>
                 NP
               </Text>
             </AppPressable>
@@ -163,25 +118,21 @@ export function MenuScreen() {
             <AppPressable
               style={[styles.backupBtn, styles.backupBtnSecondary]}
               onPress={() => {
-                Alert.alert(
-                  STRINGS.dataBackup,
-                  STRINGS.backupImportConfirm,
-                  [
-                    { text: STRINGS.cancel, style: 'cancel' },
-                    {
-                      text: STRINGS.importLabel,
-                      style: 'destructive',
-                      onPress: async () => {
-                        try {
-                          const ok = await importDatabaseFromSql();
-                          if (ok) showToast(STRINGS.importSuccess);
-                        } catch (e: any) {
-                          Alert.alert(STRINGS.importFailed, String(e?.message ?? e));
-                        }
-                      },
+                Alert.alert(STRINGS.dataBackup, STRINGS.backupImportConfirm, [
+                  { text: STRINGS.cancel, style: 'cancel' },
+                  {
+                    text: STRINGS.importLabel,
+                    style: 'destructive',
+                    onPress: async () => {
+                      try {
+                        const ok = await importDatabaseFromSql();
+                        if (ok) showToast(STRINGS.importSuccess);
+                      } catch (e: any) {
+                        Alert.alert(STRINGS.importFailed, String(e?.message ?? e));
+                      }
                     },
-                  ],
-                );
+                  },
+                ]);
               }}
             >
               <Text style={[styles.backupBtnText, styles.backupBtnTextSecondary]}>
@@ -191,7 +142,6 @@ export function MenuScreen() {
           </View>
         </View>
         <View style={styles.menuCard}>{mainItems.map(renderItem)}</View>
-        <View style={styles.menuCard}>{supportItems.map(renderItem)}</View>
       </ScrollView>
     </View>
   );
@@ -321,6 +271,8 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderColor: COLORS.border,
     marginBottom: SPACING.lg,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.sm,
   },
   menuRow: {
     flexDirection: 'row',
