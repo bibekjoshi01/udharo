@@ -1,16 +1,25 @@
 import * as Application from 'expo-application';
 import { Linking, Platform } from 'react-native';
+import { compareVersions } from 'compare-versions';
 
 type UpdateApiResponse = {
-  currentVersion: string;
+  latestVersion: string;
+  minSupportedVersion: string;
   force: boolean;
-  storeUrl: string;
+  androidStoreUrl: string;
+  iosStoreUrl: string;
+};
+
+type UpdateCheckResult = {
+  updateAvailable: boolean;
+  forceUpdate: boolean;
+  storeUrl: string | null;
 };
 
 const UPDATE_URL = 'https://udharo.cloud/update-config';
 const REQUEST_TIMEOUT_MS = 5000;
 
-export async function checkForAppUpdate(): Promise<UpdateApiResponse | null> {
+export async function checkForAppUpdate(): Promise<UpdateCheckResult | null> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -27,18 +36,31 @@ export async function checkForAppUpdate(): Promise<UpdateApiResponse | null> {
 
     const data = (await response.json()) as UpdateApiResponse;
 
-    if (!data?.currentVersion) return null;
+    if (!data?.latestVersion) return null;
 
     const installedVersion = Application.nativeApplicationVersion;
 
     if (!installedVersion) return null;
 
-    // SIMPLE STRING CHECK
-    if (installedVersion === data.currentVersion) {
-      return null;
+    const storeUrl = Platform.OS === 'android' ? data.androidStoreUrl : data.iosStoreUrl;
+
+    const needsUpdate = compareVersions(installedVersion, data.latestVersion) < 0;
+
+    const forceUpdate = compareVersions(installedVersion, data.minSupportedVersion) < 0;
+
+    if (!needsUpdate) {
+      return {
+        updateAvailable: false,
+        forceUpdate: false,
+        storeUrl: null,
+      };
     }
 
-    return data;
+    return {
+      updateAvailable: true,
+      forceUpdate,
+      storeUrl,
+    };
   } catch {
     return null;
   }
@@ -48,7 +70,6 @@ export async function openStoreUrl(storeUrl: string): Promise<boolean> {
   if (!storeUrl) return false;
 
   try {
-    // First try opening directly
     const supported = await Linking.canOpenURL(storeUrl);
 
     if (supported) {
@@ -56,14 +77,14 @@ export async function openStoreUrl(storeUrl: string): Promise<boolean> {
       return true;
     }
 
-    // Fallback logic (mainly Android edge cases)
+    // Android Play Store fallback
     if (Platform.OS === 'android') {
-      // If you pass https Play Store URL, it always works
       if (storeUrl.startsWith('market://')) {
         const fallback = storeUrl.replace(
           'market://details?id=',
           'https://play.google.com/store/apps/details?id=',
         );
+
         await Linking.openURL(fallback);
         return true;
       }
