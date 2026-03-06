@@ -1,17 +1,15 @@
 import 'react-native-gesture-handler';
 import React, { useEffect, useState } from 'react';
-import { AppState, Platform, StatusBar, Text, TextInput } from 'react-native';
+import { AppState, Platform, StatusBar, Text, TextInput, StatusBarStyle } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import * as Network from 'expo-network';
 import crashlytics from '@react-native-firebase/crashlytics';
-
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { LockScreen } from './src/screens/LockScreen';
 
 import { useStore } from './src/store/useStore';
-import { COLORS } from './src/constants/theme';
 import {
   ensureChannel,
   ensureNotificationPermission,
@@ -27,6 +25,7 @@ import {
 } from '@expo-google-fonts/noto-sans-devanagari';
 import { checkForAppUpdate } from './src/utils/appUpdate';
 import { AppUpdatePrompt } from './src/components/UpdatePrompt';
+import { COLORS } from './src/constants/theme';
 
 export default function App() {
   useEffect(() => {
@@ -172,26 +171,26 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <AppUpdatePrompt
-          visible={updateInfo.visible}
-          forceUpdate={updateInfo.forceUpdate}
-          storeUrl={updateInfo.storeUrl}
-          onCancel={() =>
-            setUpdateInfo((prev) => ({
-              ...prev,
-              visible: false,
-            }))
-          }
-        />
-
-        {showLock ? (
-          <LockScreen />
-        ) : (
-          <ErrorBoundary onReset={() => setBoundaryKey((k) => k + 1)}>
-            <AppNavigator key={boundaryKey} />
-          </ErrorBoundary>
-        )}
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} translucent={false} />
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.primary, gap: 0 }} edges={['top']}>
+          <AppUpdatePrompt
+            visible={updateInfo.visible}
+            forceUpdate={updateInfo.forceUpdate}
+            storeUrl={updateInfo.storeUrl}
+            onCancel={() =>
+              setUpdateInfo((prev) => ({
+                ...prev,
+                visible: false,
+              }))
+            }
+          />
+          {showLock ? (
+            <LockScreen />
+          ) : (
+            <ErrorBoundary onReset={() => setBoundaryKey((k) => k + 1)}>
+              <AppNavigator key={boundaryKey} />
+            </ErrorBoundary>
+          )}
+        </SafeAreaView>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

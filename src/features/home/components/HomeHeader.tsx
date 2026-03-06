@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, MIN_TOUCH } from '../../../constants/theme';
 import { AppPressable } from '../../../components/AppPressable';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatNepaliDateLong } from '../../../utils/date';
 
 const ICON_SIZE = 24;
@@ -13,12 +12,10 @@ export interface HomeHeaderProps {
 }
 
 export function HomeHeader({ onMenuPress }: HomeHeaderProps) {
-  const insets = useSafeAreaInsets();
-  const paddingTop = insets.top + SPACING.sm;
   const todayLabel = React.useMemo(() => formatNepaliDateLong(), []);
 
   return (
-    <View style={[styles.header, { paddingTop }]}>
+    <View style={styles.header}>
       <View style={styles.headerLeft}>
         <View style={styles.logoWrap}>
           <Image source={require('../../../../assets/logo.png')} style={styles.logoImage} />

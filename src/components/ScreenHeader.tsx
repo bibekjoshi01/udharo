@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, FONTS, SPACING, MIN_TOUCH } from '../constants/theme';
 import { AppPressable } from './AppPressable';
@@ -22,11 +21,9 @@ export function ScreenHeader({
   leftElement,
   showBackIcon = true,
 }: ScreenHeaderProps) {
-  const insets = useSafeAreaInsets();
-  const paddingTop = insets.top + SPACING.xs;
 
   return (
-    <View style={[styles.header, { paddingTop }]}>
+    <View style={styles.header}>
       <View style={styles.side}>
         {leftElement ??
           (showBackIcon && onBack ? (
@@ -54,6 +51,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: SPACING.sm,
+    paddingTop: SPACING.sm,
     paddingBottom: SPACING.xs,
     backgroundColor: COLORS.surface,
     borderBottomWidth: 1,

@@ -37,7 +37,7 @@ export function SplashScreen({ onReady }: { onReady: () => void }) {
       style={[
         styles.container,
         {
-          paddingTop: insets.top,
+          paddingTop: SPACING.md,
           paddingBottom: insets.bottom,
           paddingLeft: Math.max(insets.left, SPACING.xl),
           paddingRight: Math.max(insets.right, SPACING.xl),

@@ -44,13 +44,20 @@ npx expo start
 
 ---
 
-## Build
+## Cloud Build
 
 ```bash
 npx eas-cli login
 npx eas-cli build -p android --profile preview   # APK for testing
 npx eas-cli build -p ios --profile preview
 npx eas-cli build -p android --profile production # AAB for Play Store
+```
+
+## Local Build
+
+```bash
+npm install -g eas-cli
+eas build -p android --profile preview --local
 ```
 
 ---
@@ -85,6 +92,7 @@ npx tsc -p tsconfig.json --noEmit
 ## Release Guide
 
 See `docs/release-guide.md` for:
+
 - versioning
 - database migration safety
 - build + Play Store flow

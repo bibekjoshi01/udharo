@@ -1,9 +1,5 @@
 {
   "expo": {
-    "androidStatusBar": {
-      "backgroundColor": "#0F766E",
-      "barStyle": "light-content"
-    },
     "name": "Udharo",
     "slug": "udharo",
     "version": "1.5.1",
@@ -11,16 +7,37 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "androidStatusBar": {
+      "backgroundColor": "#0F766E",
+      "barStyle": "light-content"
+    },
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0F766E"
+      "backgroundColor": "#ffffff"
     },
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/crashlytics",
-      "expo-system-ui"
+      "./plugins/withModularHeaders"
     ],
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.udharo.app",
+      "versionCode": 1,
+      "permissions": ["POST_NOTIFICATIONS"],
+      "edgeToEdgeEnabled": false,
+      "predictiveBackGestureEnabled": false,
+      "splash": {
+        "image": "./assets/icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
+      "googleServicesFile": "./google-services.json"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.udharo.app",
@@ -30,24 +47,13 @@
       },
       "googleServicesFile": "./GoogleService-Info.plist"
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.udharo.app",
-      "versionCode": 1,
-      "permissions": ["POST_NOTIFICATIONS"],
-      "googleServicesFile": "./google-services.json"
-    },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
         "projectId": "620f8af5-61ba-4978-ad9d-fe4093b1ad03"
-      },
-      "updateConfigUrl": ""
+      }
     }
   }
 }
