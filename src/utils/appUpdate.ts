@@ -1,10 +1,6 @@
 import * as Application from 'expo-application';
 import { Linking, Platform } from 'react-native';
 
-export type UpdateCheckResult = {
-  force: boolean;
-};
-
 type UpdateApiResponse = {
   currentVersion: string;
   force: boolean;
@@ -14,7 +10,7 @@ type UpdateApiResponse = {
 const UPDATE_URL = 'https://udharo.cloud/update-config';
 const REQUEST_TIMEOUT_MS = 5000;
 
-export async function checkForAppUpdate(): Promise<UpdateCheckResult | null> {
+export async function checkForAppUpdate(): Promise<UpdateApiResponse | null> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -42,9 +38,7 @@ export async function checkForAppUpdate(): Promise<UpdateCheckResult | null> {
       return null;
     }
 
-    return {
-      force: Boolean(data.force),
-    };
+    return data;
   } catch {
     return null;
   }

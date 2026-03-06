@@ -10,7 +10,6 @@ import { LockScreen } from './src/screens/LockScreen';
 
 import { useStore } from './src/store/useStore';
 import { COLORS } from './src/constants/theme';
-import { useStrings } from './src/constants/strings';
 import {
   ensureChannel,
   ensureNotificationPermission,
@@ -34,8 +33,6 @@ export default function App() {
   const setUnlocked = useStore((s) => s.setUnlocked);
   const lastBackgroundAt = useStore((s) => s.lastBackgroundAt);
   const setLastBackgroundAt = useStore((s) => s.setLastBackgroundAt);
-
-  const STRINGS = useStrings();
 
   // Local State
   // ------------------------------------------------------------------
