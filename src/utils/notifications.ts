@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { getStrings } from '../constants/strings';
+import { logError } from './crashlytics';
 
 const CHANNEL_ID = 'daily-reminder';
 let handlerInitialized = false;
@@ -88,8 +89,7 @@ export async function scheduleDailyReminderAtNine() {
       trigger,
     });
 
-    console.log('Daily reminder scheduled at 9 AM');
   } catch (err) {
-    console.log('Failed to schedule daily reminder', err);
+    logError(err);
   }
 }

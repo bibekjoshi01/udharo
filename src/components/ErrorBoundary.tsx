@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from "../constants/theme";
 import { AppPressable } from "./AppPressable";
 import { getStrings } from "../constants/strings";
+import { logError } from "../utils/crashlytics";
 
 type ErrorBoundaryProps = {
   children: React.ReactNode;
@@ -21,8 +22,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return { hasError: true, message: error?.message };
   }
 
-  componentDidCatch() {
-    // Here we can hook crash reporting in future
+  componentDidCatch(error: Error) {
+    logError(error);
   }
 
   handleReset = () => {
