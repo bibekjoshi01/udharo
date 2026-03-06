@@ -1,6 +1,7 @@
 import * as Application from 'expo-application';
 import { Linking, Platform } from 'react-native';
 import { compareVersions } from 'compare-versions';
+import { logError } from './crashlytics';
 
 type UpdateApiResponse = {
   latestVersion: string;
@@ -60,7 +61,8 @@ export async function checkForAppUpdate(): Promise<UpdateCheckResult | null> {
       forceUpdate,
       storeUrl,
     };
-  } catch {
+  } catch (error: any) {
+    logError(error);
     return null;
   }
 }
@@ -90,7 +92,8 @@ export async function openStoreUrl(storeUrl: string): Promise<boolean> {
     }
 
     return false;
-  } catch {
+  } catch (error: any) {
+    logError(error);
     return false;
   }
 }

@@ -4,6 +4,7 @@ import { AppState, Platform, StatusBar, Text, TextInput } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Network from 'expo-network';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
@@ -28,6 +29,15 @@ import { checkForAppUpdate } from './src/utils/appUpdate';
 import { AppUpdatePrompt } from './src/components/UpdatePrompt';
 
 export default function App() {
+  useEffect(() => {
+    const defaultHandler = ErrorUtils.getGlobalHandler();
+
+    ErrorUtils.setGlobalHandler((error, isFatal) => {
+      crashlytics().recordError(error);
+      defaultHandler(error, isFatal);
+    });
+  }, []);
+
   // App Update
   // ------------------------------------------------------------------
   const [updateInfo, setUpdateInfo] = useState<{

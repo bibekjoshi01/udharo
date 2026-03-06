@@ -14,15 +14,21 @@
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0F766E"
     },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
+      "expo-system-ui"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.udharo.app",
       "buildNumber": "1",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -31,11 +37,8 @@
       },
       "package": "com.udharo.app",
       "versionCode": 1,
-      "permissions": [
-        "POST_NOTIFICATIONS"
-      ],
-      "edgeToEdgeEnabled": false,
-      "predictiveBackGestureEnabled": false
+      "permissions": ["POST_NOTIFICATIONS"],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
