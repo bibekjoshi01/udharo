@@ -39,6 +39,11 @@ npm install
 npx expo start
 ```
 
+```bash
+npx expo prebuild --platform android
+npx expo run:android         
+```
+
 - Android (Expo Go): press `a` or use `npx expo start --android`
 - iOS: press `i`
 
@@ -57,7 +62,7 @@ npx eas-cli build -p android --profile production # AAB for Play Store
 
 ```bash
 npm install -g eas-cli
-npx eas prebuild --platform android
+npx expo prebuild --platform android
 eas build -p android --profile preview --local
 ```
 
