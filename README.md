@@ -88,7 +88,3 @@ See `docs/release-guide.md` for:
 - versioning
 - database migration safety
 - build + Play Store flow
-
----
-
-If you want to contribute or extend features, see `TODO.md`.
