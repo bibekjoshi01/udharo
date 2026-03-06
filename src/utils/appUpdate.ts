@@ -5,7 +5,6 @@ import { compareVersions } from 'compare-versions';
 type UpdateApiResponse = {
   latestVersion: string;
   minSupportedVersion: string;
-  force: boolean;
   androidStoreUrl: string;
   iosStoreUrl: string;
 };
@@ -16,7 +15,7 @@ type UpdateCheckResult = {
   storeUrl: string | null;
 };
 
-const UPDATE_URL = 'https://udharo.cloud/update-config';
+const UPDATE_URL = 'https://udharo.cloud/api/update-config';
 const REQUEST_TIMEOUT_MS = 5000;
 
 export async function checkForAppUpdate(): Promise<UpdateCheckResult | null> {

@@ -2,41 +2,51 @@ import React from 'react';
 import { Modal, View, Text, StyleSheet } from 'react-native';
 import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
 import { AppPressable } from './AppPressable';
+import { openStoreUrl } from '../utils/appUpdate';
 
 export interface UpdatePromptProps {
   visible: boolean;
-  title: string;
-  message: string;
-  confirmLabel: string;
-  onConfirm: () => void;
-  cancelLabel?: string;
+  forceUpdate: boolean;
+  storeUrl: string | null;
   onCancel?: () => void;
 }
 
-export function UpdatePrompt({
-  visible,
-  title,
-  message,
-  confirmLabel,
-  onConfirm,
-  cancelLabel,
-  onCancel,
-}: UpdatePromptProps) {
-  const handleRequestClose = onCancel ?? (() => {});
+export function AppUpdatePrompt({ visible, forceUpdate, storeUrl, onCancel }: UpdatePromptProps) {
+  function handleConfirm() {
+    if (storeUrl) {
+      openStoreUrl(storeUrl);
+    }
+  }
+
+  function handleCancel() {
+    if (!forceUpdate && onCancel) {
+      onCancel();
+    }
+  }
+
+  const title = 'Update Available';
+
+  const message = forceUpdate
+    ? 'Your app version is no longer supported. Please update to continue.'
+    : 'A new version of the app is available. Update now for the best experience.';
+
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleRequestClose}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleCancel}>
       <View style={styles.overlay}>
         <View style={styles.card}>
           <Text style={styles.title}>{title}</Text>
+
           <Text style={styles.message}>{message}</Text>
+
           <View style={styles.actions}>
-            {cancelLabel ? (
-              <AppPressable style={[styles.btn, styles.btnGhost]} onPress={onCancel}>
-                <Text style={styles.btnGhostText}>{cancelLabel}</Text>
+            {!forceUpdate && (
+              <AppPressable style={[styles.btn, styles.btnGhost]} onPress={handleCancel}>
+                <Text style={styles.btnGhostText}>Later</Text>
               </AppPressable>
-            ) : null}
-            <AppPressable style={[styles.btn, styles.btnPrimary]} onPress={onConfirm}>
-              <Text style={styles.btnText}>{confirmLabel}</Text>
+            )}
+
+            <AppPressable style={[styles.btn, styles.btnPrimary]} onPress={handleConfirm}>
+              <Text style={styles.btnText}>Update</Text>
             </AppPressable>
           </View>
         </View>

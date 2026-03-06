@@ -1,8 +1,9 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppState, Platform, StatusBar, Text, TextInput } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import * as Network from 'expo-network';
 
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
@@ -23,8 +24,48 @@ import {
   NotoSansDevanagari_600SemiBold,
   NotoSansDevanagari_700Bold,
 } from '@expo-google-fonts/noto-sans-devanagari';
+import { checkForAppUpdate } from './src/utils/appUpdate';
+import { AppUpdatePrompt } from './src/components/UpdatePrompt';
 
 export default function App() {
+  // App Update
+  // ------------------------------------------------------------------
+  const [updateInfo, setUpdateInfo] = useState<{
+    visible: boolean;
+    forceUpdate: boolean;
+    storeUrl: string | null;
+  }>({
+    visible: false,
+    forceUpdate: false,
+    storeUrl: null,
+  });
+
+  useEffect(() => {
+    checkUpdate();
+  }, []);
+
+  async function checkUpdate() {
+    // Check internet
+    const network = await Network.getNetworkStateAsync();
+
+    if (!network.isConnected) {
+      return;
+    }
+
+    // Call update API
+    const result = await checkForAppUpdate();
+
+    if (!result) return;
+
+    if (result.updateAvailable) {
+      setUpdateInfo({
+        visible: true,
+        forceUpdate: result.forceUpdate,
+        storeUrl: result.storeUrl,
+      });
+    }
+  }
+
   // Store
   // ------------------------------------------------------------------
   const isDbReady = useStore((s) => s.isDbReady);
@@ -121,6 +162,18 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
+        <AppUpdatePrompt
+          visible={updateInfo.visible}
+          forceUpdate={updateInfo.forceUpdate}
+          storeUrl={updateInfo.storeUrl}
+          onCancel={() =>
+            setUpdateInfo((prev) => ({
+              ...prev,
+              visible: false,
+            }))
+          }
+        />
+
         {showLock ? (
           <LockScreen />
         ) : (
