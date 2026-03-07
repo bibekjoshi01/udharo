@@ -6,6 +6,7 @@ export const STRINGS_NE = {
 
   // Home
   totalReceivables: 'कुल लिन बाँकी रकम',
+  totalPayables: 'कुल तिर्नुपर्ने रकम',
   currencyPrefix: 'रू ',
   customers: 'ग्राहकहरू',
   udharoharu: 'उधारोहरू',
@@ -21,7 +22,7 @@ export const STRINGS_NE = {
   paymentInfoBody: 'भुक्तानी भनेको ग्राहकले तपाईँलाई उधारो तिर्न दिएको रकम हो।',
   balanceInfoTitle: 'रकमको जानकारी',
   balanceInfoBody:
-    'यदि रकम माइनस (-) छ भने तपाईँले तिर्नुपर्ने (बाहिर जाने) रकम हो। यदि प्लस छ भने लिन बाँकी रकम हो।',
+    '↑ ले तपाईंले प्राप्त गर्नुहुने रकम हो, ↓ ले बाहिर जाने (तिर्नुपर्ने) रकम हो।',
   collectionPriorityTitle: 'उठाउनुपर्ने प्राथमिकता',
   collectionPriorityEmpty: 'लिन बाँकी ग्राहक छैनन्।',
   oldestDueLabel: 'सबैभन्दा पुरानो देय मिति',
@@ -40,6 +41,7 @@ export const STRINGS_NE = {
 
   // Customer detail
   outstandingBalance: 'लिन बाँकी रकम',
+  payableAmount: 'तिर्नुपर्ने रकम',
   addCredit: 'उधारो थप्नुहोस्',
   payment: 'भुक्तानी',
   editCustomer: 'ग्राहक सम्पादन',
@@ -102,6 +104,7 @@ export const STRINGS_NE = {
   totalCredits: 'कुल उधारो',
   totalPayments: 'कुल भुक्तानी',
   netBalance: 'कुल लिन बाँकी रकम',
+  netPayables: 'कुल तिर्नुपर्ने रकम',
   thisMonth: 'यो महिना',
   thisYear: 'यो वर्ष',
   today: 'आज',

@@ -22,13 +22,7 @@ npm install
 npx expo start
 ```
 
-Options while the bundler is running:
-
-- `npm run android` (alias for `expo run:android`) – builds and installs on a connected emulator/device.
-- `npm run ios` – builds and runs on simulator (macOS only).
-- `npm run web` – launches the web version of the app.
-
-If you want to use the Expo Dev Client, run `npx expo prebuild --platform android` once, then `expo run:android` as normal.
+If you want to use the Expo Dev Client, run `npx expo prebuild --platform android` once, then `npx expo run:android` as normal.
 
 ## Building for Distribution
 

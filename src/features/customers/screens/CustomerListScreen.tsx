@@ -119,8 +119,11 @@ export function CustomerListScreen() {
         onEndReachedThreshold={0.5}
         keyboardShouldPersistTaps="handled"
         renderItem={({ item }) => {
-          const isDebt = item.balance > 0;
-          const balanceText = item.balance.toLocaleString('en-US', { maximumFractionDigits: 0 });
+          const balance = item.balance ?? 0;
+          const absBalance = Math.abs(balance);
+          const balanceText = absBalance.toLocaleString('en-US', { maximumFractionDigits: 0 });
+          const isOutgoing = balance < 0;
+          const balanceDirection = balance > 0 ? '↑' : balance < 0 ? '↓' : '';
           const txCount = item.transaction_count ?? 0;
           return (
             <AppPressable
@@ -131,12 +134,27 @@ export function CustomerListScreen() {
                 <Text style={styles.cardName} numberOfLines={1}>
                   {item.name}
                 </Text>
-                <Text
-                  style={[styles.cardBalance, isDebt ? styles.balanceDebt : styles.balancePaid]}
-                >
-                  {STRINGS.currencyPrefix}
-                  {balanceText}
-                </Text>
+                <View style={styles.cardBalanceRow}>
+                  <Text
+                    style={[
+                      styles.cardBalance,
+                      isOutgoing ? styles.balanceDebt : styles.balancePaid,
+                    ]}
+                  >
+                    {STRINGS.currencyPrefix}
+                    {balanceText}
+                  </Text>
+                  {balanceDirection ? (
+                    <Text
+                      style={[
+                        styles.balanceArrow,
+                        isOutgoing ? styles.balanceDebt : styles.balancePaid,
+                      ]}
+                    >
+                      {balanceDirection}
+                    </Text>
+                  ) : null}
+                </View>
               </View>
               <View style={styles.cardMetaRow}>
                 <View style={styles.metaLeft}>
@@ -303,6 +321,15 @@ const styles = StyleSheet.create({
   cardBalance: {
     fontSize: FONTS.title,
     fontWeight: '700',
+  },
+  cardBalanceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+  },
+  balanceArrow: {
+    fontSize: FONTS.title,
+    fontWeight: '800',
   },
   cardMetaRow: {
     flexDirection: 'row',

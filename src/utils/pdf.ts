@@ -121,6 +121,7 @@ export async function exportCustomerPdf(params: {
   const STRINGS = getStrings();
   const prefix = STRINGS.currencyPrefix;
   const { customer, totalCredits, totalPayments, balance, credits, payments } = params;
+  const balanceLabel = balance >= 0 ? STRINGS.outstandingBalance : STRINGS.payableAmount;
   const title = STRINGS.customerReportTitle;
   const body = `
     <div class="muted">${formatNepaliDateLong()}</div>
@@ -130,7 +131,7 @@ export async function exportCustomerPdf(params: {
       <div class="summary-row"><span class="summary-label">${STRINGS.address}:</span><span class="summary-value">${customer.address ?? '-'}</span></div>
       <div class="summary-row"><span class="summary-label">${STRINGS.totalCredits}:</span><span class="summary-value">${currency(totalCredits, prefix)}</span></div>
       <div class="summary-row"><span class="summary-label">${STRINGS.totalPayments}:</span><span class="summary-value">${currency(totalPayments, prefix)}</span></div>
-      <div class="summary-row"><span class="summary-label">${STRINGS.outstandingBalance}:</span><span class="summary-value">${currency(balance, prefix)}</span></div>
+      <div class="summary-row"><span class="summary-label">${balanceLabel}:</span><span class="summary-value">${currency(Math.abs(balance), prefix)}</span></div>
     </div>
     <h2>${STRINGS.creditDetailsTitle}</h2>
     <table>
@@ -159,12 +160,13 @@ export async function exportReportPdf(params: {
   const STRINGS = getStrings();
   const prefix = STRINGS.currencyPrefix;
   const { title, totalCredits, totalPayments, netBalance, credits, payments, rangeLabel } = params;
+  const netLabel = netBalance >= 0 ? STRINGS.netBalance : STRINGS.netPayables;
   const body = `
     <div class="muted">${formatNepaliDateLong()}</div>
     <div class="summary">
       <div class="summary-row"><span class="summary-label">${STRINGS.totalCredits}:</span><span class="summary-value">${currency(totalCredits, prefix)}</span></div>
       <div class="summary-row"><span class="summary-label">${STRINGS.totalPayments}:</span><span class="summary-value">${currency(totalPayments, prefix)}</span></div>
-      <div class="summary-row"><span class="summary-label">${STRINGS.netBalance}:</span><span class="summary-value">${currency(netBalance, prefix)}</span></div>
+      <div class="summary-row"><span class="summary-label">${netLabel}:</span><span class="summary-value">${currency(Math.abs(netBalance), prefix)}</span></div>
     </div>
     <h2>${STRINGS.creditTableTitle}</h2>
     <table>

@@ -57,6 +57,18 @@ export function CustomerDetailScreen() {
   }
 
   const isDebt = balance > 0;
+  const balanceLabel = balance >= 0 ? STRINGS.outstandingBalance : STRINGS.payableAmount;
+  const balanceDirection = balance > 0 ? '↑' : balance < 0 ? '↓' : '';
+  const absoluteBalance = Math.abs(balance);
+  const isOutgoing = balance < 0;
+  const balanceTextStyle = [
+    styles.balanceValue,
+    isOutgoing ? styles.balanceDebt : styles.balancePositive,
+  ];
+  const arrowStyle = [
+    styles.balanceArrow,
+    isOutgoing ? styles.balanceDebt : styles.balancePositive,
+  ];
 
   return (
     <View style={styles.container}>
@@ -111,11 +123,16 @@ export function CustomerDetailScreen() {
       />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.balanceSection}>
-          <Text style={styles.balanceLabel}>{STRINGS.outstandingBalance}</Text>
-          <Text style={[styles.balanceValue, isDebt ? styles.balanceDebt : styles.balancePaid]}>
-            {STRINGS.currencyPrefix}
-            {formatAmount(balance)}
-          </Text>
+          <Text style={styles.balanceLabel}>{balanceLabel}</Text>
+          <View style={styles.balanceValueRow}>
+            <Text style={balanceTextStyle}>
+              {STRINGS.currencyPrefix}
+              {formatAmount(absoluteBalance)}
+            </Text>
+            {balanceDirection ? (
+              <Text style={arrowStyle}>{balanceDirection}</Text>
+            ) : null}
+          </View>
         </View>
 
         <View style={styles.infoCard}>
@@ -225,8 +242,18 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
   },
+  balanceValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  balanceArrow: {
+    fontSize: 28,
+    fontWeight: '800',
+    marginLeft: SPACING.xs,
+  },
   balanceDebt: { color: COLORS.debt },
   balancePaid: { color: COLORS.paid },
+  balancePositive: { color: COLORS.paid },
   scrollContent: { padding: SPACING.md, paddingBottom: SPACING.xl },
   infoCard: {
     backgroundColor: COLORS.surface,

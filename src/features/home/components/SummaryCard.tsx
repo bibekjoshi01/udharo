@@ -20,13 +20,14 @@ const formatAmount = (n: number) =>
 export function SummaryCard({ total, loading = false }: SummaryCardProps) {
   const STRINGS = useStrings();
   const directionArrow = total > 0 ? '↑' : total < 0 ? '↓' : '';
+  const summaryLabel = total >= 0 ? STRINGS.totalReceivables : STRINGS.totalPayables;
   const showInfo = () => {
     Alert.alert(STRINGS.balanceInfoTitle, STRINGS.balanceInfoBody);
   };
   return (
     <View style={styles.summaryCard}>
       <View style={styles.summaryHeader}>
-        <Text style={styles.summaryLabel}>{STRINGS.totalReceivables}</Text>
+        <Text style={styles.summaryLabel}>{summaryLabel}</Text>
         <AppPressable style={styles.infoBtn} onPress={showInfo}>
           <Ionicons name="information-circle-outline" size={20} color={COLORS.white} />
         </AppPressable>
@@ -36,7 +37,7 @@ export function SummaryCard({ total, loading = false }: SummaryCardProps) {
       ) : (
         <View style={styles.summaryAmountRow}>
           <Text style={styles.summaryAmount}>
-            {`${STRINGS.currencyPrefix}${formatAmount(total)}`}
+            {`${STRINGS.currencyPrefix}${formatAmount(Math.abs(total))}`}
           </Text>
           {directionArrow ? <Text style={styles.summaryArrow}>{directionArrow}</Text> : null}
         </View>

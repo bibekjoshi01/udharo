@@ -5,6 +5,7 @@ export const STRINGS_EN = {
 
   // Home
   totalReceivables: 'Total Receivables',
+  totalPayables: 'Total Payables',
   currencyPrefix: 'Rs. ',
   customers: 'Customers',
   udharoharu: 'Credits',
@@ -21,7 +22,7 @@ export const STRINGS_EN = {
     'Payments are amounts you received from customers to settle their credits.',
   balanceInfoTitle: 'Amount Info',
   balanceInfoBody:
-    'If the amount is negative (-), it means you need to pay that amount (outgoing). If it is positive, it means you will receive that amount.',
+    'An upward arrow (↑) means you will receive that amount. A downward arrow (↓) means it is outgoing/payable.',
   collectionPriorityTitle: 'Collection Priority',
   collectionPriorityEmpty: 'No outstanding customers yet.',
   oldestDueLabel: 'Oldest Due',
@@ -40,6 +41,7 @@ export const STRINGS_EN = {
 
   // Customer detail
   outstandingBalance: 'Receivable Amount',
+  payableAmount: 'Payable Amount',
   addCredit: 'Add Credit',
   payment: 'Payment',
   editCustomer: 'Edit Customer',
@@ -102,6 +104,7 @@ export const STRINGS_EN = {
   totalCredits: 'Total Credits',
   totalPayments: 'Total Payments',
   netBalance: 'Total Receivables',
+  netPayables: 'Total Payables',
   thisMonth: 'Monthly',
   thisYear: 'Yearly',
   today: 'Today',

@@ -71,6 +71,19 @@ export function CreditReportsScreen() {
   const formatAmount = (n: number) =>
     n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
+  const netLabel = totals.netBalance >= 0 ? STRINGS.netBalance : STRINGS.netPayables;
+  const netDirection = totals.netBalance > 0 ? '↑' : totals.netBalance < 0 ? '↓' : '';
+  const netAmount = formatAmount(Math.abs(totals.netBalance));
+  const netIsOutgoing = totals.netBalance < 0;
+  const netAmountStyle = [
+    styles.cardAmount,
+    netIsOutgoing ? styles.cardAmountDebt : styles.cardAmountPositive,
+  ];
+  const netArrowStyle = [
+    styles.cardArrow,
+    netIsOutgoing ? styles.cardAmountDebt : styles.cardAmountPositive,
+  ];
+
   const maxBar = Math.max(
     Math.abs(totals.totalCredits),
     Math.abs(totals.totalPayments),
@@ -212,16 +225,14 @@ export function CreditReportsScreen() {
             </View>
 
             <View style={[styles.card, styles.cardNet]}>
-              <Text style={styles.cardLabel}>{STRINGS.netBalance}</Text>
-              <Text
-                style={[
-                  styles.cardAmount,
-                  totals.netBalance >= 0 ? styles.cardAmountDebt : styles.cardAmountGreen,
-                ]}
-              >
-                {STRINGS.currencyPrefix}
-                {formatAmount(totals.netBalance)}
-              </Text>
+              <Text style={styles.cardLabel}>{netLabel}</Text>
+              <View style={styles.cardAmountRow}>
+                <Text style={netAmountStyle}>
+                  {STRINGS.currencyPrefix}
+                  {netAmount}
+                </Text>
+                {netDirection ? <Text style={netArrowStyle}>{netDirection}</Text> : null}
+              </View>
             </View>
 
             <View style={styles.chartCard}>
@@ -249,7 +260,7 @@ export function CreditReportsScreen() {
                       { height: barHeight(totals.netBalance) },
                     ]}
                   />
-                  <Text style={styles.chartLabel}>{STRINGS.outstandingBalance}</Text>
+                  <Text style={styles.chartLabel}>{netLabel}</Text>
                 </View>
               </View>
             </View>
@@ -339,6 +350,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     color: COLORS.text,
+  },
+  cardAmountPositive: {
+    color: COLORS.paid,
+  },
+  cardAmountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardArrow: {
+    fontSize: 28,
+    fontWeight: '800',
+    marginLeft: SPACING.xs,
   },
   cardAmountGreen: { color: COLORS.paid },
   cardAmountDebt: { color: COLORS.debt },
