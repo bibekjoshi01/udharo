@@ -39,12 +39,13 @@ export function CreditReportsScreen() {
         setLoading(true);
       }
       try {
-        const { startAD, endAD } = range === 'today'
-          ? getNepaliRange('today')
-          : {
-              startAD: customStart,
-              endAD: customEnd >= customStart ? customEnd : customStart,
-            };
+        const { startAD, endAD } =
+          range === 'today'
+            ? getNepaliRange('today')
+            : {
+                startAD: customStart,
+                endAD: customEnd >= customStart ? customEnd : customStart,
+              };
         const t = await getReportTotals(startAD, endAD);
         setTotals(t);
       } catch {
@@ -91,6 +92,7 @@ export function CreditReportsScreen() {
     1,
   );
   const barHeight = (value: number) => Math.max(8, Math.round((Math.abs(value) / maxBar) * 120));
+  const netBarColor = totals.netBalance >= 0 ? COLORS.paid : COLORS.debt;
 
   return (
     <View style={styles.container}>
@@ -107,12 +109,13 @@ export function CreditReportsScreen() {
                   text: STRINGS.download,
                   onPress: async () => {
                     try {
-                      const { startAD, endAD } = range === 'today'
-                        ? getNepaliRange('today')
-                        : {
-                            startAD: customStart,
-                            endAD: customEnd >= customStart ? customEnd : customStart,
-                          };
+                      const { startAD, endAD } =
+                        range === 'today'
+                          ? getNepaliRange('today')
+                          : {
+                              startAD: customStart,
+                              endAD: customEnd >= customStart ? customEnd : customStart,
+                            };
                       const credits = await getCreditsByDateRange(startAD, endAD);
                       const payments = await getPaymentsByDateRange(startAD, endAD);
                       const startNep = formatNepaliDate(startAD);
@@ -239,28 +242,38 @@ export function CreditReportsScreen() {
               <Text style={styles.chartTitle}>{STRINGS.summaryComparisonTitle}</Text>
               <View style={styles.chartRow}>
                 <View style={styles.chartBarWrap}>
-                  <View style={[styles.chartBar, { height: barHeight(totals.totalCredits) }]} />
-                  <Text style={styles.chartLabel}>{STRINGS.totalCredits}</Text>
+                  <View
+                    style={[
+                      styles.chartBar,
+                      { height: barHeight(totals.totalCredits), backgroundColor: COLORS.text },
+                    ]}
+                  />
+                  <Text style={[styles.chartLabel, { color: COLORS.text }]}>
+                    {STRINGS.totalCredits}
+                  </Text>
                 </View>
                 <View style={styles.chartBarWrap}>
                   <View
                     style={[
                       styles.chartBar,
-                      styles.chartBarPaid,
-                      { height: barHeight(totals.totalPayments) },
+                      { height: barHeight(totals.totalPayments), backgroundColor: COLORS.paid },
                     ]}
                   />
-                  <Text style={styles.chartLabel}>{STRINGS.totalPayments}</Text>
+                  <Text style={[styles.chartLabel, { color: COLORS.paid }]}>
+                    {STRINGS.totalPayments}
+                  </Text>
                 </View>
                 <View style={styles.chartBarWrap}>
                   <View
                     style={[
                       styles.chartBar,
-                      totals.netBalance >= 0 ? styles.chartBarDebt : styles.chartBarPaid,
-                      { height: barHeight(totals.netBalance) },
+                      {
+                        height: barHeight(totals.netBalance),
+                        backgroundColor: netBarColor,
+                      },
                     ]}
                   />
-                  <Text style={styles.chartLabel}>{netLabel}</Text>
+                  <Text style={[styles.chartLabel, { color: netBarColor }]}>{netLabel}</Text>
                 </View>
               </View>
             </View>
@@ -394,12 +407,6 @@ const styles = StyleSheet.create({
     width: 28,
     borderRadius: 10,
     backgroundColor: COLORS.debtLight,
-  },
-  chartBarDebt: {
-    backgroundColor: COLORS.debt,
-  },
-  chartBarPaid: {
-    backgroundColor: COLORS.paid,
   },
   chartLabel: {
     marginTop: SPACING.xs,

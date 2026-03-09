@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SPACING.md,
+    justifyContent: 'center',
   },
   actionCard: {
     width: '47%',
