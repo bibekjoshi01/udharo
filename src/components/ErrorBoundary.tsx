@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from "../constants/theme";
-import { AppPressable } from "./AppPressable";
-import { getStrings } from "../constants/strings";
-import { logError } from "../utils/crashlytics";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { COLORS, FONTS, SPACING, BORDER_RADIUS, MIN_TOUCH } from '../constants/theme';
+import { AppPressable } from './AppPressable';
+import { getStrings } from '../constants/strings';
+import { logError } from '../utils/crashlytics';
 
 type ErrorBoundaryProps = {
   children: React.ReactNode;
@@ -38,9 +38,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return (
       <View style={styles.container}>
         <Text style={styles.title}>{STRINGS.errorTitle}</Text>
-        <Text style={styles.subtitle}>
-          {STRINGS.errorSubtitle}
-        </Text>
+        <Text style={styles.subtitle}>{STRINGS.errorSubtitle}</Text>
         {this.state.message ? (
           <Text style={styles.message} numberOfLines={3}>
             {this.state.message}
@@ -58,27 +56,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: SPACING.xl,
   },
   title: {
     fontSize: 20,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.text,
     marginBottom: SPACING.xs,
-    textAlign: "center",
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: FONTS.body,
     color: COLORS.textSecondary,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: SPACING.md,
   },
   message: {
     fontSize: FONTS.small,
     color: COLORS.textSecondary,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: SPACING.md,
   },
   button: {
@@ -86,12 +84,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     borderRadius: BORDER_RADIUS.sm,
     backgroundColor: COLORS.primary,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     fontSize: FONTS.body,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.white,
   },
 });

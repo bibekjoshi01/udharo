@@ -31,7 +31,7 @@ const DB_VERSION = 4;
 async function recordMigration(database: SQLite.SQLiteDatabase, version: number) {
   await database.execAsync(CREATE_SCHEMA_MIGRATIONS_TABLE);
   await database.runAsync(
-    'INSERT OR IGNORE INTO schema_migrations (version, applied_at) VALUES (?, datetime(\'now\'))',
+    "INSERT OR IGNORE INTO schema_migrations (version, applied_at) VALUES (?, datetime('now'))",
     version,
   );
 }
@@ -97,7 +97,9 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   if (!paymentsColSet.has('attachment_mime'))
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN attachment_mime TEXT');
   if (!paymentsColSet.has('is_verified'))
-    await database.runAsync('ALTER TABLE customer_payments ADD COLUMN is_verified INTEGER DEFAULT 0');
+    await database.runAsync(
+      'ALTER TABLE customer_payments ADD COLUMN is_verified INTEGER DEFAULT 0',
+    );
   if (!paymentsColSet.has('verified_at'))
     await database.runAsync('ALTER TABLE customer_payments ADD COLUMN verified_at TEXT');
   if (!paymentsColSet.has('date')) {
@@ -116,14 +118,13 @@ async function ensureSchema(database: SQLite.SQLiteDatabase) {
   await database.runAsync(
     "UPDATE customer_payments SET created_at = COALESCE(created_at, datetime('now'))",
   );
-  await database.runAsync("UPDATE customer_payments SET is_verified = COALESCE(is_verified, 0)");
+  await database.runAsync('UPDATE customer_payments SET is_verified = COALESCE(is_verified, 0)');
 
   // Indexes last: older DBs might not have the indexed columns until we migrate above.
   await database.execAsync(CREATE_INDEX_CREDITS_CUSTOMER_ID);
   await database.execAsync(CREATE_INDEX_PAYMENTS_CUSTOMER_ID);
   await database.execAsync(CREATE_INDEX_CREDITS_DATE);
   await database.execAsync(CREATE_INDEX_PAYMENTS_DATE);
-
 }
 
 async function migrateDatabase(database: SQLite.SQLiteDatabase) {
@@ -485,7 +486,10 @@ export async function getPaymentsForCustomer(customerId: number): Promise<Custom
   return (rows as CustomerPayment[]) ?? [];
 }
 
-export async function getCreditsByDateRange(startDate: string, endDate: string): Promise<CustomerCredit[]> {
+export async function getCreditsByDateRange(
+  startDate: string,
+  endDate: string,
+): Promise<CustomerCredit[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerCredit>(
     `SELECT id, customer_id, amount, note, expected_payment_date, date, created_at
@@ -497,7 +501,10 @@ export async function getCreditsByDateRange(startDate: string, endDate: string):
   return (rows as CustomerCredit[]) ?? [];
 }
 
-export async function getPaymentsByDateRange(startDate: string, endDate: string): Promise<CustomerPayment[]> {
+export async function getPaymentsByDateRange(
+  startDate: string,
+  endDate: string,
+): Promise<CustomerPayment[]> {
   const database = db ?? (await initDatabase());
   const rows = await database.getAllAsync<CustomerPayment>(
     `SELECT id, customer_id, amount, note, is_verified, verified_at, attachment_uri, attachment_name, attachment_mime, date, created_at
@@ -526,7 +533,7 @@ export async function getPaymentsWithCustomerPage(params: {
      JOIN customers cu ON cu.id = p.customer_id
      ${
        hasQuery
-         ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ? OR lower(COALESCE(p.note, \'\')) LIKE ?'
+         ? "WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ? OR lower(COALESCE(p.note, '')) LIKE ?"
          : ''
      }
      ORDER BY p.date DESC, p.created_at DESC
@@ -548,7 +555,7 @@ export async function getPaymentsCount(query?: string): Promise<number> {
      JOIN customers cu ON cu.id = p.customer_id
      ${
        hasQuery
-         ? 'WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ? OR lower(COALESCE(p.note, \'\')) LIKE ?'
+         ? "WHERE lower(cu.name) LIKE ? OR lower(cu.mobile) LIKE ? OR lower(COALESCE(p.note, '')) LIKE ?"
          : ''
      }`,
     ...(hasQuery ? [like, like, like] : []),
